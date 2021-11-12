@@ -4,8 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Hello World, 是小竹不是小猪">
-    <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hex">
+    <meta name="keywords" content="CTFHub-SVN和HG泄露, 是小竹不是小猪">
+    <meta name="description" content="dvcs-ripper工具安装在Ubuntu虚拟机上面执行
+1234sudo apt-get install perl libio-socket-ssl-perl libdbd-sqlite3-perl libclass-dbi-perl ">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +18,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Hello World | 是小竹不是小猪</title>
+    <title>CTFHub-SVN和HG泄露 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -309,12 +310,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/11.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Hello World</h1>
+                    <h1 class="description center-align post-title">CTFHub-SVN和HG泄露</h1>
                 </div>
             </div>
         </div>
@@ -442,7 +443,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-11-10
+                    2021-11-12
                 </div>
                 
 
@@ -463,19 +464,49 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+                <h2 id="dvcs-ripper工具安装"><a href="#dvcs-ripper工具安装" class="headerlink" title="dvcs-ripper工具安装"></a>dvcs-ripper工具安装</h2><p>在Ubuntu虚拟机上面执行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install perl libio-socket-ssl-perl libdbd-sqlite3-perl libclass-dbi-perl libio-all-lwp-perl</span><br><span class="line">sudo apt-get install libparallel-forkmanager-perl libredis-perl libalgorithm-combinatorics-perl</span><br><span class="line">sudo apt-get install cvs subversion git bzr mercurial</span><br><span class="line">git clone https://github.com/kost/dvcs-ripper</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>注意在执行的时候有git clone代理问题,报错Failed to connect to github.com port 443:connection timed out。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --global --unset http.proxy</span><br><span class="line"> </span><br><span class="line">git config --global --unset https.proxy</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="CTFHub-中SVN泄露"><a href="#CTFHub-中SVN泄露" class="headerlink" title="CTFHub 中SVN泄露"></a>CTFHub 中SVN泄露</h2><p>使用工具，进入该工具后端打开</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./rip-svn.pl -v -u http://challenge-fb13f9afd9ee3b28.sandbox.ctfhub.com:10080/.svn/</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/11/12/a/1.PNG" alt="1"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -al</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<p><img src="/2021/11/12/a/2.PNG" alt="2"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cd .svn</span><br><span class="line">ls</span><br><span class="line">cd pristine</span><br><span class="line">ls</span><br><span class="line">cd f3</span><br><span class="line">ls </span><br><span class="line">cat f325ddfa45224698cdeb8b13737b305d1503620d.svn-base #查看文件</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/12/a/3.PNG" alt="3"></p>
+<p><img src="/2021/11/12/a/4.PNG" alt="4"></p>
+<p>到此可以得到最终结果。</p>
+<hr>
+<h2 id="CTFHub中的HG泄露"><a href="#CTFHub中的HG泄露" class="headerlink" title="CTFHub中的HG泄露"></a>CTFHub中的HG泄露</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./rip-hg.pl -v -u http://challenge-cf630b528f6f25e2.sandbox.ctfhub.com:10080/.hg/</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/12/a/5.PNG" alt="5"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -al   #查看全部可以得到的文件</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/12/a/6.PNG" alt="6"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd .hg #打开.hg 进行查看</span><br><span class="line">ls -al</span><br></pre></td></tr></table></figure>
+
+<p>在 .hg之下打开store文件夹，刚开始看到data文件夹直接打开，发现没有进展，之后回退查看fncache 文件。发现其中在data 之下有flag文本文件，但是直接打开data无法显示，于是尝试直接在网页中进行访问。</p>
+<p><img src="/2021/11/12/a/7.PNG" alt="7"></p>
+<p><img src="/2021/11/12/a/9.PNG" alt="9"></p>
+<p>直接在浏览器中访问可以得到结果</p>
+<p><img src="/2021/11/12/a/10.PNG" alt="10"></p>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h4 id="SVN泄露"><a href="#SVN泄露" class="headerlink" title="SVN泄露"></a>SVN泄露</h4><p>1.在使用SVN管理本地代码过程中，会自动生成一个隐藏文件夹，其中包含重要的源代码信息。但一些网站管理员在发布代码时，不愿意使用‘导出’功能，而是直接复制代码文件夹到WEB服务器上，这就使隐藏文件夹被暴露于外网环境，这使得渗透工程师可以借助其中包含版本信息追踪的网站文件，逐步摸清站点结构。</p>
+<p> 2.在服务器上布署代码时。如果是使用 svn checkout 功能来更新代码，而没有配置好目录访问权限，则会存在此漏洞。黑客利用此漏洞，可以下载整套网站的源代码。</p>
+<p>3.svn目录（隐藏目录）</p>
+<p>使用svn checkout后，项目目录下会生成隐藏的.svn文件夹<strong>（Linux上用ls命令看不到，要用ls -al命令）</strong>。 </p>
+<p>svn1.6及以前版本会在项目的每个文件夹下都生成一个.svn文件夹，里面包含了所有文件的备份，文件名为 .svn/text-base/文件名.svn-base。</p>
+<p>svn1.7及以后版本则只在项目根目录生成一个.svn文件夹，里面的pristine文件夹里包含了整个项目的所有文件备份。文件也是以.svn-base结尾。</p>
+<h4 id="HG泄露"><a href="#HG泄露" class="headerlink" title="HG泄露"></a>HG泄露</h4><p>当开发人员使用 Mercurial 进行版本控制，对站点自动部署。如果配置不当,可能会将.hg 文件夹直接部署到线上环境。这就引起了 hg 泄露漏洞。</p>
+<hr>
+<h2 id="针对SVN泄露的其他知识"><a href="#针对SVN泄露的其他知识" class="headerlink" title="针对SVN泄露的其他知识"></a>针对SVN泄露的其他知识</h2><p>可以参考网址：<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_39190897/article/details/109306693">(19条消息) Web安全-SVN信息泄露漏洞分析_Tr0e-CSDN博客_web下svn泄露的信息</a></p>
 
                 
             </div>
@@ -502,7 +533,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2021/11/10/hello-world/">http://example.com/2021/11/10/hello-world/</a>
+                    <a href="http://example.com/2021/11/12/a/">http://example.com/2021/11/12/a/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -709,9 +740,48 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2021/11/12/a/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="CTFHub-SVN和HG泄露">
+                        
+                        <span class="card-title">CTFHub-SVN和HG泄露</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-12
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
             <div class="card">
                 <a href="/2021/11/11/CtfHub-git%E6%B3%84%E9%9C%B2/">
                     <div class="card-image">
@@ -729,45 +799,8 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2021-11-11
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            小竹
-                            
-                        </span>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                本篇&nbsp;<i class="far fa-dot-circle"></i>
-            </div>
-            <div class="card">
-                <a href="/2021/11/10/hello-world/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="Hello World">
-                        
-                        <span class="card-title">Hello World</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-10
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-11
                             </span>
                         <span class="publish-author">
                             
@@ -777,7 +810,6 @@
                         </span>
                     </div>
                 </div>
-
                 
             </div>
         </div>
