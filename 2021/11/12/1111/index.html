@@ -474,29 +474,29 @@
 <h2 id="CTFHub-中SVN泄露"><a href="#CTFHub-中SVN泄露" class="headerlink" title="CTFHub 中SVN泄露"></a>CTFHub 中SVN泄露</h2><p>使用工具，进入该工具后端打开</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./rip-svn.pl -v -u http://challenge-fb13f9afd9ee3b28.sandbox.ctfhub.com:10080/.svn/</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2021/11/12/a/1.PNG" alt="1"></p>
+<p><img src="/2021/11/12/1111/1.PNG" alt="1"></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -al</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2021/11/12/a/2.PNG" alt="2"></p>
+<p><img src="/2021/11/12/1111/2.PNG" alt="2"></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cd .svn</span><br><span class="line">ls</span><br><span class="line">cd pristine</span><br><span class="line">ls</span><br><span class="line">cd f3</span><br><span class="line">ls </span><br><span class="line">cat f325ddfa45224698cdeb8b13737b305d1503620d.svn-base #查看文件</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2021/11/12/a/3.PNG" alt="3"></p>
-<p><img src="/2021/11/12/a/4.PNG" alt="4"></p>
+<p><img src="/2021/11/12/1111/3.PNG" alt="3"></p>
+<p><img src="/2021/11/12/1111/4.PNG" alt="4"></p>
 <p>到此可以得到最终结果。</p>
 <hr>
 <h2 id="CTFHub中的HG泄露"><a href="#CTFHub中的HG泄露" class="headerlink" title="CTFHub中的HG泄露"></a>CTFHub中的HG泄露</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./rip-hg.pl -v -u http://challenge-cf630b528f6f25e2.sandbox.ctfhub.com:10080/.hg/</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2021/11/12/a/5.PNG" alt="5"></p>
+<p><img src="/2021/11/12/1111/5.PNG" alt="5"></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -al   #查看全部可以得到的文件</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2021/11/12/a/6.PNG" alt="6"></p>
+<p><img src="/2021/11/12/1111/6.PNG" alt="6"></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd .hg #打开.hg 进行查看</span><br><span class="line">ls -al</span><br></pre></td></tr></table></figure>
 
 <p>在 .hg之下打开store文件夹，刚开始看到data文件夹直接打开，发现没有进展，之后回退查看fncache 文件。发现其中在data 之下有flag文本文件，但是直接打开data无法显示，于是尝试直接在网页中进行访问。</p>
-<p><img src="/2021/11/12/a/7.PNG" alt="7"></p>
-<p><img src="/2021/11/12/a/9.PNG" alt="9"></p>
+<p><img src="/2021/11/12/1111/7.PNG" alt="7"></p>
+<p><img src="/2021/11/12/1111/9.PNG" alt="9"></p>
 <p>直接在浏览器中访问可以得到结果</p>
-<p><img src="/2021/11/12/a/10.PNG" alt="10"></p>
+<p><img src="/2021/11/12/1111/10.PNG" alt="10"></p>
 <hr>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h4 id="SVN泄露"><a href="#SVN泄露" class="headerlink" title="SVN泄露"></a>SVN泄露</h4><p>1.在使用SVN管理本地代码过程中，会自动生成一个隐藏文件夹，其中包含重要的源代码信息。但一些网站管理员在发布代码时，不愿意使用‘导出’功能，而是直接复制代码文件夹到WEB服务器上，这就使隐藏文件夹被暴露于外网环境，这使得渗透工程师可以借助其中包含版本信息追踪的网站文件，逐步摸清站点结构。</p>
 <p> 2.在服务器上布署代码时。如果是使用 svn checkout 功能来更新代码，而没有配置好目录访问权限，则会存在此漏洞。黑客利用此漏洞，可以下载整套网站的源代码。</p>
@@ -533,7 +533,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2021/11/12/a/">http://example.com/2021/11/12/a/</a>
+                    <a href="http://example.com/2021/11/12/1111/">http://example.com/2021/11/12/1111/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -740,18 +740,17 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2021/11/12/a/">
+                <a href="/2021/11/12/b1112/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="CTFHub-SVN和HG泄露">
+                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="CTFHub-报错注入">
                         
-                        <span class="card-title">CTFHub-SVN和HG泄露</span>
+                        <span class="card-title">CTFHub-报错注入</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -761,9 +760,9 @@
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-12
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2021-11-12
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -772,7 +771,6 @@
                         </span>
                     </div>
                 </div>
-
                 
             </div>
         </div>

