@@ -489,6 +489,18 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run dev</span><br></pre></td></tr></table></figure>
 
 <p><img src="/2021/11/14/1114/2.PNG" alt="2"></p>
+<h3 id="三-vue-element-admin-配置"><a href="#三-vue-element-admin-配置" class="headerlink" title="三 vue-element-admin 配置"></a>三 vue-element-admin 配置</h3><h4 id="1、下载-vue-element-admin，并启动"><a href="#1、下载-vue-element-admin，并启动" class="headerlink" title="1、下载 vue-element-admin，并启动"></a>1、下载 vue-element-admin，并启动</h4><p>官方：<a target="_blank" rel="noopener" href="https://github.com/PanJiaChen/vue-element-admin">https://github.com/PanJiaChen/vue-element-admin</a></p>
+<p>进入后下载压缩包到本地，用管理员身份打开文件夹，执行以下命令。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">clone</span> the project</span></span><br><span class="line">git clone https://github.com/PanJiaChen/vue-element-admin.git</span><br><span class="line"><span class="meta">#</span><span class="bash">执行该命令，如果不可以尝试 git <span class="built_in">clone</span> git://github.com/PanJiaChen/vue-element-admin.git</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> enter the project directory</span></span><br><span class="line">cd vue-element-admin</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> install dependency</span></span><br><span class="line">cnpm install</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> develop</span></span><br><span class="line">npm run dev</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>注意：</p>
+<p>1、第三步应该在安装过淘宝镜像的条件下（npm install –registry=<a target="_blank" rel="noopener" href="https://registry.npm.taobao.org)进行./">https://registry.npm.taobao.org）进行。</a></p>
+<p>2、如果运行cnpm install 出现很多ERROR建议可以删除文件夹里面的node_modules文件夹然后重新进行cnpm install。</p>
+<p>3、请在网络通畅的条件下进行。【很重要】</p>
+<p>4、如果在npm run dev的时候出现以下问题</p>
+<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20211115201420453.png" alt="image-20211115201420453"></p>
+<p>可以直接cnpm install core.js【缺少的模块】</p>
+<p>5、然后重新进行run run dev即可。</p>
 
                 
             </div>
