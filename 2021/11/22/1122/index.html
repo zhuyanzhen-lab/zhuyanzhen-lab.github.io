@@ -4,9 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="最大子序和, 是小竹不是小猪">
-    <meta name="description" content="数组最大子序和自己思考的方法：
-1234567891011121314151617181920212223242526int maxSubArray(int* nums, int numsSize)&amp;#123;    int a[5];  ">
+    <meta name="keywords" content="基于nodejs实现一个静态文件服务器, 是小竹不是小猪">
+    <meta name="description" content="一、搭建环境检查nodejs环境
+12node -vnpm -v
+
+如果在后续运行过程中出现缺少模块的情况可以使用npm install （模块名）的方法。注意全局和局部的区别。
+【必须以管理员身份操作】
+12npm install mod">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -18,7 +22,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>最大子序和 | 是小竹不是小猪</title>
+    <title>基于nodejs实现一个静态文件服务器 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -310,12 +314,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/10.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/14.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">最大子序和</h1>
+                    <h1 class="description center-align post-title">基于nodejs实现一个静态文件服务器</h1>
                 </div>
             </div>
         </div>
@@ -443,7 +447,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-11-19
+                    2021-11-22
                 </div>
                 
 
@@ -464,27 +468,37 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="数组最大子序和"><a href="#数组最大子序和" class="headerlink" title="数组最大子序和"></a>数组最大子序和</h2><p>自己思考的方法：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">maxSubArray</span><span class="params">(<span class="keyword">int</span>* nums, <span class="keyword">int</span> numsSize)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a[<span class="number">5</span>];</span><br><span class="line">    <span class="keyword">int</span> i,j;</span><br><span class="line">    <span class="keyword">int</span> <span class="keyword">final</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;=numsSize<span class="number">-1</span>;i++)&#123;</span><br><span class="line">        <span class="keyword">int</span> MAX=nums[i];</span><br><span class="line">        <span class="keyword">int</span> j=i;</span><br><span class="line">        <span class="keyword">int</span> count=nums[i];</span><br><span class="line">        <span class="keyword">while</span>(j&gt;<span class="number">0</span>)&#123;</span><br><span class="line">            count=count+nums[j<span class="number">-1</span>];</span><br><span class="line">            <span class="keyword">if</span>(count&gt;MAX)&#123;</span><br><span class="line">                MAX=count;</span><br><span class="line">            &#125;</span><br><span class="line">            j--;</span><br><span class="line">        &#125;</span><br><span class="line">        a[i]=MAX;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">final</span>=a[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">for</span>(j=<span class="number">1</span>;j&lt;=numsSize<span class="number">-1</span>;j++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(a[j]&gt;<span class="keyword">final</span>)&#123;</span><br><span class="line">            <span class="keyword">final</span>=a[j];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">final</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                <h2 id="一、搭建环境"><a href="#一、搭建环境" class="headerlink" title="一、搭建环境"></a>一、搭建环境</h2><p>检查nodejs环境</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure>
 
-<p>因为时间复杂度过高，不能采纳。</p>
-<p>提供两种其他方法:</p>
-<h3 id="方法一"><a href="#方法一" class="headerlink" title="方法一:"></a>方法一:</h3><p>这种方法思路其实和前面一样，但是他利用了一个捆绑的概念，就是说每一次Pre是该位置的最大子序和，对于0和1位置的pre1计算出来之后，2位置的最大子序和便是和pre1比较就可以不需要再去和1，2位置做和比较。变量maxAns是pre中的最大值，也就是相当于每个位置的最大子序和的最大值。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">maxSubArray</span><span class="params">(<span class="keyword">int</span>* nums, <span class="keyword">int</span> numsSize)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> pre = <span class="number">0</span>, maxAns = nums[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numsSize; i++) &#123;</span><br><span class="line">        pre = fmax(pre + nums[i], nums[i]);</span><br><span class="line">        maxAns = fmax(maxAns, pre);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> maxAns;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果在后续运行过程中出现缺少模块的情况可以使用npm install （模块名）的方法。注意全局和局部的区别。</p>
+<p>【必须以管理员身份操作】</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install model-name -g //全局</span><br><span class="line">npm install model-name  //局部</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* fmax example */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span>      <span class="comment">/* printf */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;math.h&gt;</span>       <span class="comment">/* fmax */</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;    <span class="comment">//函数fmax的用法计算较大值</span></span><br><span class="line">  <span class="built_in">printf</span> (<span class="string">&quot;fmax (100.0, 1.0) = %f\n&quot;</span>, fmax(<span class="number">100.0</span>,<span class="number">1.0</span>));</span><br><span class="line">  <span class="built_in">printf</span> (<span class="string">&quot;fmax (-100.0, 1.0) = %f\n&quot;</span>, fmax(<span class="number">-100.0</span>,<span class="number">1.0</span>));</span><br><span class="line">  <span class="built_in">printf</span> (<span class="string">&quot;fmax (-100.0, -1.0) = %f\n&quot;</span>, fmax(<span class="number">-100.0</span>,<span class="number">-1.0</span>));</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="二、服务实现说明"><a href="#二、服务实现说明" class="headerlink" title="二、服务实现说明"></a>二、服务实现说明</h2><h3 id="（一）要求"><a href="#（一）要求" class="headerlink" title="（一）要求"></a>（一）要求</h3><p>利用Node.js实现要给简单基于http的文件服务器。</p>
+<p>要求：</p>
+<p>1、利用http模块构建一个Http Server;</p>
+<p>2、服务器对输入的URL进行解析，获取URL中的pathname;</p>
+<p>3、将pathname和服务当前所在地址构造出一个绝对路径，显示这个路径下的文件与目录；</p>
+<p>4、可以点击页面的中文件或目录，如果是文件则在页面显示文件内容，如果是目录则显示目录下的内容。</p>
+<p>你只需要运行项目中的server.js文件，运行方法是打开项目目录的命令行输入node server.js，然后，在浏览器中输入：localhost:1314 或者 127.0.0.1:1314即可预览。</p>
+<h3 id="（二）实现步骤："><a href="#（二）实现步骤：" class="headerlink" title="（二）实现步骤："></a>（二）实现步骤：</h3><p>1、获取项目的绝对路径；</p>
+<p>2、获取请求的path，进行路径拼接；</p>
+<p>判断请求，如果是icon则忽略；</p>
+<p> else  执行3</p>
+<p> 3、判断请求的url是否存在；</p>
+<p>存在：（1）判断文件是文件夹还是文件目录</p>
+<p>​     目录：遍历目录下的所有文件，</p>
+<p>   文件：判断文件的类型，读取文件，然后响应数据。</p>
+<p>​    （2）获取一个路径，给文件的href</p>
+<p>  不存在：404，end;</p>
+<h3 id="（三）代码解析"><a href="#（三）代码解析" class="headerlink" title="（三）代码解析"></a>（三）代码解析</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">//server.js文件</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//我们使用 require 指令来载入 http，url,path,mime,fs,urlencode等模块，并且进行实例化。</span></span><br><span class="line"> <span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">&quot;http&quot;</span>);</span><br><span class="line"> <span class="keyword">var</span> url = <span class="built_in">require</span>(<span class="string">&quot;url&quot;</span>);</span><br><span class="line"> <span class="keyword">var</span> path =  <span class="built_in">require</span>(<span class="string">&quot;path&quot;</span>);</span><br><span class="line"> <span class="keyword">var</span> mime = <span class="built_in">require</span>(<span class="string">&quot;mime&quot;</span>);</span><br><span class="line"> <span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">&quot;fs&quot;</span>);</span><br><span class="line"> <span class="keyword">var</span> urlencode = <span class="built_in">require</span>(<span class="string">&#x27;urlencode&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//服务器框架</span></span><br><span class="line">http.createServer(<span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</span><br><span class="line">	<span class="comment">//获取路径名</span></span><br><span class="line">    <span class="keyword">var</span> pathname = url.parse(req.url).pathname; <span class="comment">//利用url模块的功能</span></span><br><span class="line">    <span class="comment">//URL解码，防止乱码</span></span><br><span class="line">    pathname = urlencode.decode(pathname, <span class="string">&#x27;utf-8&#x27;</span>);</span><br><span class="line">    <span class="comment">//排错</span></span><br><span class="line">    <span class="keyword">if</span>(pathname == <span class="string">&quot;/favicon.ico&quot;</span>) <span class="keyword">return</span>;</span><br><span class="line">    <span class="comment">//获取根路径</span></span><br><span class="line">    finalpath = __dirname + pathname; <span class="comment">//原本的目录加上访问目录</span></span><br><span class="line">    <span class="comment">//如果文件存在：</span></span><br><span class="line">    fs.exists(finalpath,<span class="function"><span class="keyword">function</span>(<span class="params">exists</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(exists)&#123;</span><br><span class="line">        	<span class="comment">//如果是文件夹</span></span><br><span class="line">            <span class="keyword">if</span>(fs.statSync(finalpath).isDirectory())&#123;</span><br><span class="line">            	<span class="comment">//获取文件夹的文件结构</span></span><br><span class="line">                fs.readdir(finalpath,<span class="function"><span class="keyword">function</span>(<span class="params">err,files</span>)</span>&#123;</span><br><span class="line">                	<span class="comment">//排错</span></span><br><span class="line">                    <span class="keyword">if</span>(err)&#123;</span><br><span class="line">                        res.writeHead(<span class="number">200</span>,&#123;<span class="string">&quot;Content-Type&quot;</span>:<span class="string">&#x27;text/plain&#x27;</span>&#125;);</span><br><span class="line">                        res.end(<span class="string">&quot;&lt;h1&gt;404 page cannot be found&lt;/h1&gt;&quot;</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="comment">//将文件结构写入页面</span></span><br><span class="line">                    <span class="keyword">else</span>&#123;</span><br><span class="line">                        <span class="keyword">var</span> html = <span class="string">&quot;&lt;head&gt;&lt;meta charset=&#x27;utf-8&#x27;&gt;&lt;/head&gt;&quot;</span>;</span><br><span class="line">                        <span class="keyword">var</span> files = fs.readdirSync(finalpath);</span><br><span class="line">                        <span class="comment">//创建超链接打开文件</span></span><br><span class="line">                        <span class="keyword">for</span> (<span class="keyword">var</span> i <span class="keyword">in</span> files) &#123;</span><br><span class="line">                            <span class="keyword">var</span> filename = files[i];</span><br><span class="line">                            html += <span class="string">&quot;&lt;ul&gt;&lt;li&gt;&lt;a href=&#x27;http://127.0.0.1:1314&quot;</span> +</span><br><span class="line">                             		pathname + <span class="string">&#x27;/&#x27;</span>+  filename + <span class="string">&quot;&#x27;&gt;&quot;</span> + filename + <span class="string">&quot;&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&quot;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        res.writeHead(<span class="number">200</span>, &#123;<span class="string">&#x27;content-type&#x27;</span>: <span class="string">&#x27;text/html&#x27;</span>&#125;);</span><br><span class="line">                        res.write(html);</span><br><span class="line">                        res.end();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//如果是文件</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(fs.statSync(finalpath).isFile())&#123;</span><br><span class="line">            	<span class="comment">//打开文件</span></span><br><span class="line">                fs.readFile(finalpath,<span class="function"><span class="keyword">function</span>(<span class="params">err,data</span>)</span>&#123;</span><br><span class="line">                    <span class="keyword">if</span>(err) res.end(<span class="string">&quot;cannot read file!&quot;</span>);</span><br><span class="line">                    <span class="keyword">else</span> &#123;</span><br><span class="line">                        res.writeHead(<span class="number">200</span>,&#123;<span class="string">&quot;Content-Type&quot;</span>:mime.getType(path.basename)&#125;);</span><br><span class="line">                        res.write(data);</span><br><span class="line">                        res.end();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                res.writeHead(<span class="number">200</span>,&#123;<span class="string">&quot;Content-Type&quot;</span>:<span class="string">&quot;text/html;charset=utf-8&quot;</span>&#125;);</span><br><span class="line">                res.end(<span class="string">&quot;&lt;h1&gt;404 page cannot be found!&lt;/h1&gt;&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;).listen(<span class="number">1314</span>);<span class="comment">//设置监听端口</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&quot;Server running at http://127.0.0.1:1314/&quot;</span>);</span><br></pre></td></tr></table></figure>
 
+<p>实现效果如图可以看到：对本地的127.0.0.1:1314进行访问     <img src="/2021/11/22/1122/web.PNG" alt="web"></p>
+<h3 id="（四）nodejs的一些知识"><a href="#（四）nodejs的一些知识" class="headerlink" title="（四）nodejs的一些知识"></a>（四）nodejs的一些知识</h3><h4 id="1、url模块："><a href="#1、url模块：" class="headerlink" title="1、url模块："></a>1、url模块：</h4><p>模块的作用：解析用户的URL，以便程序根据URL的不同提供不同的服务；</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">url.parse (urlStr[, parseQueryString][, slashesDenoteHost]); <span class="comment">//解析用户输入的URL。</span></span><br><span class="line">url.format(urlObj)    <span class="comment">// 输入一个 URL 对象，返回格式化后的 URL 字符串 。  </span></span><br><span class="line">url.resolve(<span class="keyword">from</span>, to) <span class="comment">//给定一个基URL路径，和一个href URL路径，并且象浏览器那样处理他们可以带上锚点。</span></span><br></pre></td></tr></table></figure>
 
-
-<h3 id="方法二-分治法："><a href="#方法二-分治法：" class="headerlink" title="方法二:分治法："></a>方法二:分治法：</h3><p>思路和算法</p>
-<p>这个分治方法类似于「线段树求解最长公共上升子序列问题」的 pushUp 操作。 也许读者还没有接触过线段树，没有关系，方法二的内容假设你没有任何线段树的基础。当然，如果读者有兴趣的话，推荐阅读线段树区间合并法解决多次询问的「区间最长连续上升序列问题」和「区间最大子段和问题」，还是非常有趣的。</p>
-<p>我们定义一个操作 get(a, l, r) 表示查询 aa 序列 [l,r][l,r] 区间内的最大子段和，那么最终我们要求的答案就是 get(nums, 0, nums.size() - 1)。如何分治实现这个操作呢？对于一个区间 [l,r][l,r]，我们取m=[(l+r)/2]，对区间 [l,m][l,m] 和 [m+1,r][m+1,r] 分治求解。当递归逐层深入直到区间长度缩小为 1 的时候，递归「开始回升」。这个时候我们考虑如何通过 [l,m][l,m] 区间的信息和 [m+1,r][m+1,r] 区间的信息合并成区间 [l,r][l,r] 的信息。最关键的两个问题是：</p>
-<p>我们要维护区间的哪些信息呢？<br>我们如何合并这些信息呢？<br>对于一个区间 [l,r][l,r]，我们可以维护四个量：</p>
-<p>lSum 表示 [l,r][l,r] 内以 l 为左端点的最大子段和<br>rSum 表示 [l,r][l,r] 内以 r 为右端点的最大子段和<br>mSum 表示 [l,r][l,r] 内的最大子段和<br>iSum 表示 [l,r][l,r] 的区间和<br>以下简称 [l,m][l,m] 为 [l,r][l,r] 的「左子区间」，[m+1,r][m+1,r] 为 [l,r][l,r] 的「右子区间」。我们考虑如何维护这些量呢（如何通过左右子区间的信息合并得到 [l,r][l,r] 的信息）？对于长度为 1 的区间 [i,i]，四个量的值都和 nums[i] 相等。对于长度大于 1 的区间：</p>
-<p>首先最好维护的是 iSum，区间 [l,r][l,r] 的iSum 就等于「左子区间」的 iSum 加上「右子区间」的iSum。<br>对于 [l,r][l,r] 的 lSum，存在两种可能，它要么等于「左子区间」的 lSum，要么等于「左子区间」的iSum 加上「右子区间」的lSum，二者取大。<br>对于 [l,r][l,r] 的 rSum，同理，它要么等于「右子区间」的rSum，要么等于「右子区间」的iSum 加上「左子区间」的 rSum，二者取大。<br>当计算好上面的三个量之后，就很好计算 [l,r][l,r] 的mSum 了。我们可以考虑 [l,r][l,r] 的 mSum 对应的区间是否跨越 m——它可能不跨越 m，也就是说 [l,r][l,r] 的 mSum 可能是「左子区间」的 mSum 和 「右子区间」的mSum 中的一个；它也可能跨越 m，可能是「左子区间」的rSum 和 「右子区间」的lSum 求和。三者取大。<br>这样问题就得到了解决。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Status</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> lSum, rSum, mSum, iSum;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">struct Status <span class="title">pushUp</span><span class="params">(struct Status l, struct Status r)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> iSum = l.iSum + r.iSum;</span><br><span class="line">    <span class="keyword">int</span> lSum = fmax(l.lSum, l.iSum + r.lSum);</span><br><span class="line">    <span class="keyword">int</span> rSum = fmax(r.rSum, r.iSum + l.rSum);</span><br><span class="line">    <span class="keyword">int</span> mSum = fmax(fmax(l.mSum, r.mSum), l.rSum + r.lSum);</span><br><span class="line">    <span class="keyword">return</span> (struct Status)&#123;lSum, rSum, mSum, iSum&#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">struct Status <span class="title">get</span><span class="params">(<span class="keyword">int</span>* a, <span class="keyword">int</span> l, <span class="keyword">int</span> r)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (l == r) &#123;</span><br><span class="line">        <span class="keyword">return</span> (struct Status)&#123;a[l], a[l], a[l], a[l]&#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> m = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Status</span> <span class="title">lSub</span> =</span> get(a, l, m);</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Status</span> <span class="title">rSub</span> =</span> get(a, m + <span class="number">1</span>, r);</span><br><span class="line">    <span class="keyword">return</span> pushUp(lSub, rSub);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">maxSubArray</span><span class="params">(<span class="keyword">int</span>* nums, <span class="keyword">int</span> numsSize)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> get(nums, <span class="number">0</span>, numsSize - <span class="number">1</span>).mSum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>参考资料：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/maximum-subarray/solution/zui-da-zi-xu-he-by-leetcode-solution/">https://leetcode-cn.com/problems/maximum-subarray/solution/zui-da-zi-xu-he-by-leetcode-solution/</a></p>
+<h4 id="2、Node-js文件系统"><a href="#2、Node-js文件系统" class="headerlink" title="2、Node.js文件系统"></a>2、Node.js文件系统</h4><p>可以参照菜鸟教程的讲解。</p>
 
                 
             </div>
@@ -511,7 +525,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2021/11/19/1119/">http://example.com/2021/11/19/1119/</a>
+                    <a href="http://example.com/2021/11/22/1122/">http://example.com/2021/11/22/1122/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -718,9 +732,48 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2021/11/22/1122/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="基于nodejs实现一个静态文件服务器">
+                        
+                        <span class="card-title">基于nodejs实现一个静态文件服务器</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-22
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
             <div class="card">
                 <a href="/2021/11/20/1120/">
                     <div class="card-image">
@@ -738,45 +791,8 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2021-11-20
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            小竹
-                            
-                        </span>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2021/11/18/1118/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="C语言排序">
-                        
-                        <span class="card-title">C语言排序</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-18
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-20
                             </span>
                         <span class="publish-author">
                             
