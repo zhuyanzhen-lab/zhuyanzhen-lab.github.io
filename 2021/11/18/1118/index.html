@@ -6,7 +6,10 @@
     <meta charset="utf-8">
     <meta name="keywords" content="C语言排序, 是小竹不是小猪">
     <meta name="description" content="C语言排序冒泡排序最基础的排序方式，时间复杂度：O()
-1234567891011121314151617181920212223242526272829303132#include &amp;lt;stdio.h&amp;gt;#define MAXSI">
+#include &amp;lt;stdio.h&amp;gt;
+#define MAXSIZE 100
+void bubble(int num[], int len)&amp;#123;
+    int n">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -465,21 +468,195 @@
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <h2 id="C语言排序"><a href="#C语言排序" class="headerlink" title="C语言排序"></a>C语言排序</h2><h3 id="冒泡排序"><a href="#冒泡排序" class="headerlink" title="冒泡排序"></a>冒泡排序</h3><p>最基础的排序方式，时间复杂度：O()</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAXSIZE 100</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bubble</span><span class="params">(<span class="keyword">int</span> num[], <span class="keyword">int</span> len)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n, j,temp;</span><br><span class="line">    <span class="keyword">for</span>(n=<span class="number">0</span>;n&lt;len<span class="number">-1</span>;n++)&#123;</span><br><span class="line">        <span class="keyword">for</span>(j=<span class="number">0</span>;j&lt;len<span class="number">-1</span>-n;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(num[j]&gt;num[j+<span class="number">1</span>])&#123;</span><br><span class="line">                temp=num[j+<span class="number">1</span>];</span><br><span class="line">                num[j+<span class="number">1</span>]=num[j];</span><br><span class="line">                num[j]=temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> num[MAXSIZE];</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">int</span> len=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> number;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入要输入的数字个数&quot;</span>);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;len);</span><br><span class="line">    <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;len;i++)&#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;number);</span><br><span class="line">        num[i]=number;</span><br><span class="line">    &#125;</span><br><span class="line">    bubble(num,len);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\n排序之后的列表：\n&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>( i = <span class="number">0</span> ; i &lt; len; i++ ) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,num[i]);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="c">#include &lt;stdio.h&gt;
+#define MAXSIZE 100
+void bubble(int num[], int len)&#123;
+    int n, j,temp;
+    for(n=0;n&lt;len-1;n++)&#123;
+        for(j=0;j&lt;len-1-n;j++)&#123;
+            if(num[j]&gt;num[j+1])&#123;
+                temp=num[j+1];
+                num[j+1]=num[j];
+                num[j]=temp;
+            &#125;
+        &#125;
+    &#125;
 
+&#125;
+int main ()&#123;
+    int num[MAXSIZE];
+    int i;
+    int len=0;
+    int number;
+    printf(&quot;请输入要输入的数字个数&quot;);
+    scanf(&quot;%d&quot;,&amp;len);
+    for(i=0;i&lt;len;i++)&#123;
+        scanf(&quot;%d&quot;,&amp;number);
+        num[i]=number;
+    &#125;
+    bubble(num,len);
+    printf(&quot;\n排序之后的列表：\n&quot;);
+    for( i = 0 ; i &lt; len; i++ ) &#123;
+      printf(&quot;%d &quot;,num[i]);
+   &#125;
+&#125;
+</code></pre>
 <h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><p>先定位在第一个元素，依次进行比较，发现是否有比第一位元素小的元素，如果有小的直接交换位置，直到最后。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAXSIZE 100</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Section</span><span class="params">(<span class="keyword">int</span> num[],<span class="keyword">int</span> len)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> min,n,j,temp;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span>(n=<span class="number">0</span>;n&lt;len<span class="number">-1</span>;n++)&#123;</span><br><span class="line">        min=n;</span><br><span class="line">        <span class="keyword">for</span>(j=n+<span class="number">1</span>;j&lt;len<span class="number">-1</span>;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(num[min]&gt;num[j])&#123;</span><br><span class="line">                temp=num[j];</span><br><span class="line">                num[j]=num[min];</span><br><span class="line">                num[min]=temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> num[MAXSIZE];</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">int</span> len=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> number;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入要输入的数字个数&quot;</span>);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;len);</span><br><span class="line">    <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;len;i++)&#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;number);</span><br><span class="line">        num[i]=number;</span><br><span class="line">    &#125;</span><br><span class="line">    Section(num,len);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\n排序之后的列表：\n&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>( i = <span class="number">0</span> ; i &lt; len; i++ ) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,num[i]);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<pre><code class="c">#include &lt;stdio.h&gt;
+#define MAXSIZE 100
+void Section(int num[],int len)&#123;
+    int min,n,j,temp;
+    
+    for(n=0;n&lt;len-1;n++)&#123;
+        min=n;
+        for(j=n+1;j&lt;len-1;j++)&#123;
+            if(num[min]&gt;num[j])&#123;
+                temp=num[j];
+                num[j]=num[min];
+                num[min]=temp;
+            &#125;
+        &#125;
+    &#125;
+&#125;
+int main ()&#123;
+    int num[MAXSIZE];
+    int i;
+    int len=0;
+    int number;
+    printf(&quot;请输入要输入的数字个数&quot;);
+    scanf(&quot;%d&quot;,&amp;len);
+    for(i=0;i&lt;len;i++)&#123;
+        scanf(&quot;%d&quot;,&amp;number);
+        num[i]=number;
+    &#125;
+    Section(num,len);
+    printf(&quot;\n排序之后的列表：\n&quot;);
+    for( i = 0 ; i &lt; len; i++ ) &#123;
+      printf(&quot;%d &quot;,num[i]);
+   &#125;
+&#125;
+</code></pre>
 <h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>插入排序中关键在于先从数组第二个元素开始，将第二个元素与第一个元素进行比较，如果1大于2交换位置.依次类推，定位到第三个元素，把第三个元素向前比较，知道找到合适的位置进行插入。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAXSIZE 100</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(<span class="keyword">int</span> num[],<span class="keyword">int</span> len)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n,j,temp;</span><br><span class="line">    <span class="keyword">for</span>(n=<span class="number">1</span>;n&lt;len;n++)&#123;</span><br><span class="line">        temp = num[n];</span><br><span class="line">        <span class="keyword">for</span> (j=n;j&gt;<span class="number">0</span> &amp;&amp; num[j<span class="number">-1</span>]&gt;temp;j--)&#123;</span><br><span class="line">            num[j]=num[j<span class="number">-1</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        num[j]=temp;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> num[MAXSIZE];</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">int</span> len=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> number;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入要输入的数字个数&quot;</span>);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;len);</span><br><span class="line">    <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;len;i++)&#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;number);</span><br><span class="line">        num[i]=number;</span><br><span class="line">    &#125;</span><br><span class="line">    insert(num,len);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\n排序之后的列表：\n&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>( i = <span class="number">0</span> ; i &lt; len; i++ ) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,num[i]);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<pre><code class="c">#include &lt;stdio.h&gt;
+#define MAXSIZE 100
+void insert(int num[],int len)&#123;
+    int n,j,temp;
+    for(n=1;n&lt;len;n++)&#123;
+        temp = num[n];
+        for (j=n;j&gt;0 &amp;&amp; num[j-1]&gt;temp;j--)&#123;
+            num[j]=num[j-1];
+        &#125;
+        num[j]=temp;
+    &#125;
+&#125;
+int main ()&#123;
+    int num[MAXSIZE];
+    int i;
+    int len=0;
+    int number;
+    printf(&quot;请输入要输入的数字个数&quot;);
+    scanf(&quot;%d&quot;,&amp;len);
+    for(i=0;i&lt;len;i++)&#123;
+        scanf(&quot;%d&quot;,&amp;number);
+        num[i]=number;
+    &#125;
+    insert(num,len);
+    printf(&quot;\n排序之后的列表：\n&quot;);
+    for( i = 0 ; i &lt; len; i++ ) &#123;
+      printf(&quot;%d &quot;,num[i]);
+   &#125;
+&#125;
+</code></pre>
 <h3 id="希尔排序"><a href="#希尔排序" class="headerlink" title="希尔排序"></a>希尔排序</h3><p>参考资料:<a target="_blank" rel="noopener" href="https://www.cnblogs.com/lanhaicode/p/11264197.html">希尔排序——C语言 - 蓝海人 - 博客园 (cnblogs.com)</a></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAXSIZE 100</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">shell_sort</span><span class="params">(<span class="keyword">int</span> arr[], <span class="keyword">int</span> len)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> gap, i, j;</span><br><span class="line">    <span class="keyword">int</span> temp;</span><br><span class="line">    <span class="keyword">for</span> (gap = len &gt;&gt; <span class="number">1</span>; gap &gt; <span class="number">0</span>; gap = gap &gt;&gt; <span class="number">1</span>)</span><br><span class="line">        <span class="keyword">for</span> (i = gap; i &lt; len; i++) &#123;</span><br><span class="line">            temp = arr[i];</span><br><span class="line">            <span class="keyword">for</span> (j = i - gap; j &gt;= <span class="number">0</span> &amp;&amp; arr[j] &gt; temp; j -= gap)</span><br><span class="line">                arr[j + gap] = arr[j];</span><br><span class="line">            arr[j + gap] = temp;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> num[MAXSIZE];</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">int</span> len=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> number;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入要输入的数字个数&quot;</span>);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;len);</span><br><span class="line">    <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;len;i++)&#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;number);</span><br><span class="line">        num[i]=number;</span><br><span class="line">    &#125;</span><br><span class="line">    shell_sort(num,len);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\n排序之后的列表：\n&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>( i = <span class="number">0</span> ; i &lt; len; i++ ) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,num[i]);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># <span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Swap</span><span class="params">(<span class="keyword">int</span> *, <span class="keyword">int</span> *)</span></span>;  <span class="comment">//函数声明, 交换两个变量的值</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">QuickSort</span><span class="params">(<span class="keyword">int</span> *, <span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>;  <span class="comment">//函数声明, 快速排序</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;  <span class="comment">//循环变量</span></span><br><span class="line">    <span class="keyword">int</span> a[] = &#123;<span class="number">900</span>, <span class="number">2</span>, <span class="number">-58</span>, <span class="number">3</span>, <span class="number">34</span>, <span class="number">5</span>, <span class="number">76</span>, <span class="number">7</span>, <span class="number">32</span>, <span class="number">4</span>, <span class="number">43</span>, <span class="number">9</span>, <span class="number">1</span>, <span class="number">56</span>, <span class="number">8</span>,<span class="number">-70</span>, <span class="number">635</span>, <span class="number">-234</span>, <span class="number">532</span>, <span class="number">543</span>, <span class="number">2500</span>&#125;;</span><br><span class="line">    QuickSort(a, <span class="number">0</span>, <span class="number">20</span>);  <span class="comment">/*引用起来很简单, 0为第一个元素的下标, 20为最后一个元素的下标*/</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;最终排序结果为:\n&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span> (i=<span class="number">0</span>; i&lt;<span class="number">21</span>; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>, a[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Swap</span><span class="params">(<span class="keyword">int</span> *p, <span class="keyword">int</span> *q)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> buf;</span><br><span class="line">    buf = *p;</span><br><span class="line">    *p = *q;</span><br><span class="line">    *q = buf;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">QuickSort</span><span class="params">(<span class="keyword">int</span> *a, <span class="keyword">int</span> low, <span class="keyword">int</span> high)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = low;</span><br><span class="line">    <span class="keyword">int</span> j = high;</span><br><span class="line">    <span class="keyword">int</span> key = a[low];</span><br><span class="line">    <span class="keyword">if</span> (low &gt;= high)  <span class="comment">//如果low &gt;= high说明排序结束了</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> (low &lt; high)  <span class="comment">//该while循环结束一次表示比较了一轮</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span> (low &lt; high &amp;&amp; key &lt;= a[high])</span><br><span class="line">        &#123;</span><br><span class="line">            --high;  <span class="comment">//向前寻找</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (key &gt; a[high])</span><br><span class="line">        &#123;</span><br><span class="line">            Swap(&amp;a[low], &amp;a[high]);</span><br><span class="line">            ++low;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span> (low &lt; high &amp;&amp; key &gt;= a[low])</span><br><span class="line">        &#123;</span><br><span class="line">            ++low;  <span class="comment">//向后寻找</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (key &lt; a[low])</span><br><span class="line">        &#123;</span><br><span class="line">            Swap(&amp;a[low], &amp;a[high]);</span><br><span class="line">            --high;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    QuickSort(a, i, low<span class="number">-1</span>);  <span class="comment">//用同样的方式对分出来的左边的部分进行同上的做法</span></span><br><span class="line">    QuickSort(a, low+<span class="number">1</span>, j);  <span class="comment">//用同样的方式对分出来的右边的部分进行同上的做法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<pre><code class="c">#include &lt;stdio.h&gt;
+#define MAXSIZE 100
+void shell_sort(int arr[], int len) &#123;
+    int gap, i, j;
+    int temp;
+    for (gap = len &gt;&gt; 1; gap &gt; 0; gap = gap &gt;&gt; 1)
+        for (i = gap; i &lt; len; i++) &#123;
+            temp = arr[i];
+            for (j = i - gap; j &gt;= 0 &amp;&amp; arr[j] &gt; temp; j -= gap)
+                arr[j + gap] = arr[j];
+            arr[j + gap] = temp;
+        &#125;
+&#125;
+int main ()&#123;
+    int num[MAXSIZE];
+    int i;
+    int len=0;
+    int number;
+    printf(&quot;请输入要输入的数字个数&quot;);
+    scanf(&quot;%d&quot;,&amp;len);
+    for(i=0;i&lt;len;i++)&#123;
+        scanf(&quot;%d&quot;,&amp;number);
+        num[i]=number;
+    &#125;
+    shell_sort(num,len);
+    printf(&quot;\n排序之后的列表：\n&quot;);
+    for( i = 0 ; i &lt; len; i++ ) &#123;
+      printf(&quot;%d &quot;,num[i]);
+   &#125;
+&#125;
+</code></pre>
+<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><pre><code class="c"># include &lt;stdio.h&gt;
+void Swap(int *, int *);  //函数声明, 交换两个变量的值
+void QuickSort(int *, int, int);  //函数声明, 快速排序
+int main(void)
+&#123;
+    int i;  //循环变量
+    int a[] = &#123;900, 2, -58, 3, 34, 5, 76, 7, 32, 4, 43, 9, 1, 56, 8,-70, 635, -234, 532, 543, 2500&#125;;
+    QuickSort(a, 0, 20);  /*引用起来很简单, 0为第一个元素的下标, 20为最后一个元素的下标*/
+    printf(&quot;最终排序结果为:\n&quot;);
+    for (i=0; i&lt;21; ++i)
+    &#123;
+        printf(&quot;%d &quot;, a[i]);
+    &#125;
+    printf(&quot;\n&quot;);
+    return 0;
+&#125;
+void Swap(int *p, int *q)
+&#123;
+    int buf;
+    buf = *p;
+    *p = *q;
+    *q = buf;
+    return;
+&#125;
+void QuickSort(int *a, int low, int high)
+&#123;
+    int i = low;
+    int j = high;
+    int key = a[low];
+    if (low &gt;= high)  //如果low &gt;= high说明排序结束了
+    &#123;
+        return ;
+    &#125;
+    while (low &lt; high)  //该while循环结束一次表示比较了一轮
+    &#123;
+        while (low &lt; high &amp;&amp; key &lt;= a[high])
+        &#123;
+            --high;  //向前寻找
+        &#125;
+        if (key &gt; a[high])
+        &#123;
+            Swap(&amp;a[low], &amp;a[high]);
+            ++low;
+        &#125;
+        while (low &lt; high &amp;&amp; key &gt;= a[low])
+        &#123;
+            ++low;  //向后寻找
+        &#125;
+        if (key &lt; a[low])
+        &#123;
+            Swap(&amp;a[low], &amp;a[high]);
+            --high;
+        &#125;
+    &#125;
+    QuickSort(a, i, low-1);  //用同样的方式对分出来的左边的部分进行同上的做法
+    QuickSort(a, low+1, j);  //用同样的方式对分出来的右边的部分进行同上的做法
+&#125;
+</code></pre>
 <p>参考资料：<a target="_blank" rel="noopener" href="http://c.biancheng.net/view/198.html">快速排序算法，C语言快速排序算法详解 (biancheng.net)</a></p>
 
                 

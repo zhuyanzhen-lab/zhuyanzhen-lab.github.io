@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="keywords" content="CTFHub-SVN和HG泄露, 是小竹不是小猪">
     <meta name="description" content="dvcs-ripper工具安装在Ubuntu虚拟机上面执行
-1234sudo apt-get install perl libio-socket-ssl-perl libdbd-sqlite3-perl libclass-dbi-perl ">
+sudo apt-get install perl libio-socket-ssl-perl libdbd-sqlite3-perl libclass-dbi-perl libi">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -465,33 +465,45 @@
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <h2 id="dvcs-ripper工具安装"><a href="#dvcs-ripper工具安装" class="headerlink" title="dvcs-ripper工具安装"></a>dvcs-ripper工具安装</h2><p>在Ubuntu虚拟机上面执行</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install perl libio-socket-ssl-perl libdbd-sqlite3-perl libclass-dbi-perl libio-all-lwp-perl</span><br><span class="line">sudo apt-get install libparallel-forkmanager-perl libredis-perl libalgorithm-combinatorics-perl</span><br><span class="line">sudo apt-get install cvs subversion git bzr mercurial</span><br><span class="line">git clone https://github.com/kost/dvcs-ripper</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">sudo apt-get install perl libio-socket-ssl-perl libdbd-sqlite3-perl libclass-dbi-perl libio-all-lwp-perl
+sudo apt-get install libparallel-forkmanager-perl libredis-perl libalgorithm-combinatorics-perl
+sudo apt-get install cvs subversion git bzr mercurial
+git clone https://github.com/kost/dvcs-ripper
+</code></pre>
 <p>注意在执行的时候有git clone代理问题,报错Failed to connect to github.com port 443:connection timed out。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --global --unset http.proxy</span><br><span class="line"> </span><br><span class="line">git config --global --unset https.proxy</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">git config --global --unset http.proxy
+ 
+git config --global --unset https.proxy
+</code></pre>
 <hr>
 <h2 id="CTFHub-中SVN泄露"><a href="#CTFHub-中SVN泄露" class="headerlink" title="CTFHub 中SVN泄露"></a>CTFHub 中SVN泄露</h2><p>使用工具，进入该工具后端打开</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./rip-svn.pl -v -u http://challenge-fb13f9afd9ee3b28.sandbox.ctfhub.com:10080/.svn/</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">./rip-svn.pl -v -u http://challenge-fb13f9afd9ee3b28.sandbox.ctfhub.com:10080/.svn/
+</code></pre>
 <p><img src="/2021/11/12/1111/1.PNG" alt="1"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -al</span><br></pre></td></tr></table></figure>
-
+<pre><code>ls -al
+</code></pre>
 <p><img src="/2021/11/12/1111/2.PNG" alt="2"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cd .svn</span><br><span class="line">ls</span><br><span class="line">cd pristine</span><br><span class="line">ls</span><br><span class="line">cd f3</span><br><span class="line">ls </span><br><span class="line">cat f325ddfa45224698cdeb8b13737b305d1503620d.svn-base #查看文件</span><br></pre></td></tr></table></figure>
-
+<pre><code>cd .svn
+ls
+cd pristine
+ls
+cd f3
+ls 
+cat f325ddfa45224698cdeb8b13737b305d1503620d.svn-base #查看文件
+</code></pre>
 <p><img src="/2021/11/12/1111/3.PNG" alt="3"></p>
 <p><img src="/2021/11/12/1111/4.PNG" alt="4"></p>
 <p>到此可以得到最终结果。</p>
 <hr>
-<h2 id="CTFHub中的HG泄露"><a href="#CTFHub中的HG泄露" class="headerlink" title="CTFHub中的HG泄露"></a>CTFHub中的HG泄露</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./rip-hg.pl -v -u http://challenge-cf630b528f6f25e2.sandbox.ctfhub.com:10080/.hg/</span><br></pre></td></tr></table></figure>
-
+<h2 id="CTFHub中的HG泄露"><a href="#CTFHub中的HG泄露" class="headerlink" title="CTFHub中的HG泄露"></a>CTFHub中的HG泄露</h2><pre><code>./rip-hg.pl -v -u http://challenge-cf630b528f6f25e2.sandbox.ctfhub.com:10080/.hg/
+</code></pre>
 <p><img src="/2021/11/12/1111/5.PNG" alt="5"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -al   #查看全部可以得到的文件</span><br></pre></td></tr></table></figure>
-
+<pre><code>ls -al   #查看全部可以得到的文件
+</code></pre>
 <p><img src="/2021/11/12/1111/6.PNG" alt="6"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd .hg #打开.hg 进行查看</span><br><span class="line">ls -al</span><br></pre></td></tr></table></figure>
-
+<pre><code>cd .hg #打开.hg 进行查看
+ls -al
+</code></pre>
 <p>在 .hg之下打开store文件夹，刚开始看到data文件夹直接打开，发现没有进展，之后回退查看fncache 文件。发现其中在data 之下有flag文本文件，但是直接打开data无法显示，于是尝试直接在网页中进行访问。</p>
 <p><img src="/2021/11/12/1111/7.PNG" alt="7"></p>
 <p><img src="/2021/11/12/1111/9.PNG" alt="9"></p>

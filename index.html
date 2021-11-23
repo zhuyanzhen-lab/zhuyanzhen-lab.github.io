@@ -563,11 +563,12 @@
                         <div class="summary block-with-text">
                             
                                 一、搭建环境检查nodejs环境
-12node -vnpm -v
+node -v
+npm -v
 
 如果在后续运行过程中出现缺少模块的情况可以使用npm install （模块名）的方法。注意全局和局部的区别。
 【必须以管理员身份操作】
-12npm install mod
+npm install model-
                             
                         </div>
                         <div class="publish-info">
@@ -642,7 +643,12 @@
                         <div class="summary block-with-text">
                             
                                 数组最大子序和自己思考的方法：
-1234567891011121314151617181920212223242526int maxSubArray(int* nums, int numsSize)&#123;    int a[5];  
+int maxSubArray(int* nums, int numsSize)&#123;
+    int a[5];
+    int i,j;
+    int final;
+    
+    for(i=
                             
                         </div>
                         <div class="publish-info">
@@ -680,7 +686,10 @@
                         <div class="summary block-with-text">
                             
                                 C语言排序冒泡排序最基础的排序方式，时间复杂度：O()
-1234567891011121314151617181920212223242526272829303132#include &lt;stdio.h&gt;#define MAXSI
+#include &lt;stdio.h&gt;
+#define MAXSIZE 100
+void bubble(int num[], int len)&#123;
+    int n
                             
                         </div>
                         <div class="publish-info">
@@ -717,7 +726,8 @@
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                检测数组是否存在重复元素方法一：直接进行比较（时间复杂度过高）12345678910bool containsDuplicate(int* nums, int numsSize)&#123;    for(int i=0;i&lt;nums
+                                检测数组是否存在重复元素方法一：直接进行比较（时间复杂度过高）bool containsDuplicate(int* nums, int numsSize)&#123;
+    for(int i=0;i&lt;numsSize;i++)&
                             
                         </div>
                         <div class="publish-info">
@@ -797,12 +807,10 @@ sqlmap支持
                         <div class="summary block-with-text">
                             
                                 CTFHub-sql布尔盲注一 手工注入1、可以尝试实出数据库名字的长度
-11 and (length(database()))=4   #返回正确
-
-
+ 1 and (length(database()))=4   #返回正确
 
 2、尝试对比下表实验出数据库名字
-1231 and ascil(substr(dat
+1 and ascil(substr(database
                             
                         </div>
                         <div class="publish-info">
@@ -842,7 +850,7 @@ sqlmap支持
                                 如何搭建一个vue项目一 安装node环境1、检查是否安装成功：
 
 2、安装npm淘宝镜像（注意使用管理员身份，且在全局情况下）
-1npm install -g cnpm –registry=https://registry.npm.tao
+npm install -g cnpm –registry=https://registry.npm.taob
                             
                         </div>
                         <div class="publish-info">
@@ -879,7 +887,9 @@ sqlmap支持
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                1 SQL语句基本知识1.1基本函数1.1.1 concat函数12345678910111213SQL&gt; SELECT * FROM employee_tbl;+------+------+------------+--------
+                                1 SQL语句基本知识1.1基本函数1.1.1 concat函数SQL&gt; SELECT * FROM employee_tbl;
++------+------+------------+--------------------+
+| 
                             
                         </div>
                         <div class="publish-info">
@@ -917,7 +927,7 @@ sqlmap支持
                         <div class="summary block-with-text">
                             
                                 dvcs-ripper工具安装在Ubuntu虚拟机上面执行
-1234sudo apt-get install perl libio-socket-ssl-perl libdbd-sqlite3-perl libclass-dbi-perl 
+sudo apt-get install perl libio-socket-ssl-perl libdbd-sqlite3-perl libclass-dbi-perl libi
                             
                         </div>
                         <div class="publish-info">

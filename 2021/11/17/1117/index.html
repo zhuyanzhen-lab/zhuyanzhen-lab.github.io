@@ -5,7 +5,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="检测数组存在重复元素, 是小竹不是小猪">
-    <meta name="description" content="检测数组是否存在重复元素方法一：直接进行比较（时间复杂度过高）12345678910bool containsDuplicate(int* nums, int numsSize)&amp;#123;    for(int i=0;i&amp;lt;nums">
+    <meta name="description" content="检测数组是否存在重复元素方法一：直接进行比较（时间复杂度过高）bool containsDuplicate(int* nums, int numsSize)&amp;#123;
+    for(int i=0;i&amp;lt;numsSize;i++)&amp;">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -463,26 +464,323 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="检测数组是否存在重复元素"><a href="#检测数组是否存在重复元素" class="headerlink" title="检测数组是否存在重复元素"></a>检测数组是否存在重复元素</h2><h4 id="方法一：直接进行比较（时间复杂度过高）"><a href="#方法一：直接进行比较（时间复杂度过高）" class="headerlink" title="方法一：直接进行比较（时间复杂度过高）"></a>方法一：直接进行比较（时间复杂度过高）</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">containsDuplicate</span><span class="params">(<span class="keyword">int</span>* nums, <span class="keyword">int</span> numsSize)</span></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;numsSize;i++)&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j=i+<span class="number">1</span>;j&lt;numsSize;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(nums[i]==nums[j])&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                <h2 id="检测数组是否存在重复元素"><a href="#检测数组是否存在重复元素" class="headerlink" title="检测数组是否存在重复元素"></a>检测数组是否存在重复元素</h2><h4 id="方法一：直接进行比较（时间复杂度过高）"><a href="#方法一：直接进行比较（时间复杂度过高）" class="headerlink" title="方法一：直接进行比较（时间复杂度过高）"></a>方法一：直接进行比较（时间复杂度过高）</h4><pre><code class="c">bool containsDuplicate(int* nums, int numsSize)&#123;
+    for(int i=0;i&lt;numsSize;i++)&#123;
+        for(int j=i+1;j&lt;numsSize;j++)&#123;
+            if(nums[i]==nums[j])&#123;
+                return true;
+            &#125;
+        &#125;
+    &#125;
+    return false;
+&#125;
+</code></pre>
+<h4 id="方法二-利用C语言的qsort函数进行排序"><a href="#方法二-利用C语言的qsort函数进行排序" class="headerlink" title="方法二:利用C语言的qsort函数进行排序"></a>方法二:利用C语言的qsort函数进行排序</h4><pre><code class="c">int cmpfunc (const void * a, const void * b)
+&#123;
+   return ( *(int*)a - *(int*)b );
+&#125;
 
-<h4 id="方法二-利用C语言的qsort函数进行排序"><a href="#方法二-利用C语言的qsort函数进行排序" class="headerlink" title="方法二:利用C语言的qsort函数进行排序"></a>方法二:利用C语言的qsort函数进行排序</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">cmpfunc</span> <span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> * a, <span class="keyword">const</span> <span class="keyword">void</span> * b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> ( *(<span class="keyword">int</span>*)a - *(<span class="keyword">int</span>*)b );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">containsDuplicate</span><span class="params">(<span class="keyword">int</span>* nums, <span class="keyword">int</span> numsSize)</span> </span>&#123;</span><br><span class="line">    qsort(nums, numsSize, <span class="keyword">sizeof</span>(<span class="keyword">int</span>), cmpfunc);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numsSize - <span class="number">1</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (nums[i] == nums[i + <span class="number">1</span>]) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+bool containsDuplicate(int* nums, int numsSize) &#123;
+    qsort(nums, numsSize, sizeof(int), cmpfunc);
+    for (int i = 0; i &lt; numsSize - 1; i++) &#123;
+        if (nums[i] == nums[i + 1]) &#123;
+            return true;
+        &#125;
+    &#125;
+    return false;
+&#125;
+</code></pre>
+<h4 id="方法三：哈希表"><a href="#方法三：哈希表" class="headerlink" title="方法三：哈希表"></a>方法三：哈希表</h4><pre><code class="c">struct hashTable &#123;
+    int key;
+    UT_hash_handle hh;
+&#125;;
 
-<h4 id="方法三：哈希表"><a href="#方法三：哈希表" class="headerlink" title="方法三：哈希表"></a>方法三：哈希表</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hashTable</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> key;</span><br><span class="line">    UT_hash_handle hh;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">containsDuplicate</span><span class="params">(<span class="keyword">int</span>* nums, <span class="keyword">int</span> numsSize)</span> </span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">hashTable</span>* <span class="title">set</span> =</span> <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numsSize; i++) &#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">hashTable</span>* <span class="title">tmp</span>;</span></span><br><span class="line">        HASH_FIND_INT(<span class="built_in">set</span>, nums + i, tmp);</span><br><span class="line">        <span class="keyword">if</span> (tmp == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            tmp = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(struct hashTable));</span><br><span class="line">            tmp-&gt;key = nums[i];</span><br><span class="line">            HASH_ADD_INT(<span class="built_in">set</span>, key, tmp);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+bool containsDuplicate(int* nums, int numsSize) &#123;
+    struct hashTable* set = NULL;
+    for (int i = 0; i &lt; numsSize; i++) &#123;
+        struct hashTable* tmp;
+        HASH_FIND_INT(set, nums + i, tmp);
+        if (tmp == NULL) &#123;
+            tmp = malloc(sizeof(struct hashTable));
+            tmp-&gt;key = nums[i];
+            HASH_ADD_INT(set, key, tmp);
+        &#125; else &#123;
+            return true;
+        &#125;
+    &#125;
+    return false;
+&#125;
+</code></pre>
+<h4 id="完整的方法一示例代码："><a href="#完整的方法一示例代码：" class="headerlink" title="完整的方法一示例代码："></a>完整的方法一示例代码：</h4><pre><code class="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+int values[] = &#123; 88, 56, 100, 2, 1 &#125;;
 
-<h4 id="完整的方法一示例代码："><a href="#完整的方法一示例代码：" class="headerlink" title="完整的方法一示例代码："></a>完整的方法一示例代码：</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdbool.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> values[] = &#123; <span class="number">88</span>, <span class="number">56</span>, <span class="number">100</span>, <span class="number">2</span>, <span class="number">1</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">containsDuplicate</span><span class="params">(<span class="keyword">int</span>* nums, <span class="keyword">int</span> numsSize)</span></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;numsSize;i++)&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j=i+<span class="number">1</span>;j&lt;numsSize;j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(nums[i]==nums[j])&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">int</span> n;</span><br><span class="line"></span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">&quot;列表：\n&quot;</span>);</span><br><span class="line">   <span class="keyword">for</span>( n = <span class="number">0</span> ; n &lt; <span class="number">5</span>; n++ ) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>, values[n]);</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">   <span class="keyword">bool</span> a=containsDuplicate(values, <span class="number">5</span>);</span><br><span class="line">   <span class="keyword">if</span>(a)&#123;</span><br><span class="line">       <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">       <span class="built_in">printf</span>(<span class="string">&quot;存在重复元素&quot;</span>);</span><br><span class="line">   &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">       <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">       <span class="built_in">printf</span>(<span class="string">&quot;不存在&quot;</span>);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+bool containsDuplicate(int* nums, int numsSize)&#123;
+    for(int i=0;i&lt;numsSize;i++)&#123;
+        for(int j=i+1;j&lt;numsSize;j++)&#123;
+            if(nums[i]==nums[j])&#123;
+                return true;
+            &#125;
+        &#125;
+    &#125;
+    return false;
+&#125;
+int main()
+&#123;
+   int n;
 
-<h4 id="完整的方法二示例代码："><a href="#完整的方法二示例代码：" class="headerlink" title="完整的方法二示例代码："></a>完整的方法二示例代码：</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdbool.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> values[] = &#123; <span class="number">88</span>, <span class="number">56</span>, <span class="number">100</span>, <span class="number">2</span>, <span class="number">2</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">cmpfunc</span> <span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> * a, <span class="keyword">const</span> <span class="keyword">void</span> * b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> ( *(<span class="keyword">int</span>*)a - *(<span class="keyword">int</span>*)b );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">containsDuplicate</span><span class="params">(<span class="keyword">int</span>* nums, <span class="keyword">int</span> numsSize)</span> </span>&#123;</span><br><span class="line">    qsort(nums, numsSize, <span class="keyword">sizeof</span>(<span class="keyword">int</span>), cmpfunc);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numsSize - <span class="number">1</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (nums[i] == nums[i + <span class="number">1</span>]) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">int</span> n;</span><br><span class="line"></span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">&quot;排序之前的列表：\n&quot;</span>);</span><br><span class="line">   <span class="keyword">for</span>( n = <span class="number">0</span> ; n &lt; <span class="number">5</span>; n++ ) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>, values[n]);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   qsort(values, <span class="number">5</span>, <span class="keyword">sizeof</span>(<span class="keyword">int</span>), cmpfunc);</span><br><span class="line"></span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">&quot;\n排序之后的列表：\n&quot;</span>);</span><br><span class="line">   <span class="keyword">for</span>( n = <span class="number">0</span> ; n &lt; <span class="number">5</span>; n++ ) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>, values[n]);</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">   <span class="keyword">bool</span> a=containsDuplicate(values, <span class="number">5</span>);</span><br><span class="line">   <span class="keyword">if</span>(a)&#123;</span><br><span class="line">       <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">       <span class="built_in">printf</span>(<span class="string">&quot;存在重复元素&quot;</span>);</span><br><span class="line">   &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">       <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">       <span class="built_in">printf</span>(<span class="string">&quot;不存在&quot;</span>);</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">   </span><br><span class="line">  <span class="keyword">return</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+   printf(&quot;列表：\n&quot;);
+   for( n = 0 ; n &lt; 5; n++ ) &#123;
+      printf(&quot;%d &quot;, values[n]);
+   &#125;
+   
+   bool a=containsDuplicate(values, 5);
+   if(a)&#123;
+       printf(&quot;\n&quot;);
+       printf(&quot;存在重复元素&quot;);
+   &#125;else&#123;
+       printf(&quot;\n&quot;);
+       printf(&quot;不存在&quot;);
+   &#125;
+&#125;
+</code></pre>
+<h4 id="完整的方法二示例代码："><a href="#完整的方法二示例代码：" class="headerlink" title="完整的方法二示例代码："></a>完整的方法二示例代码：</h4><pre><code class="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+int values[] = &#123; 88, 56, 100, 2, 2 &#125;;
 
-<h4 id="完整的方法三的哈希表操作的学习"><a href="#完整的方法三的哈希表操作的学习" class="headerlink" title="完整的方法三的哈希表操作的学习"></a>完整的方法三的哈希表操作的学习</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span>   <span class="comment">/* gets */</span>  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span>  <span class="comment">/* atoi, malloc */</span>  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span>  <span class="comment">/* strcpy */</span>  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;uthash.h&quot;</span>  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdbool.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> values[] = &#123; <span class="number">88</span>, <span class="number">56</span>, <span class="number">100</span>, <span class="number">2</span>, <span class="number">2</span> &#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hashTable</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> key;</span><br><span class="line">    UT_hash_handle hh;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">containsDuplicate</span><span class="params">(<span class="keyword">int</span>* nums, <span class="keyword">int</span> numsSize)</span> </span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">hashTable</span>* <span class="title">set</span> =</span> <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numsSize; i++) &#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">hashTable</span>* <span class="title">tmp</span>;</span></span><br><span class="line">        HASH_FIND_INT(<span class="built_in">set</span>, nums + i, tmp);</span><br><span class="line">        <span class="keyword">if</span> (tmp == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            tmp = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(struct hashTable));</span><br><span class="line">            tmp-&gt;key = nums[i];</span><br><span class="line">            HASH_ADD_INT(<span class="built_in">set</span>, key, tmp);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">int</span> n;</span><br><span class="line"></span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">&quot;\n列表：\n&quot;</span>);</span><br><span class="line">   <span class="keyword">for</span>( n = <span class="number">0</span> ; n &lt; <span class="number">5</span>; n++ ) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>, values[n]);</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">   <span class="keyword">bool</span> a=containsDuplicate(values, <span class="number">5</span>);</span><br><span class="line">   <span class="keyword">if</span>(a)&#123;</span><br><span class="line">       <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">       <span class="built_in">printf</span>(<span class="string">&quot;存在重复元素&quot;</span>);</span><br><span class="line">   &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">       <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">       <span class="built_in">printf</span>(<span class="string">&quot;不存在&quot;</span>);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+int cmpfunc (const void * a, const void * b)
+&#123;
+   return ( *(int*)a - *(int*)b );
+&#125;
+
+bool containsDuplicate(int* nums, int numsSize) &#123;
+    qsort(nums, numsSize, sizeof(int), cmpfunc);
+    for (int i = 0; i &lt; numsSize - 1; i++) &#123;
+        if (nums[i] == nums[i + 1]) &#123;
+            return true;
+        &#125;
+    &#125;
+    return false;
+&#125;
+int main()
+&#123;
+   int n;
+
+   printf(&quot;排序之前的列表：\n&quot;);
+   for( n = 0 ; n &lt; 5; n++ ) &#123;
+      printf(&quot;%d &quot;, values[n]);
+   &#125;
+
+   qsort(values, 5, sizeof(int), cmpfunc);
+
+   printf(&quot;\n排序之后的列表：\n&quot;);
+   for( n = 0 ; n &lt; 5; n++ ) &#123;
+      printf(&quot;%d &quot;, values[n]);
+   &#125;
+   
+   bool a=containsDuplicate(values, 5);
+   if(a)&#123;
+       printf(&quot;\n&quot;);
+       printf(&quot;存在重复元素&quot;);
+   &#125;else&#123;
+       printf(&quot;\n&quot;);
+       printf(&quot;不存在&quot;);
+   &#125;
+   
+   
+  return(0);
+&#125;
+</code></pre>
+<h4 id="完整的方法三的哈希表操作的学习"><a href="#完整的方法三的哈希表操作的学习" class="headerlink" title="完整的方法三的哈希表操作的学习"></a>完整的方法三的哈希表操作的学习</h4><pre><code class="c">#include &lt;stdio.h&gt;   /* gets */  
+#include &lt;stdlib.h&gt;  /* atoi, malloc */  
+#include &lt;string.h&gt;  /* strcpy */  
+#include &quot;uthash.h&quot;  
+#include &lt;stdbool.h&gt;
+
+int values[] = &#123; 88, 56, 100, 2, 2 &#125;;
+struct hashTable &#123;
+    int key;
+    UT_hash_handle hh;
+&#125;;
+
+bool containsDuplicate(int* nums, int numsSize) &#123;
+    struct hashTable* set = NULL;
+    for (int i = 0; i &lt; numsSize; i++) &#123;
+        struct hashTable* tmp;
+        HASH_FIND_INT(set, nums + i, tmp);
+        if (tmp == NULL) &#123;
+            tmp = malloc(sizeof(struct hashTable));
+            tmp-&gt;key = nums[i];
+            HASH_ADD_INT(set, key, tmp);
+        &#125; else &#123;
+            return true;
+        &#125;
+    &#125;
+    return false;
+&#125;
 
 
+int main()
+&#123;
+   int n;
 
+   printf(&quot;\n列表：\n&quot;);
+   for( n = 0 ; n &lt; 5; n++ ) &#123;
+      printf(&quot;%d &quot;, values[n]);
+   &#125;
+   
+   bool a=containsDuplicate(values, 5);
+   if(a)&#123;
+       printf(&quot;\n&quot;);
+       printf(&quot;存在重复元素&quot;);
+   &#125;else&#123;
+       printf(&quot;\n&quot;);
+       printf(&quot;不存在&quot;);
+   &#125;
+&#125;
+</code></pre>
 <h4 id="哈希表操作的学习"><a href="#哈希表操作的学习" class="headerlink" title="哈希表操作的学习"></a>哈希表操作的学习</h4><p>1、下载路径：<a target="_blank" rel="noopener" href="https://github.com/troydhanson/uthash">https://github.com/troydhanson/uthash</a></p>
 <p>2、打开目录文件，在src文件下编写C语言代码即可。</p>
 <p><img src="/2021/11/17/1117/1.png" alt="1"></p>
 <p>3、基本的操作</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span>   <span class="comment">/* gets */</span>  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span>  <span class="comment">/* atoi, malloc */</span>  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span>  <span class="comment">/* strcpy */</span>  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;uthash.h&quot;</span>  </span></span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">my_struct</span> &#123;</span>  </span><br><span class="line">    <span class="keyword">int</span> ikey;                    <span class="comment">/* key */</span>  </span><br><span class="line">    <span class="keyword">char</span> value[<span class="number">10</span>];  </span><br><span class="line">    UT_hash_handle hh;         <span class="comment">/* makes this structure hashable */</span>  </span><br><span class="line">&#125;;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">my_struct</span> *<span class="title">g_users</span> =</span> <span class="literal">NULL</span>;  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add_user</span><span class="params">(<span class="keyword">int</span> mykey, <span class="keyword">char</span> *value)</span> </span>&#123;  </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">my_struct</span> *<span class="title">s</span>;</span>  </span><br><span class="line">  </span><br><span class="line">    HASH_FIND_INT(g_users, &amp;mykey, s);  <span class="comment">/* mykey already in the hash? */</span>  </span><br><span class="line">    <span class="keyword">if</span> (s==<span class="literal">NULL</span>) &#123;  </span><br><span class="line">      s = (struct my_struct*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(struct my_struct));  </span><br><span class="line">      s-&gt;ikey = mykey;  </span><br><span class="line">      HASH_ADD_INT(g_users, ikey, s);  <span class="comment">/* ikey: name of key field */</span>  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="built_in">strcpy</span>(s-&gt;value, value);  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="function">struct my_struct *<span class="title">find_user</span><span class="params">(<span class="keyword">int</span> mykey)</span> </span>&#123;  </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">my_struct</span> *<span class="title">s</span>;</span>  </span><br><span class="line">  </span><br><span class="line">    HASH_FIND_INT(g_users, &amp;mykey, s);  <span class="comment">/* s: output pointer */</span>  </span><br><span class="line">    <span class="keyword">return</span> s;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">delete_user</span><span class="params">(struct my_struct *user)</span> </span>&#123;  </span><br><span class="line">    HASH_DEL(g_users, user);  <span class="comment">/* user: pointer to deletee */</span>  </span><br><span class="line">    <span class="built_in">free</span>(user);  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">delete_all</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">my_struct</span> *<span class="title">current_user</span>, *<span class="title">tmp</span>;</span>  </span><br><span class="line">  </span><br><span class="line">  HASH_ITER(hh, g_users, current_user, tmp) &#123;  </span><br><span class="line">    HASH_DEL(g_users,current_user);  <span class="comment">/* delete it (g_users advances to next) */</span>  </span><br><span class="line">    <span class="built_in">free</span>(current_user);            <span class="comment">/* free it */</span>  </span><br><span class="line">  &#125;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_users</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">my_struct</span> *<span class="title">s</span>;</span>  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">for</span>(s=g_users; s != <span class="literal">NULL</span>; s=(struct my_struct*)(s-&gt;hh.next)) &#123;  </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;user ikey %d: value %s\n&quot;</span>, s-&gt;ikey, s-&gt;value);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">name_sort</span><span class="params">(struct my_struct *a, struct my_struct *b)</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">strcmp</span>(a-&gt;value,b-&gt;value);  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">id_sort</span><span class="params">(struct my_struct *a, struct my_struct *b)</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">return</span> (a-&gt;ikey - b-&gt;ikey);  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sort_by_name</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    HASH_SORT(g_users, name_sort);  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sort_by_id</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    HASH_SORT(g_users, id_sort);  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">char</span> in[<span class="number">10</span>];  </span><br><span class="line">    <span class="keyword">int</span> ikey=<span class="number">1</span>, running=<span class="number">1</span>;  </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">my_struct</span> *<span class="title">s</span>;</span>  </span><br><span class="line">    <span class="keyword">unsigned</span> num_users;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">while</span> (running) &#123;  </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot; 1. add user\n&quot;</span>);  </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot; 2. add/rename user by id\n&quot;</span>);  </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot; 3. find user\n&quot;</span>);  </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot; 4. delete user\n&quot;</span>);  </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot; 5. delete all users\n&quot;</span>);  </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot; 6. sort items by name\n&quot;</span>);  </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot; 7. sort items by id\n&quot;</span>);  </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot; 8. print users\n&quot;</span>);  </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot; 9. count users\n&quot;</span>);  </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;10. quit\n&quot;</span>);  </span><br><span class="line">        gets(in);  </span><br><span class="line">        <span class="keyword">switch</span>(atoi(in)) &#123;  </span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>:  </span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;name?\n&quot;</span>);  </span><br><span class="line">                add_user(ikey++, gets(in));  </span><br><span class="line">                <span class="keyword">break</span>;  </span><br><span class="line">            <span class="keyword">case</span> <span class="number">2</span>:  </span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;id?\n&quot;</span>);  </span><br><span class="line">                gets(in); ikey = atoi(in);  </span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;name?\n&quot;</span>);  </span><br><span class="line">                add_user(ikey, gets(in));  </span><br><span class="line">                <span class="keyword">break</span>;  </span><br><span class="line">            <span class="keyword">case</span> <span class="number">3</span>:  </span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;id?\n&quot;</span>);  </span><br><span class="line">                s = find_user(atoi(gets(in)));  </span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;user: %s\n&quot;</span>, s ? s-&gt;value : <span class="string">&quot;unknown&quot;</span>);  </span><br><span class="line">                <span class="keyword">break</span>;  </span><br><span class="line">            <span class="keyword">case</span> <span class="number">4</span>:  </span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;id?\n&quot;</span>);  </span><br><span class="line">                s = find_user(atoi(gets(in)));  </span><br><span class="line">                <span class="keyword">if</span> (s) delete_user(s);  </span><br><span class="line">                <span class="keyword">else</span> <span class="built_in">printf</span>(<span class="string">&quot;id unknown\n&quot;</span>);  </span><br><span class="line">                <span class="keyword">break</span>;  </span><br><span class="line">            <span class="keyword">case</span> <span class="number">5</span>:  </span><br><span class="line">                delete_all();  </span><br><span class="line">                <span class="keyword">break</span>;  </span><br><span class="line">            <span class="keyword">case</span> <span class="number">6</span>:  </span><br><span class="line">                sort_by_name();  </span><br><span class="line">                <span class="keyword">break</span>;  </span><br><span class="line">            <span class="keyword">case</span> <span class="number">7</span>:  </span><br><span class="line">                sort_by_id();  </span><br><span class="line">                <span class="keyword">break</span>;  </span><br><span class="line">            <span class="keyword">case</span> <span class="number">8</span>:  </span><br><span class="line">                print_users();  </span><br><span class="line">                <span class="keyword">break</span>;  </span><br><span class="line">            <span class="keyword">case</span> <span class="number">9</span>:  </span><br><span class="line">                num_users=HASH_COUNT(g_users);  </span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;there are %u users\n&quot;</span>, num_users);  </span><br><span class="line">                <span class="keyword">break</span>;  </span><br><span class="line">            <span class="keyword">case</span> <span class="number">10</span>:  </span><br><span class="line">                running=<span class="number">0</span>;  </span><br><span class="line">                <span class="keyword">break</span>;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    delete_all();  <span class="comment">/* free any structures */</span>  </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;  </span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
-
+<pre><code class="c">#include &lt;stdio.h&gt;   /* gets */  
+#include &lt;stdlib.h&gt;  /* atoi, malloc */  
+#include &lt;string.h&gt;  /* strcpy */  
+#include &quot;uthash.h&quot;  
+  
+struct my_struct &#123;  
+    int ikey;                    /* key */  
+    char value[10];  
+    UT_hash_handle hh;         /* makes this structure hashable */  
+&#125;;  
+  
+static struct my_struct *g_users = NULL;  
+  
+void add_user(int mykey, char *value) &#123;  
+    struct my_struct *s;  
+  
+    HASH_FIND_INT(g_users, &amp;mykey, s);  /* mykey already in the hash? */  
+    if (s==NULL) &#123;  
+      s = (struct my_struct*)malloc(sizeof(struct my_struct));  
+      s-&gt;ikey = mykey;  
+      HASH_ADD_INT(g_users, ikey, s);  /* ikey: name of key field */  
+    &#125;  
+    strcpy(s-&gt;value, value);  
+&#125;  
+  
+struct my_struct *find_user(int mykey) &#123;  
+    struct my_struct *s;  
+  
+    HASH_FIND_INT(g_users, &amp;mykey, s);  /* s: output pointer */  
+    return s;  
+&#125;  
+  
+void delete_user(struct my_struct *user) &#123;  
+    HASH_DEL(g_users, user);  /* user: pointer to deletee */  
+    free(user);  
+&#125;  
+  
+void delete_all() &#123;  
+  struct my_struct *current_user, *tmp;  
+  
+  HASH_ITER(hh, g_users, current_user, tmp) &#123;  
+    HASH_DEL(g_users,current_user);  /* delete it (g_users advances to next) */  
+    free(current_user);            /* free it */  
+  &#125;  
+&#125;  
+  
+void print_users() &#123;  
+    struct my_struct *s;  
+  
+    for(s=g_users; s != NULL; s=(struct my_struct*)(s-&gt;hh.next)) &#123;  
+        printf(&quot;user ikey %d: value %s\n&quot;, s-&gt;ikey, s-&gt;value);  
+    &#125;  
+&#125;  
+  
+int name_sort(struct my_struct *a, struct my_struct *b) &#123;  
+    return strcmp(a-&gt;value,b-&gt;value);  
+&#125;  
+  
+int id_sort(struct my_struct *a, struct my_struct *b) &#123;  
+    return (a-&gt;ikey - b-&gt;ikey);  
+&#125;  
+  
+void sort_by_name() &#123;  
+    HASH_SORT(g_users, name_sort);  
+&#125;  
+  
+void sort_by_id() &#123;  
+    HASH_SORT(g_users, id_sort);  
+&#125;  
+  
+int main(int argc, char *argv[]) &#123;  
+    char in[10];  
+    int ikey=1, running=1;  
+    struct my_struct *s;  
+    unsigned num_users;  
+  
+    while (running) &#123;  
+        printf(&quot; 1. add user\n&quot;);  
+        printf(&quot; 2. add/rename user by id\n&quot;);  
+        printf(&quot; 3. find user\n&quot;);  
+        printf(&quot; 4. delete user\n&quot;);  
+        printf(&quot; 5. delete all users\n&quot;);  
+        printf(&quot; 6. sort items by name\n&quot;);  
+        printf(&quot; 7. sort items by id\n&quot;);  
+        printf(&quot; 8. print users\n&quot;);  
+        printf(&quot; 9. count users\n&quot;);  
+        printf(&quot;10. quit\n&quot;);  
+        gets(in);  
+        switch(atoi(in)) &#123;  
+            case 1:  
+                printf(&quot;name?\n&quot;);  
+                add_user(ikey++, gets(in));  
+                break;  
+            case 2:  
+                printf(&quot;id?\n&quot;);  
+                gets(in); ikey = atoi(in);  
+                printf(&quot;name?\n&quot;);  
+                add_user(ikey, gets(in));  
+                break;  
+            case 3:  
+                printf(&quot;id?\n&quot;);  
+                s = find_user(atoi(gets(in)));  
+                printf(&quot;user: %s\n&quot;, s ? s-&gt;value : &quot;unknown&quot;);  
+                break;  
+            case 4:  
+                printf(&quot;id?\n&quot;);  
+                s = find_user(atoi(gets(in)));  
+                if (s) delete_user(s);  
+                else printf(&quot;id unknown\n&quot;);  
+                break;  
+            case 5:  
+                delete_all();  
+                break;  
+            case 6:  
+                sort_by_name();  
+                break;  
+            case 7:  
+                sort_by_id();  
+                break;  
+            case 8:  
+                print_users();  
+                break;  
+            case 9:  
+                num_users=HASH_COUNT(g_users);  
+                printf(&quot;there are %u users\n&quot;, num_users);  
+                break;  
+            case 10:  
+                running=0;  
+                break;  
+        &#125;  
+    &#125;  
+  
+    delete_all();  /* free any structures */  
+    return 0;  
+&#125;  
+</code></pre>
 <p>学习笔记：</p>
 <p>1、get ()函数用法</p>
 <p>char *gets(char *str);</p>

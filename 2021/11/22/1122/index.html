@@ -6,11 +6,12 @@
     <meta charset="utf-8">
     <meta name="keywords" content="基于nodejs实现一个静态文件服务器, 是小竹不是小猪">
     <meta name="description" content="一、搭建环境检查nodejs环境
-12node -vnpm -v
+node -v
+npm -v
 
 如果在后续运行过程中出现缺少模块的情况可以使用npm install （模块名）的方法。注意全局和局部的区别。
 【必须以管理员身份操作】
-12npm install mod">
+npm install model-">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -469,12 +470,14 @@
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <h2 id="一、搭建环境"><a href="#一、搭建环境" class="headerlink" title="一、搭建环境"></a>一、搭建环境</h2><p>检查nodejs环境</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">node -v
+npm -v
+</code></pre>
 <p>如果在后续运行过程中出现缺少模块的情况可以使用npm install （模块名）的方法。注意全局和局部的区别。</p>
 <p>【必须以管理员身份操作】</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install model-name -g //全局</span><br><span class="line">npm install model-name  //局部</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">npm install model-name -g //全局
+npm install model-name  //局部
+</code></pre>
 <h2 id="二、服务实现说明"><a href="#二、服务实现说明" class="headerlink" title="二、服务实现说明"></a>二、服务实现说明</h2><h3 id="（一）要求"><a href="#（一）要求" class="headerlink" title="（一）要求"></a>（一）要求</h3><p>利用Node.js实现要给简单基于http的文件服务器。</p>
 <p>要求：</p>
 <p>1、利用http模块构建一个Http Server;</p>
@@ -492,12 +495,81 @@
 <p>   文件：判断文件的类型，读取文件，然后响应数据。</p>
 <p>​    （2）获取一个路径，给文件的href</p>
 <p>  不存在：404，end;</p>
-<h3 id="（三）代码解析"><a href="#（三）代码解析" class="headerlink" title="（三）代码解析"></a>（三）代码解析</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">//server.js文件</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//我们使用 require 指令来载入 http，url,path,mime,fs,urlencode等模块，并且进行实例化。</span></span><br><span class="line"> <span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">&quot;http&quot;</span>);</span><br><span class="line"> <span class="keyword">var</span> url = <span class="built_in">require</span>(<span class="string">&quot;url&quot;</span>);</span><br><span class="line"> <span class="keyword">var</span> path =  <span class="built_in">require</span>(<span class="string">&quot;path&quot;</span>);</span><br><span class="line"> <span class="keyword">var</span> mime = <span class="built_in">require</span>(<span class="string">&quot;mime&quot;</span>);</span><br><span class="line"> <span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">&quot;fs&quot;</span>);</span><br><span class="line"> <span class="keyword">var</span> urlencode = <span class="built_in">require</span>(<span class="string">&#x27;urlencode&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//服务器框架</span></span><br><span class="line">http.createServer(<span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</span><br><span class="line">	<span class="comment">//获取路径名</span></span><br><span class="line">    <span class="keyword">var</span> pathname = url.parse(req.url).pathname; <span class="comment">//利用url模块的功能</span></span><br><span class="line">    <span class="comment">//URL解码，防止乱码</span></span><br><span class="line">    pathname = urlencode.decode(pathname, <span class="string">&#x27;utf-8&#x27;</span>);</span><br><span class="line">    <span class="comment">//排错</span></span><br><span class="line">    <span class="keyword">if</span>(pathname == <span class="string">&quot;/favicon.ico&quot;</span>) <span class="keyword">return</span>;</span><br><span class="line">    <span class="comment">//获取根路径</span></span><br><span class="line">    finalpath = __dirname + pathname; <span class="comment">//原本的目录加上访问目录</span></span><br><span class="line">    <span class="comment">//如果文件存在：</span></span><br><span class="line">    fs.exists(finalpath,<span class="function"><span class="keyword">function</span>(<span class="params">exists</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(exists)&#123;</span><br><span class="line">        	<span class="comment">//如果是文件夹</span></span><br><span class="line">            <span class="keyword">if</span>(fs.statSync(finalpath).isDirectory())&#123;</span><br><span class="line">            	<span class="comment">//获取文件夹的文件结构</span></span><br><span class="line">                fs.readdir(finalpath,<span class="function"><span class="keyword">function</span>(<span class="params">err,files</span>)</span>&#123;</span><br><span class="line">                	<span class="comment">//排错</span></span><br><span class="line">                    <span class="keyword">if</span>(err)&#123;</span><br><span class="line">                        res.writeHead(<span class="number">200</span>,&#123;<span class="string">&quot;Content-Type&quot;</span>:<span class="string">&#x27;text/plain&#x27;</span>&#125;);</span><br><span class="line">                        res.end(<span class="string">&quot;&lt;h1&gt;404 page cannot be found&lt;/h1&gt;&quot;</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="comment">//将文件结构写入页面</span></span><br><span class="line">                    <span class="keyword">else</span>&#123;</span><br><span class="line">                        <span class="keyword">var</span> html = <span class="string">&quot;&lt;head&gt;&lt;meta charset=&#x27;utf-8&#x27;&gt;&lt;/head&gt;&quot;</span>;</span><br><span class="line">                        <span class="keyword">var</span> files = fs.readdirSync(finalpath);</span><br><span class="line">                        <span class="comment">//创建超链接打开文件</span></span><br><span class="line">                        <span class="keyword">for</span> (<span class="keyword">var</span> i <span class="keyword">in</span> files) &#123;</span><br><span class="line">                            <span class="keyword">var</span> filename = files[i];</span><br><span class="line">                            html += <span class="string">&quot;&lt;ul&gt;&lt;li&gt;&lt;a href=&#x27;http://127.0.0.1:1314&quot;</span> +</span><br><span class="line">                             		pathname + <span class="string">&#x27;/&#x27;</span>+  filename + <span class="string">&quot;&#x27;&gt;&quot;</span> + filename + <span class="string">&quot;&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&quot;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        res.writeHead(<span class="number">200</span>, &#123;<span class="string">&#x27;content-type&#x27;</span>: <span class="string">&#x27;text/html&#x27;</span>&#125;);</span><br><span class="line">                        res.write(html);</span><br><span class="line">                        res.end();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//如果是文件</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(fs.statSync(finalpath).isFile())&#123;</span><br><span class="line">            	<span class="comment">//打开文件</span></span><br><span class="line">                fs.readFile(finalpath,<span class="function"><span class="keyword">function</span>(<span class="params">err,data</span>)</span>&#123;</span><br><span class="line">                    <span class="keyword">if</span>(err) res.end(<span class="string">&quot;cannot read file!&quot;</span>);</span><br><span class="line">                    <span class="keyword">else</span> &#123;</span><br><span class="line">                        res.writeHead(<span class="number">200</span>,&#123;<span class="string">&quot;Content-Type&quot;</span>:mime.getType(path.basename)&#125;);</span><br><span class="line">                        res.write(data);</span><br><span class="line">                        res.end();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                res.writeHead(<span class="number">200</span>,&#123;<span class="string">&quot;Content-Type&quot;</span>:<span class="string">&quot;text/html;charset=utf-8&quot;</span>&#125;);</span><br><span class="line">                res.end(<span class="string">&quot;&lt;h1&gt;404 page cannot be found!&lt;/h1&gt;&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;).listen(<span class="number">1314</span>);<span class="comment">//设置监听端口</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&quot;Server running at http://127.0.0.1:1314/&quot;</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="（三）代码解析"><a href="#（三）代码解析" class="headerlink" title="（三）代码解析"></a>（三）代码解析</h3><pre><code class="js"> //server.js文件
 
+//我们使用 require 指令来载入 http，url,path,mime,fs,urlencode等模块，并且进行实例化。
+ var http = require(&quot;http&quot;);
+ var url = require(&quot;url&quot;);
+ var path =  require(&quot;path&quot;);
+ var mime = require(&quot;mime&quot;);
+ var fs = require(&quot;fs&quot;);
+ var urlencode = require(&#39;urlencode&#39;);
+
+//服务器框架
+http.createServer(function(req, res)&#123;
+    //获取路径名
+    var pathname = url.parse(req.url).pathname; //利用url模块的功能
+    //URL解码，防止乱码
+    pathname = urlencode.decode(pathname, &#39;utf-8&#39;);
+    //排错
+    if(pathname == &quot;/favicon.ico&quot;) return;
+    //获取根路径
+    finalpath = __dirname + pathname; //原本的目录加上访问目录
+    //如果文件存在：
+    fs.exists(finalpath,function(exists)&#123;
+        if(exists)&#123;
+            //如果是文件夹
+            if(fs.statSync(finalpath).isDirectory())&#123;
+                //获取文件夹的文件结构
+                fs.readdir(finalpath,function(err,files)&#123;
+                    //排错
+                    if(err)&#123;
+                        res.writeHead(200,&#123;&quot;Content-Type&quot;:&#39;text/plain&#39;&#125;);
+                        res.end(&quot;&lt;h1&gt;404 page cannot be found&lt;/h1&gt;&quot;);
+                    &#125;
+                    //将文件结构写入页面
+                    else&#123;
+                        var html = &quot;&lt;head&gt;&lt;meta charset=&#39;utf-8&#39;&gt;&lt;/head&gt;&quot;;
+                        var files = fs.readdirSync(finalpath);
+                        //创建超链接打开文件
+                        for (var i in files) &#123;
+                            var filename = files[i];
+                            html += &quot;&lt;ul&gt;&lt;li&gt;&lt;a href=&#39;http://127.0.0.1:1314&quot; +
+                                     pathname + &#39;/&#39;+  filename + &quot;&#39;&gt;&quot; + filename + &quot;&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&quot;;
+                        &#125;
+                        res.writeHead(200, &#123;&#39;content-type&#39;: &#39;text/html&#39;&#125;);
+                        res.write(html);
+                        res.end();
+                    &#125;
+                &#125;)
+            &#125;
+            //如果是文件
+            else if(fs.statSync(finalpath).isFile())&#123;
+                //打开文件
+                fs.readFile(finalpath,function(err,data)&#123;
+                    if(err) res.end(&quot;cannot read file!&quot;);
+                    else &#123;
+                        res.writeHead(200,&#123;&quot;Content-Type&quot;:mime.getType(path.basename)&#125;);
+                        res.write(data);
+                        res.end();
+                    &#125;
+                &#125;)
+            &#125;
+            else&#123;
+                res.writeHead(200,&#123;&quot;Content-Type&quot;:&quot;text/html;charset=utf-8&quot;&#125;);
+                res.end(&quot;&lt;h1&gt;404 page cannot be found!&lt;/h1&gt;&quot;);
+            &#125;
+        &#125;
+    &#125;)
+&#125;).listen(1314);//设置监听端口
+console.log(&quot;Server running at http://127.0.0.1:1314/&quot;);
+</code></pre>
 <p>实现效果如图可以看到：对本地的127.0.0.1:1314进行访问     <img src="/2021/11/22/1122/web.PNG" alt="web"></p>
 <h3 id="（四）nodejs的一些知识"><a href="#（四）nodejs的一些知识" class="headerlink" title="（四）nodejs的一些知识"></a>（四）nodejs的一些知识</h3><h4 id="1、url模块："><a href="#1、url模块：" class="headerlink" title="1、url模块："></a>1、url模块：</h4><p>模块的作用：解析用户的URL，以便程序根据URL的不同提供不同的服务；</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">url.parse (urlStr[, parseQueryString][, slashesDenoteHost]); <span class="comment">//解析用户输入的URL。</span></span><br><span class="line">url.format(urlObj)    <span class="comment">// 输入一个 URL 对象，返回格式化后的 URL 字符串 。  </span></span><br><span class="line">url.resolve(<span class="keyword">from</span>, to) <span class="comment">//给定一个基URL路径，和一个href URL路径，并且象浏览器那样处理他们可以带上锚点。</span></span><br></pre></td></tr></table></figure>
-
+<pre><code class="js">url.parse (urlStr[, parseQueryString][, slashesDenoteHost]); //解析用户输入的URL。
+url.format(urlObj)    // 输入一个 URL 对象，返回格式化后的 URL 字符串 。  
+url.resolve(from, to) //给定一个基URL路径，和一个href URL路径，并且象浏览器那样处理他们可以带上锚点。
+</code></pre>
 <h4 id="2、Node-js文件系统"><a href="#2、Node-js文件系统" class="headerlink" title="2、Node.js文件系统"></a>2、Node.js文件系统</h4><p>可以参照菜鸟教程的讲解。</p>
 
                 
