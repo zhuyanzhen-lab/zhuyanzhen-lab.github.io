@@ -4,8 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="关于数组中求重复元素【C语言】, 是小竹不是小猪">
-    <meta name="description" content="关于数组中求重复元素【C语言】方法一 ：哈希表思路：将第一个数组中的所有元素存进哈希表之中，key值为元素值，time为出现次数。之后再对第二个数组进行遍历，如果查找到了相同且time值&amp;gt;0的则存入result数组并对找到的值的tim">
+    <meta name="keywords" content="1129, 是小竹不是小猪">
+    <meta name="description" content="1129 | 是小竹不是小猪">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>关于数组中求重复元素【C语言】 | 是小竹不是小猪</title>
+    <title>1129 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -309,12 +309,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/6.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">关于数组中求重复元素【C语言】</h1>
+                    <h1 class="description center-align post-title">1129</h1>
                 </div>
             </div>
         </div>
@@ -442,7 +442,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-11-26
+                    2021-11-29
                 </div>
                 
 
@@ -463,107 +463,7 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="关于数组中求重复元素【C语言】"><a href="#关于数组中求重复元素【C语言】" class="headerlink" title="关于数组中求重复元素【C语言】"></a>关于数组中求重复元素【C语言】</h2><h3 id="方法一-：哈希表"><a href="#方法一-：哈希表" class="headerlink" title="方法一 ：哈希表"></a>方法一 ：哈希表</h3><p>思路：将第一个数组中的所有元素存进哈希表之中，key值为元素值，time为出现次数。之后再对第二个数组进行遍历，如果查找到了相同且time值&gt;0的则存入result数组并对找到的值的time属性-1。</p>
-<pre><code class="c">#include &lt;stdio.h&gt;   /* gets */  
-#include &lt;stdlib.h&gt;  /* atoi, malloc */  
-#include &lt;string.h&gt;  /* strcpy */  
-#include &quot;uthash.h&quot;  
-
-
-struct hashTable &#123;
-    int key;
-    int time;
-    UT_hash_handle hh;
-&#125;;
-struct hashTable* hashtable;
-
-void Rept(int num1[],int m,int num2[],int n);
-
-struct hashTable* find(int ikey) &#123;
-    struct hashTable* tmp;
-    HASH_FIND_INT(hashtable,  &amp;ikey, tmp);
-    return tmp;
-&#125;
-void Rept(int num1[],int m,int num2[],int n)&#123;
-    hashtable=NULL;
-    int size=0;
-    int result[100];
-    for(int i=0;i&lt;m;i++)&#123;
-        struct hashTable* it=find(num1[i]);
-        if(it != NULL)&#123;
-            it-&gt;time++;
-        &#125;
-        else&#123;
-            struct hashTable* tmp = malloc(sizeof(struct hashTable));
-            tmp-&gt;key = num1[i], tmp-&gt;time = 1;
-            HASH_ADD_INT(hashtable, key, tmp);
-        &#125;
-        
-    &#125;
-    for(int j=0;j&lt;n;j++)&#123;
-        struct hashTable*this=find(num2[j]);
-        if(this !=NULL&amp;&amp;this-&gt;time&gt;0)&#123;
-            result[size]=this-&gt;key;
-            this-&gt;time--;
-            size++;
-        &#125;
-    &#125;
-    for(int s=0;s&lt;size;s++)&#123;
-        printf(&quot;%d &quot;,result[s]);
-    &#125;
-&#125;
-int main()&#123;
-    int m=7;
-    int n=8;
-    int num1[7]=&#123;2,9,5,7,3,9,0&#125;;
-    int num2[8]=&#123;3,6,4,7,9,4,7,0&#125;;
-    Rept(num1,m,num2,n);
-&#125;
-</code></pre>
-<h3 id="方法二：进行排序之后利用双指针实现"><a href="#方法二：进行排序之后利用双指针实现" class="headerlink" title="方法二：进行排序之后利用双指针实现"></a>方法二：进行排序之后利用双指针实现</h3><p>思路：先利用函数qsort进行排序，之后分别将两个指针指向头部，进行大小比较，如果大小不相等，则将数字较小的指针向后移动，如果大小相等，则把这个数字存入结果数组中并且将两个指针全部后移动。</p>
-<pre><code class="c">#include &lt;stdio.h&gt;   /* gets */  
-#include &lt;stdlib.h&gt;  /* atoi, malloc */  
-#include &lt;string.h&gt;  /* strcpy */  
-#include &lt;math.h&gt;
-int cmp (const void * a, const void * b)
-&#123;
-   return ( *(int*)a - *(int*)b );
-&#125;
-int size;
-int* intersect(int* nums1, int nums1Size, int* nums2, int nums2Size) &#123;
-    
-    qsort(nums1, nums1Size, sizeof(int), cmp);
-    qsort(nums2, nums2Size, sizeof(int), cmp);
-    size=0;
-    int* intersection = (int*)malloc(sizeof(int) * fmin(nums1Size, nums2Size));
-    int index1 = 0, index2 = 0;
-    while (index1 &lt; nums1Size &amp;&amp; index2 &lt; nums2Size) &#123;
-        if (nums1[index1] &lt; nums2[index2]) &#123;
-            index1++;
-        &#125; else if (nums1[index1] &gt; nums2[index2]) &#123;
-            index2++;
-        &#125; else &#123;
-            intersection[size++] = nums1[index1];
-            index1++;
-            index2++;
-        &#125;
-    &#125;
-    return intersection;
-&#125;
-int main()&#123;
-    int m=7;
-    int n=8;
-    int nums1[7]=&#123;2,9,5,7,3,9,0&#125;;
-    int nums2[8]=&#123;3,6,4,7,9,4,7,0&#125;;
-    int *p;
-    p=intersect(nums1,m,nums2,n);
-    for(int i=0;i&lt;size;i++)&#123;
-        printf( &quot;%d\n&quot;,*(p + i));
-    &#125;
-&#125;
-</code></pre>
-<p>参考可见：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/study-plan/data-structures/?progress=m2hc95s">「数据结构」 - 学习计划 - 力扣（LeetCode）全球极客挚爱的技术成长平台 (leetcode-cn.com)</a></p>
-
+                
                 
             </div>
             <hr/>
@@ -589,7 +489,7 @@ int main()&#123;
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2021/11/26/1126/">http://example.com/2021/11/26/1126/</a>
+                    <a href="http://example.com/2021/11/29/1129/">http://example.com/2021/11/29/1129/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -796,9 +696,48 @@ int main()&#123;
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2021/11/29/1129/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="1129">
+                        
+                        <span class="card-title">1129</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-29
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
             <div class="card">
                 <a href="/2021/11/28/1128/">
                     <div class="card-image">
@@ -816,45 +755,8 @@ int main()&#123;
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2021-11-28
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            小竹
-                            
-                        </span>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2021/11/25/1125/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="关于数组的合并排序">
-                        
-                        <span class="card-title">关于数组的合并排序</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-25
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-28
                             </span>
                         <span class="publish-author">
                             
