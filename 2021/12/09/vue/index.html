@@ -4,9 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="二叉排序树的建构和按规则输出, 是小竹不是小猪">
-    <meta name="description" content="二叉排序树的建构和按规则输出实验题目：设二叉排序树的各元素值均不相同，采用二叉链表作为存储结构，试设计递归或者非递 归算能按递减序打印所有左子树为空，右子树非空的结点的数据域。
-源代码：#include &amp;quot;stdio.h&amp;quot">
+    <meta name="keywords" content="vue3-摄影平台, 是小竹不是小猪">
+    <meta name="description" content="vue3-摄影平台+Ant Design of Vue本节就如何开始新建一个vue项目进行介绍
+一、初始化一个vue3项目npm install -g @vue-cil
+
+注意版本一定在vue-cli@3之上
+
+接下来：初始化一个名字叫做v">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -18,7 +22,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>二叉排序树的建构和按规则输出 | 是小竹不是小猪</title>
+    <title>vue3-摄影平台 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -310,12 +314,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/18.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">二叉排序树的建构和按规则输出</h1>
+                    <h1 class="description center-align post-title">vue3-摄影平台</h1>
                 </div>
             </div>
         </div>
@@ -443,7 +447,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-11-29
+                    2021-12-09
                 </div>
                 
 
@@ -464,103 +468,115 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="二叉排序树的建构和按规则输出"><a href="#二叉排序树的建构和按规则输出" class="headerlink" title="二叉排序树的建构和按规则输出"></a>二叉排序树的建构和按规则输出</h1><h4 id="实验题目："><a href="#实验题目：" class="headerlink" title="实验题目："></a>实验题目：</h4><p>设二叉排序树的各元素值均不相同，采用二叉链表作为存储结构，试设计递归或者非递 归算能按递减序打印所有左子树为空，右子树非空的结点的数据域。</p>
-<h4 id="源代码："><a href="#源代码：" class="headerlink" title="源代码："></a>源代码：</h4><pre><code class="c">#include &quot;stdio.h&quot;
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
- 
-using namespace std;
- 
-typedef struct Tree
-&#123;
-    int Data;
-    struct Tree *LeftTree;//左子树
-    struct Tree *RightTree;//右子树
-&#125;TreeNode, *TreeNodeP;
- 
-void InsertNode(TreeNodeP &amp;TreeRoot, int Data)
-&#123;
-    //新建一个节点
-    TreeNodeP NodeP;
-    NodeP = (TreeNodeP)malloc(sizeof(TreeNode));
-    NodeP-&gt;Data = Data;
-    NodeP-&gt;LeftTree = NodeP-&gt;RightTree = NULL;
- 
-    //如果树根还没创建，那就把当前新建的节点赋给根吧
-    if (TreeRoot == NULL)
-    &#123;
-        TreeRoot = NodeP;
-    &#125;
-    //新插入的节点数值比根的小或等，走根的左边
-    else if (Data &lt; TreeRoot-&gt;Data)
-    &#123;
-        //左子树递归结束处
-        if (TreeRoot-&gt;LeftTree == NULL)
-            TreeRoot-&gt;LeftTree = NodeP;
-        //左递归
-        else
-            InsertNode(TreeRoot-&gt;LeftTree, Data);
-    &#125;
-    //新插入的节点数值比根的大，走根的右边
-    else if (Data &gt; TreeRoot-&gt;Data)
-    &#123;
-        //右子树递归结束处
-        if (TreeRoot-&gt;RightTree == NULL)
-            TreeRoot-&gt;RightTree = NodeP;
-        //右递归
-        else
-            InsertNode(TreeRoot-&gt;RightTree, Data);
-    &#125;
-    else if(Data = TreeRoot-&gt;Data)&#123;
-        printf(&quot;有重复输入不进行插入\n&quot;);
-    &#125;
-&#125;
- 
-void TraveseTreeNode(TreeNodeP TreeRoot)
-&#123;
-    if (TreeRoot)
-    &#123;
-            
-            TraveseTreeNode(TreeRoot-&gt;RightTree);
-            if(TreeRoot-&gt;LeftTree==NULL&amp;&amp;TreeRoot-&gt;RightTree!=NULL)
-            printf(&quot;%d\t&quot;, TreeRoot-&gt;Data);
-            TraveseTreeNode(TreeRoot-&gt;LeftTree);
-    
-
-    &#125;
-&#125;
-void Printf(TreeNodeP TreeRoot)&#123;
-    if (TreeRoot)
-    &#123;
-           
-            Printf(TreeRoot-&gt;LeftTree);
-            printf(&quot;%d\t&quot;, TreeRoot-&gt;Data);
-            Printf(TreeRoot-&gt;RightTree);
-    
-
-    &#125;
-&#125;
- 
-int main()
-&#123;
-    TreeNodeP Tree = NULL;
- 
-    int A[11] = &#123;45,24,53,53,37,93 &#125;;
-    for (int i = 0; i &lt; 6; i++)
-    &#123;
-        InsertNode(Tree, A[i]);
-    &#125;
-     printf(&quot;中序遍历结果&quot;);
-    Printf(Tree);
-    printf(&quot;\n&quot;);
-    printf(&quot;输出结果为&quot;);
-    TraveseTreeNode(Tree);
-    
-    return 0;
-&#125;
- 
+                <h1 id="vue3-摄影平台-Ant-Design-of-Vue"><a href="#vue3-摄影平台-Ant-Design-of-Vue" class="headerlink" title="vue3-摄影平台+Ant Design of Vue"></a>vue3-摄影平台+Ant Design of Vue</h1><p>本节就如何开始新建一个vue项目进行介绍</p>
+<h3 id="一、初始化一个vue3项目"><a href="#一、初始化一个vue3项目" class="headerlink" title="一、初始化一个vue3项目"></a>一、初始化一个vue3项目</h3><pre><code class="shell">npm install -g @vue-cil
 </code></pre>
+<p>注意版本一定在vue-cli@3之上</p>
+<p><img src="/2021/12/09/vue/1.PNG" alt="1"></p>
+<p>接下来：初始化一个名字叫做vue3-demo的项目，**<u>注意选项。</u>**</p>
+<p><img src="/2021/12/09/vue/2.PNG" alt="2"></p>
+<p>初始化完成之后打开vue3-demo文件夹并且运行</p>
+<p><img src="/2021/12/09/vue/3.PNG" alt="3"></p>
+<p><img src="/2021/12/09/vue/4.PNG" alt="4"></p>
+<p><img src="/2021/12/09/vue/5.PNG" alt="5"></p>
+<p><img src="/2021/12/09/vue/6.PNG" alt="6"></p>
+<p>到这里你已经成功的创建了一个vue3的项目，那么如何开始运行呢。</p>
+<h3 id="二、理解文件的作用和联系"><a href="#二、理解文件的作用和联系" class="headerlink" title="二、理解文件的作用和联系"></a>二、理解文件的作用和联系</h3><p><img src="/2021/12/09/vue/7.PNG" alt="7"></p>
+<p>我们可以看到文件夹中初始的几个文件。</p>
+<table>
+<thead>
+<tr>
+<th>文件名</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>components</td>
+<td>放置组件，网站的主要界面可以把组件引入其显示</td>
+</tr>
+<tr>
+<td>main.js</td>
+<td>是项目的入口文件，其中放置的是vue的初始实例化，还有一些用到的库的申明</td>
+</tr>
+<tr>
+<td>assets</td>
+<td>放置本地的一些图片或者视频</td>
+</tr>
+<tr>
+<td>App.vue</td>
+<td>是项目的界面入口文件，其中包含有部分组件和路由</td>
+</tr>
+<tr>
+<td>views</td>
+<td>通常会在src文件夹中创建一个文件夹名称为views，其中放置的是网站的主要界面</td>
+</tr>
+<tr>
+<td>index.js</td>
+<td>其中包含所有路由的路径</td>
+</tr>
+</tbody></table>
+<h3 id="三、配置Ant-Design-of-Vue"><a href="#三、配置Ant-Design-of-Vue" class="headerlink" title="三、配置Ant Design of Vue"></a>三、配置Ant Design of Vue</h3><p>使用管理员身份在项目的文件夹中，如果出现版本问题大概率上述步骤有问题。</p>
+<pre><code class="shell"> npm install ant-design-vue --save
+</code></pre>
+<p>之后打开main.js文件写入</p>
+<pre><code class="js">import Vue from &#39;vue&#39;
+import App from &#39;./App.vue&#39;
+import Antd from &#39;ant-design-vue&#39;;
+import &#39;ant-design-vue/dist/antd.css&#39;;
 
+Vue.config.productionTip = false
+Vue.use(Antd)
+new Vue(&#123;
+  render: h =&gt; h(App),
+&#125;).$mount(&#39;#app&#39;)
+</code></pre>
+<p>在APP.vue中修改</p>
+<pre><code class="vue">&lt;template&gt;
+  &lt;div id=&quot;app&quot;&gt;
+    &lt;img alt=&quot;Vue logo&quot; src=&quot;./assets/logo.png&quot;&gt;
+    &lt;HelloWorld&gt;&lt;/HelloWorld&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+import HelloWorld from &#39;./components/HelloWorld.vue&#39;
+
+export default &#123;
+  name: &#39;App&#39;,
+  components: &#123;
+    HelloWorld
+  &#125;
+&#125;
+&lt;/script&gt;
+
+&lt;style&gt;
+
+&lt;/style&gt;
+</code></pre>
+<p>HelloWorld.vue中我先做测试随便引入一个组件</p>
+<pre><code class="vue">&lt;template&gt;
+  &lt;div&gt;
+    &lt;a-card title=&quot;Default size card&quot; style=&quot;width: 300px&quot;&gt;
+      &lt;a href=&quot;#&quot; slot=&quot;extra&quot;&gt;more&lt;/a&gt;
+      &lt;p&gt;card content&lt;/p&gt;
+      &lt;p&gt;card content&lt;/p&gt;
+      &lt;p&gt;card content&lt;/p&gt;
+    &lt;/a-card&gt;
+    &lt;br /&gt;
+    &lt;a-card size=&quot;small&quot; title=&quot;Small size card&quot; style=&quot;width: 300px&quot;&gt;
+      &lt;a href=&quot;#&quot; slot=&quot;extra&quot;&gt;more&lt;/a&gt;
+      &lt;p&gt;card content&lt;/p&gt;
+      &lt;p&gt;card content&lt;/p&gt;
+      &lt;p&gt;card content&lt;/p&gt;
+    &lt;/a-card&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+</code></pre>
+<p>之后尝试运行看看是否已经改变页面。</p>
+<p>如果修改没有问题，应该是如下界面。</p>
+<p><img src="/2021/12/09/vue/8.PNG" alt="8"></p>
+<p>下面我来解释一下如何灵活的使用<a target="_blank" rel="noopener" href="https://www.bookstack.cn/read/antdv-1.4.10/7148f8d9188cdaa7.md">Ant Design of Vue - 《Ant Design of Vue v1.4.10 组件文档》 - 书栈网 · BookStack</a>其中的组件使页面变得更加美观。</p>
+<h3 id="四、如何灵活使用"><a href="#四、如何灵活使用" class="headerlink" title="四、如何灵活使用"></a>四、如何灵活使用</h3>
                 
             </div>
             <hr/>
@@ -586,7 +602,7 @@ int main()
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2021/11/29/1129/">http://example.com/2021/11/29/1129/</a>
+                    <a href="http://example.com/2021/12/09/vue/">http://example.com/2021/12/09/vue/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -793,9 +809,48 @@ int main()
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2021/12/09/vue/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="vue3-摄影平台">
+                        
+                        <span class="card-title">vue3-摄影平台</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-12-09
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
             <div class="card">
                 <a href="/2021/12/09/1209/">
                     <div class="card-image">
@@ -813,45 +868,8 @@ int main()
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2021-12-09
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            小竹
-                            
-                        </span>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2021/11/28/1128/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="CTFHub/DVWA的xss泄露反射型">
-                        
-                        <span class="card-title">CTFHub/DVWA的xss泄露反射型</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-28
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-12-09
                             </span>
                         <span class="publish-author">
                             

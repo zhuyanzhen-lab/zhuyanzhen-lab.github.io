@@ -4,9 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="二叉排序树的建构和按规则输出, 是小竹不是小猪">
-    <meta name="description" content="二叉排序树的建构和按规则输出实验题目：设二叉排序树的各元素值均不相同，采用二叉链表作为存储结构，试设计递归或者非递 归算能按递减序打印所有左子树为空，右子树非空的结点的数据域。
-源代码：#include &amp;quot;stdio.h&amp;quot">
+    <meta name="keywords" content="数据结构-折半查找的递归算法, 是小竹不是小猪">
+    <meta name="description" content="折半查找的递归算法完整源代码
+#include &amp;lt;stdio.h&amp;gt;
+#include &amp;lt;iostream&amp;gt;
+#include &amp;lt;vector&amp;gt;
+using namespace std;
+typedef  ">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -18,7 +22,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>二叉排序树的建构和按规则输出 | 是小竹不是小猪</title>
+    <title>数据结构-折半查找的递归算法 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -310,12 +314,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/1.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">二叉排序树的建构和按规则输出</h1>
+                    <h1 class="description center-align post-title">数据结构-折半查找的递归算法</h1>
                 </div>
             </div>
         </div>
@@ -443,7 +447,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-11-29
+                    2021-12-09
                 </div>
                 
 
@@ -464,102 +468,62 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="二叉排序树的建构和按规则输出"><a href="#二叉排序树的建构和按规则输出" class="headerlink" title="二叉排序树的建构和按规则输出"></a>二叉排序树的建构和按规则输出</h1><h4 id="实验题目："><a href="#实验题目：" class="headerlink" title="实验题目："></a>实验题目：</h4><p>设二叉排序树的各元素值均不相同，采用二叉链表作为存储结构，试设计递归或者非递 归算能按递减序打印所有左子树为空，右子树非空的结点的数据域。</p>
-<h4 id="源代码："><a href="#源代码：" class="headerlink" title="源代码："></a>源代码：</h4><pre><code class="c">#include &quot;stdio.h&quot;
+                <h1 id="折半查找的递归算法"><a href="#折半查找的递归算法" class="headerlink" title="折半查找的递归算法"></a>折半查找的递归算法</h1><p>完整源代码</p>
+<pre><code class="c">#include &lt;stdio.h&gt;
 #include &lt;iostream&gt;
 #include &lt;vector&gt;
- 
 using namespace std;
- 
-typedef struct Tree
+typedef  int ElemType; 
+typedef int KeyTable;
+typedef struct
 &#123;
-    int Data;
-    struct Tree *LeftTree;//左子树
-    struct Tree *RightTree;//右子树
-&#125;TreeNode, *TreeNodeP;
- 
-void InsertNode(TreeNodeP &amp;TreeRoot, int Data)
-&#123;
-    //新建一个节点
-    TreeNodeP NodeP;
-    NodeP = (TreeNodeP)malloc(sizeof(TreeNode));
-    NodeP-&gt;Data = Data;
-    NodeP-&gt;LeftTree = NodeP-&gt;RightTree = NULL;
- 
-    //如果树根还没创建，那就把当前新建的节点赋给根吧
-    if (TreeRoot == NULL)
-    &#123;
-        TreeRoot = NodeP;
+    /* data */
+    ElemType *elem;
+    int length;
+&#125;SSTable;
+int Search(SSTable ST,KeyTable key,int low1,int high1)&#123;
+    int high,low,mid;
+    high=high1;
+    low=low1;
+    mid=(low+high)/2;
+    if(low&gt;high)&#123;
+        return -1;
+    &#125;else&#123;
+        if(key==ST.elem[mid])&#123;
+        return mid;
+    &#125;else&#123;
+        if(key&lt;ST.elem[mid])
+        Search(ST,key,low,mid-1);
+        else&#123;
+        Search(ST,key,mid+1,high);
+        &#125;
     &#125;
-    //新插入的节点数值比根的小或等，走根的左边
-    else if (Data &lt; TreeRoot-&gt;Data)
-    &#123;
-        //左子树递归结束处
-        if (TreeRoot-&gt;LeftTree == NULL)
-            TreeRoot-&gt;LeftTree = NodeP;
-        //左递归
-        else
-            InsertNode(TreeRoot-&gt;LeftTree, Data);
     &#125;
-    //新插入的节点数值比根的大，走根的右边
-    else if (Data &gt; TreeRoot-&gt;Data)
-    &#123;
-        //右子树递归结束处
-        if (TreeRoot-&gt;RightTree == NULL)
-            TreeRoot-&gt;RightTree = NodeP;
-        //右递归
-        else
-            InsertNode(TreeRoot-&gt;RightTree, Data);
-    &#125;
-    else if(Data = TreeRoot-&gt;Data)&#123;
-        printf(&quot;有重复输入不进行插入\n&quot;);
-    &#125;
-&#125;
- 
-void TraveseTreeNode(TreeNodeP TreeRoot)
-&#123;
-    if (TreeRoot)
-    &#123;
-            
-            TraveseTreeNode(TreeRoot-&gt;RightTree);
-            if(TreeRoot-&gt;LeftTree==NULL&amp;&amp;TreeRoot-&gt;RightTree!=NULL)
-            printf(&quot;%d\t&quot;, TreeRoot-&gt;Data);
-            TraveseTreeNode(TreeRoot-&gt;LeftTree);
-    
 
-    &#125;
 &#125;
-void Printf(TreeNodeP TreeRoot)&#123;
-    if (TreeRoot)
-    &#123;
-           
-            Printf(TreeRoot-&gt;LeftTree);
-            printf(&quot;%d\t&quot;, TreeRoot-&gt;Data);
-            Printf(TreeRoot-&gt;RightTree);
+int main()&#123;
+    SSTable ST;
+    KeyTable key;
+    int low,high,mid;
+    low=1; 
+    // ST.elem[0]=1;
+    printf(&quot;请输入长度&quot;);
+    scanf(&quot;%d&quot;,&amp;ST.length);
+    ST.elem = (ElemType *)malloc((ST.length)*sizeof(ElemType));
+    printf(&quot;请输入数表元素&quot;);
+    for(int i=1;i&lt;=ST.length;i++)
+    scanf(&quot;%d&quot;,&amp;ST.elem[i]);
+    printf(&quot;请输入查询元素&quot;);
+    scanf(&quot;%d&quot;,&amp;key);
+    high=ST.length;
+    printf(&quot;%d&quot;,Search(ST,key,low,high));
     
-
-    &#125;
 &#125;
- 
-int main()
-&#123;
-    TreeNodeP Tree = NULL;
- 
-    int A[11] = &#123;45,24,53,53,37,93 &#125;;
-    for (int i = 0; i &lt; 6; i++)
-    &#123;
-        InsertNode(Tree, A[i]);
-    &#125;
-     printf(&quot;中序遍历结果&quot;);
-    Printf(Tree);
-    printf(&quot;\n&quot;);
-    printf(&quot;输出结果为&quot;);
-    TraveseTreeNode(Tree);
-    
-    return 0;
-&#125;
- 
 </code></pre>
+<p>心得体会：</p>
+<pre><code class="c">  ST.elem = (ElemType *)malloc((ST.length)*sizeof(ElemType));
+</code></pre>
+<p>关于指针数组的申请内存问题。</p>
 
                 
             </div>
@@ -586,7 +550,7 @@ int main()
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2021/11/29/1129/">http://example.com/2021/11/29/1129/</a>
+                    <a href="http://example.com/2021/12/09/1209/">http://example.com/2021/12/09/1209/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -797,13 +761,13 @@ int main()
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2021/12/09/1209/">
+                <a href="/2021/12/09/vue/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/1.jpg" class="responsive-img" alt="数据结构-折半查找的递归算法">
+                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="vue3-摄影平台">
                         
-                        <span class="card-title">数据结构-折半查找的递归算法</span>
+                        <span class="card-title">vue3-摄影平台</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -834,13 +798,13 @@ int main()
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2021/11/28/1128/">
+                <a href="/2021/11/29/1129/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="CTFHub/DVWA的xss泄露反射型">
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="二叉排序树的建构和按规则输出">
                         
-                        <span class="card-title">CTFHub/DVWA的xss泄露反射型</span>
+                        <span class="card-title">二叉排序树的建构和按规则输出</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -851,7 +815,7 @@ int main()
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-28
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-29
                             </span>
                         <span class="publish-author">
                             
