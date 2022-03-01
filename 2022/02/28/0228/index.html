@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="sqli-lab  less8-9, 是小竹不是小猪">
+    <meta name="keywords" content="sqli-lab  less8-10, 是小竹不是小猪">
     <meta name="description" content="less8 –布尔型盲注使用sqlmap扫描，发现是单引号闭合。尝试一下，发现无报错信息。但是信息的正确和错误可以通过页面回显出来。
 一、猜测数据库长度
 and length(database())=8
@@ -23,7 +23,7 @@ and lef">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>sqli-lab  less8-9 | 是小竹不是小猪</title>
+    <title>sqli-lab  less8-10 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -315,12 +315,12 @@ and lef">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/16.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">sqli-lab  less8-9</h1>
+                    <h1 class="description center-align post-title">sqli-lab  less8-10</h1>
                 </div>
             </div>
         </div>
@@ -504,6 +504,7 @@ and lef">
 <p>查username字段的第一个值得第一个字母</p>
 <pre><code>http://127.0.0.1/sql1/Less-9/?id=1&#39; and if(substr((select username from security.users limit 0,1),1,1)=&#39;s&#39;,1,sleep(5))--+
 </code></pre>
+<h2 id="less10-–双引号时间盲注"><a href="#less10-–双引号时间盲注" class="headerlink" title="less10 –双引号时间盲注"></a>less10 –双引号时间盲注</h2><p>过程和less9一样，需要将id=1’改为id=1”</p>
 <p>本文参考诸多下面这篇文章，如有细节均可参考。</p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/kukudeshuo/article/details/114551467">https://blog.csdn.net/kukudeshuo/article/details/114551467</a></p>
 
@@ -739,48 +740,9 @@ and lef">
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
-            <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
-            <div class="card">
-                <a href="/2022/02/28/0228/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="sqli-lab  less8-9">
-                        
-                        <span class="card-title">sqli-lab  less8-9</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-02-28
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            小竹
-                            
-                        </span>
-                    </div>
-                </div>
-
-                
-            </div>
-        </div>
-        
-        
         <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
                 <a href="/2022/02/28/0227/">
                     <div class="card-image">
@@ -798,8 +760,45 @@ and lef">
                         
                     </div>
                     <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2022-02-28
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2022/02/26/0226/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="sqil-lab less2-5">
+                        
+                        <span class="card-title">sqil-lab less2-5</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-02-28
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-02-26
                             </span>
                         <span class="publish-author">
                             

