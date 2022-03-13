@@ -4,11 +4,17 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="fabric2.2 test-network测试网络, 是小竹不是小猪">
-    <meta name="description" content="fabric2.2 test-network测试网络./network.sh up
+    <meta name="keywords" content="DVWA xss （stored), 是小竹不是小猪">
+    <meta name="description" content="Low在评论框中输入 alert(&#39;hack&#39;)  测试，查看是否出现弹窗。
 
-该命令创建两个对等节点和一个排序节点组成的Fabric网络。
-3.3 在通道启动一个链码使用network.sh创建通道后，你可以使用以下命令在通道上启动">
+
+查看数据库发现已经存储。
+Medium再次输入alert(&#39;hack&#39;)  测试，发现过滤,
+
+因此查看源代码
+
+&amp;lt;?php
+if( isset( $_">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -20,7 +26,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>fabric2.2 test-network测试网络 | 是小竹不是小猪</title>
+    <title>DVWA xss （stored) | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -312,12 +318,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/15.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/14.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">fabric2.2 test-network测试网络</h1>
+                    <h1 class="description center-align post-title">DVWA xss （stored)</h1>
                 </div>
             </div>
         </div>
@@ -445,7 +451,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-01-20
+                    2022-03-13
                 </div>
                 
 
@@ -466,24 +472,69 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="fabric2-2-test-network测试网络"><a href="#fabric2-2-test-network测试网络" class="headerlink" title="fabric2.2 test-network测试网络"></a>fabric2.2 test-network测试网络</h1><pre><code class="shell">./network.sh up
-</code></pre>
-<p>该命令创建两个对等节点和一个排序节点组成的Fabric网络。</p>
-<p>3.3 在通道启动一个链码<br>使用network.sh创建通道后，你可以使用以下命令在通道上启动链码：</p>
-<p>sudo ./network.sh deployCC</p>
-<p>注意！！！<br>可能出现的问题1<br>执行上面的命令后可能会出现找不到go命令的错误，这是因为sudo命令会重置当前的环境变量，导致go命令找不到。聪明的人可能会想到不加sudo命令，然后运行后你会发现提示权限不够。</p>
-<p>Error: failed to normalize chaincode path: failed to determine module root: exec: “go”: executable file not found in $PATH<br>1<br>解决方法如下：</p>
-<p>vim ~/.bashrc</p>
-<p>开头或末尾添加</p>
-<p>alias sudo=’sudo env PATH=$PATH LD_LIBRARY_PATH=$LD_LIBRARY_PATH’</p>
-<p>保存退出</p>
-<p>重置环境配置</p>
-<p>source ~/.bashrc</p>
-<p>可能出现的问题2<br>执行上面的命令后可能会出现以下错误：</p>
-<p>Error: failed to normalize chaincode path: ‘go list’ failed with: go: github.com/golang/<a href="mailto:&#112;&#x72;&#x6f;&#116;&#111;&#98;&#117;&#102;&#64;&#x76;&#49;&#46;&#51;&#x2e;&#50;">&#112;&#x72;&#x6f;&#116;&#111;&#98;&#117;&#102;&#64;&#x76;&#49;&#46;&#51;&#x2e;&#50;</a>: Get “<a target="_blank" rel="noopener" href="https://proxy.golang.org/github.com/golang/protobuf/@v/v1.3.2.mod&quot;">https://proxy.golang.org/github.com/golang/protobuf/@v/v1.3.2.mod&quot;</a>: dial tcp 216.58.200.49:443: connect: connection refused: exit status 1<br>1<br>看错误提示可以看到它是访问golang的官网<a target="_blank" rel="noopener" href="https://proxy.golang.org,这是外网,自然报错./">https://proxy.golang.org，这是外网，自然报错。</a><br>解决方法如下：</p>
-<p>在命令行直接运行</p>
-<p>go env -w GO111MODULE=on<br>go env -w GOPROXY=<a target="_blank" rel="noopener" href="https://goproxy.cn,direct/">https://goproxy.cn,direct</a></p>
+                <h2 id="Low"><a href="#Low" class="headerlink" title="Low"></a>Low</h2><p>在评论框中输入 <script>alert('hack')</script>  测试，查看是否出现弹窗。</p>
+<p><img src="/2022/03/13/0313/2.PNG" alt="2"></p>
+<p><img src="/2022/03/13/0313/1.PNG" alt="1"></p>
+<p>查看数据库发现已经存储。<img src="/2022/03/13/0313/3.PNG" alt="3"></p>
+<h2 id="Medium"><a href="#Medium" class="headerlink" title="Medium"></a>Medium</h2><p>再次输入<script>alert('hack')</script>  测试，发现过滤<script>,</p>
+<p><img src="0313/4.PNG" alt="4"></p>
+<p>因此查看源代码</p>
+<pre><code class="php">
+&lt;?php
+if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
+    // Get input
+    $message = trim( $_POST[ &#39;mtxMessage&#39; ] );
+    $name    = trim( $_POST[ &#39;txtName&#39; ] );
+    // Sanitize message input
+    $message = strip_tags( addslashes( $message ) );
+    $message = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $message ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
+    $message = htmlspecialchars( $message );
+    // Sanitize name input
+    $name = str_replace( &#39;&lt;script&gt;&#39;, &#39;&#39;, $name );
+    $name = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $name ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
+    // Update database
+    $query  = &quot;INSERT INTO guestbook ( comment, name ) VALUES ( &#39;$message&#39;, &#39;$name&#39; );&quot;;
+    $result = mysqli_query($GLOBALS[&quot;___mysqli_ston&quot;],  $query ) or die( &#39;&lt;pre&gt;&#39; . ((is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_error($GLOBALS[&quot;___mysqli_ston&quot;]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . &#39;&lt;/pre&gt;&#39; );
+    //mysql_close();
+&#125;
 
+?&gt; 
+
+</code></pre>
+<p>发现</p>
+<p>addslashes(string) ：函数返回在预定义字符之前添加反斜杠的字符串，预定义字符 ‘ 、” 、\ 、NULL</p>
+<p>strip_tags(string) ：函数剥去string字符串中的 HTML、XML 以及 PHP 的标签</p>
+<p>htmlspecialchars(string)： 把预定义的字符 “&lt;” （小于）、 “&gt;” （大于）、&amp; 、‘’、“” 转换为 HTML 实体，防止浏览器将其作为HTML元素</p>
+<p>当我们再次输入1 和 <script>alert('hack')</script> ，strip_tags函数把<script>标签给剥除了，addslashes函数把 '  转义成了  &#39;</p>
+<p>因此我们尝试在name中构造，但name 中有长度限制。因此利用抓包进行尝试。</p>
+<p><img src="0313/5.PNG" alt="5"></p>
+<p>发现提交的时url编码，因此对<script>alert('hack')</script> 进行url编码%3CSCRIPT%3Ealert(‘hack’)%3C%2FSCRIPT%3E，进行重定向发送。</p>
+<p><img src="/2022/03/13/0313/6.PNG" alt="6"></p>
+<p>最后成功。</p>
+<p><img src="/2022/03/13/0313/7.PNG" alt="7"></p>
+<h2 id="High"><a href="#High" class="headerlink" title="High"></a>High</h2><pre><code class="php">
+&lt;?php
+if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
+    // Get input
+    $message = trim( $_POST[ &#39;mtxMessage&#39; ] );
+    $name    = trim( $_POST[ &#39;txtName&#39; ] );
+    // Sanitize message input
+    $message = strip_tags( addslashes( $message ) );
+    $message = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $message ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
+    $message = htmlspecialchars( $message );
+    // Sanitize name input
+    $name = preg_replace( &#39;/&lt;(.*)s(.*)c(.*)r(.*)i(.*)p(.*)t/i&#39;, &#39;&#39;, $name );
+    $name = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $name ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
+    // Update database
+    $query  = &quot;INSERT INTO guestbook ( comment, name ) VALUES ( &#39;$message&#39;, &#39;$name&#39; );&quot;;
+    $result = mysqli_query($GLOBALS[&quot;___mysqli_ston&quot;],  $query ) or die( &#39;&lt;pre&gt;&#39; . ((is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_error($GLOBALS[&quot;___mysqli_ston&quot;]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . &#39;&lt;/pre&gt;&#39; );
+    //mysql_close();
+&#125;
+?&gt;
+</code></pre>
+<p>检查源代码，发现在medium基础上增加了对于name 的正则表达式替换。依然可以使用第二种方法，不过将<script>改成<img src=1  οnerrοr=alert('hack')>的url编码。</p>
+<p>参考文章：<br>原文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36119192/article/details/82935895">https://blog.csdn.net/qq_36119192/article/details/82935895</a></p>
+</script></p>
                 
             </div>
             <hr/>
@@ -509,7 +560,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/01/20/a0120/">http://example.com/2022/01/20/a0120/</a>
+                    <a href="http://example.com/2022/03/13/0313/">http://example.com/2022/03/13/0313/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -716,54 +767,18 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2022/01/20/a0121/">
+                <a href="/2022/03/13/0313/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="SQli-lab test1">
+                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="DVWA xss （stored)">
                         
-                        <span class="card-title">SQli-lab test1</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-01-20
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            小竹
-                            
-                        </span>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2021/12/09/vue/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="vue3-摄影平台">
-                        
-                        <span class="card-title">vue3-摄影平台</span>
+                        <span class="card-title">DVWA xss （stored)</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -774,7 +789,45 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-12-09
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-03-13
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2022/03/10/0311/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="XSS (dom) DVWA">
+                        
+                        <span class="card-title">XSS (dom) DVWA</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-03-10
                             </span>
                         <span class="publish-author">
                             
