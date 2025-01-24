@@ -4,17 +4,12 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="DVWA xss （stored), 是小竹不是小猪">
-    <meta name="description" content="Low在评论框中输入 alert(&#39;hack&#39;)  测试，查看是否出现弹窗。
+    <meta name="keywords" content="是小竹不是小猪">
+    <meta name="description" content="Pandas查询：
+import pandas as pd
 
-
-查看数据库发现已经存储。
-Medium再次输入alert(&#39;hack&#39;)  测试，发现过滤,
-
-因此查看源代码
-
-&amp;lt;?php
-if( isset( $_">
+def big_countries(World: pd.DataFrame) -&amp;gt; pd.DataFrame:
+    df = World[(World[&amp;#39;are">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -26,7 +21,7 @@ if( isset( $_">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>DVWA xss （stored) | 是小竹不是小猪</title>
+    <title>是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -318,12 +313,12 @@ if( isset( $_">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/14.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">DVWA xss （stored)</h1>
+                    <h1 class="description center-align post-title"></h1>
                 </div>
             </div>
         </div>
@@ -451,7 +446,7 @@ if( isset( $_">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-03-13
+                    2025-01-24
                 </div>
                 
 
@@ -472,69 +467,34 @@ if( isset( $_">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="Low"><a href="#Low" class="headerlink" title="Low"></a>Low</h2><p>在评论框中输入 <script>alert('hack')</script>  测试，查看是否出现弹窗。</p>
-<p><img src="/2022/03/13/0313/2.PNG" alt="2"></p>
-<p><img src="/2022/03/13/0313/1.PNG" alt="1"></p>
-<p>查看数据库发现已经存储。<img src="/2022/03/13/0313/3.PNG" alt="3"></p>
-<h2 id="Medium"><a href="#Medium" class="headerlink" title="Medium"></a>Medium</h2><p>再次输入<script>alert('hack')</script>  测试，发现过滤<script>,</p>
-<p><img src="0313/4.PNG" alt="4"></p>
-<p>因此查看源代码</p>
-<pre><code class="php">
-&lt;?php
-if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
-    // Get input
-    $message = trim( $_POST[ &#39;mtxMessage&#39; ] );
-    $name    = trim( $_POST[ &#39;txtName&#39; ] );
-    // Sanitize message input
-    $message = strip_tags( addslashes( $message ) );
-    $message = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $message ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
-    $message = htmlspecialchars( $message );
-    // Sanitize name input
-    $name = str_replace( &#39;&lt;script&gt;&#39;, &#39;&#39;, $name );
-    $name = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $name ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
-    // Update database
-    $query  = &quot;INSERT INTO guestbook ( comment, name ) VALUES ( &#39;$message&#39;, &#39;$name&#39; );&quot;;
-    $result = mysqli_query($GLOBALS[&quot;___mysqli_ston&quot;],  $query ) or die( &#39;&lt;pre&gt;&#39; . ((is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_error($GLOBALS[&quot;___mysqli_ston&quot;]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . &#39;&lt;/pre&gt;&#39; );
-    //mysql_close();
-&#125;
+                <h1 id="Pandas"><a href="#Pandas" class="headerlink" title="Pandas"></a>Pandas</h1><p>查询：</p>
+<pre><code class="python">import pandas as pd
 
-?&gt; 
+def big_countries(World: pd.DataFrame) -&gt; pd.DataFrame:
+    df = World[(World[&#39;area&#39;] &gt;= 3000000) | (World[&#39;population&#39;] &gt;= 25000000)]
+    return df[[&#39;name&#39;, &#39;population&#39;, &#39;area&#39;]]
+</code></pre>
+<p>外键筛选，改列名</p>
+<pre><code class="python">import pandas as pd
 
+def find_customers(customers: pd.DataFrame, orders: pd.DataFrame) -&gt; pd.DataFrame:
+    df = customers[~customers[&#39;id&#39;].isin(orders[&#39;customerId&#39;])]
+    return df[[&#39;name&#39;]].rename(columns=&#123;&#39;name&#39;:&#39;Customers&#39;&#125;)
 </code></pre>
-<p>发现</p>
-<p>addslashes(string) ：函数返回在预定义字符之前添加反斜杠的字符串，预定义字符 ‘ 、” 、\ 、NULL</p>
-<p>strip_tags(string) ：函数剥去string字符串中的 HTML、XML 以及 PHP 的标签</p>
-<p>htmlspecialchars(string)： 把预定义的字符 “&lt;” （小于）、 “&gt;” （大于）、&amp; 、‘’、“” 转换为 HTML 实体，防止浏览器将其作为HTML元素</p>
-<p>当我们再次输入1 和 <script>alert('hack')</script> ，strip_tags函数把<script>标签给剥除了，addslashes函数把 '  转义成了  &#39;</p>
-<p>因此我们尝试在name中构造，但name 中有长度限制。因此利用抓包进行尝试。</p>
-<p><img src="0313/5.PNG" alt="5"></p>
-<p>发现提交的时url编码，因此对<script>alert('hack')</script> 进行url编码%3CSCRIPT%3Ealert(‘hack’)%3C%2FSCRIPT%3E，进行重定向发送。</p>
-<p><img src="/2022/03/13/0313/6.PNG" alt="6"></p>
-<p>最后成功。</p>
-<p><img src="/2022/03/13/0313/7.PNG" alt="7"></p>
-<h2 id="High"><a href="#High" class="headerlink" title="High"></a>High</h2><pre><code class="php">
-&lt;?php
-if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
-    // Get input
-    $message = trim( $_POST[ &#39;mtxMessage&#39; ] );
-    $name    = trim( $_POST[ &#39;txtName&#39; ] );
-    // Sanitize message input
-    $message = strip_tags( addslashes( $message ) );
-    $message = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $message ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
-    $message = htmlspecialchars( $message );
-    // Sanitize name input
-    $name = preg_replace( &#39;/&lt;(.*)s(.*)c(.*)r(.*)i(.*)p(.*)t/i&#39;, &#39;&#39;, $name );
-    $name = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $name ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
-    // Update database
-    $query  = &quot;INSERT INTO guestbook ( comment, name ) VALUES ( &#39;$message&#39;, &#39;$name&#39; );&quot;;
-    $result = mysqli_query($GLOBALS[&quot;___mysqli_ston&quot;],  $query ) or die( &#39;&lt;pre&gt;&#39; . ((is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_error($GLOBALS[&quot;___mysqli_ston&quot;]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . &#39;&lt;/pre&gt;&#39; );
-    //mysql_close();
-&#125;
-?&gt;
+<p>删除重复行</p>
+<pre><code class="python">df.drop_duplicates(subset=[&#39;author_id&#39;], inplace=False)
 </code></pre>
-<p>检查源代码，发现在medium基础上增加了对于name 的正则表达式替换。依然可以使用第二种方法，不过将<script>改成<img src=1  οnerrοr=alert('hack')>的url编码。</p>
-<p>参考文章：<br>原文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36119192/article/details/82935895">https://blog.csdn.net/qq_36119192/article/details/82935895</a></p>
-</script></p>
+<p><strong>subset</strong>：它指定应该考虑哪些列来查找重复项。如果未指定，将使用 DataFrame 中的所有列来识别重复项。在我们的情况下，我们将其设置为 [‘author_id’] ，因此仅考虑author_id列中的重复项。<br><strong>inplace</strong>：这是一个布尔参数，用于确定方法是否应该对原始 DataFrame 进行就地修改，还是返回一个删除了重复项的新 DataFrame。我们将其设置为 True，表示原地修改。</p>
+<p>排序：</p>
+<pre><code class="python"># 按 &#39;author_id&#39; 列升序排序 DataFrame。
+df.sort_values(by=[&#39;author_id&#39;], inplace=True)
+</code></pre>
+<p>查长度:</p>
+<pre><code class="python">def invalid_tweets(tweets: pd.DataFrame) -&gt; pd.DataFrame:
+    df=tweets[tweets[&#39;content&#39;].str.len()&gt;15]
+    return df[[&#39;tweet_id&#39;]]
+</code></pre>
+
                 
             </div>
             <hr/>
@@ -560,7 +520,7 @@ if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/03/13/0313/">http://example.com/2022/03/13/0313/</a>
+                    <a href="http://example.com/2025/01/24/20230930(2)/">http://example.com/2025/01/24/20230930(2)/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -771,13 +731,13 @@ if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2022/03/14/0314/">
+                <a href="/2025/01/24/BUUCTF/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="DVWA  CSF Bypass">
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="">
                         
-                        <span class="card-title">DVWA  CSF Bypass</span>
+                        <span class="card-title"></span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -788,7 +748,7 @@ if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-03-14
+                            <i class="far fa-clock fa-fw icon-date"></i>2025-01-24
                         </span>
                         <span class="publish-author">
                             
@@ -808,13 +768,13 @@ if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/03/10/0311/">
+                <a href="/2025/01/24/20230930/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="XSS (dom) DVWA">
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="">
                         
-                        <span class="card-title">XSS (dom) DVWA</span>
+                        <span class="card-title"></span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -825,7 +785,7 @@ if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-03-10
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-01-24
                             </span>
                         <span class="publish-author">
                             

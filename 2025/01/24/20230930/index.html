@@ -4,17 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="DVWA xss （stored), 是小竹不是小猪">
-    <meta name="description" content="Low在评论框中输入 alert(&#39;hack&#39;)  测试，查看是否出现弹窗。
+    <meta name="keywords" content="是小竹不是小猪">
+    <meta name="description" content="深度学习/神经网络特征工程，是非常重要的部分。也就是数据特征决定了模型的上限。
+K近邻算法
+CIFAR-10数据集很不错
 
-
-查看数据库发现已经存储。
-Medium再次输入alert(&#39;hack&#39;)  测试，发现过滤,
-
-因此查看源代码
-
-&amp;lt;?php
-if( isset( $_">
+部分结果还可以，但是出现没有分类对的图像。主要原因在于KNN算法不知道背景在哪主题在哪。因此不适用于神经网络。
+神经">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -26,7 +22,7 @@ if( isset( $_">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>DVWA xss （stored) | 是小竹不是小猪</title>
+    <title>是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -318,12 +314,12 @@ if( isset( $_">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/14.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">DVWA xss （stored)</h1>
+                    <h1 class="description center-align post-title"></h1>
                 </div>
             </div>
         </div>
@@ -451,7 +447,7 @@ if( isset( $_">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-03-13
+                    2025-01-24
                 </div>
                 
 
@@ -472,69 +468,151 @@ if( isset( $_">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="Low"><a href="#Low" class="headerlink" title="Low"></a>Low</h2><p>在评论框中输入 <script>alert('hack')</script>  测试，查看是否出现弹窗。</p>
-<p><img src="/2022/03/13/0313/2.PNG" alt="2"></p>
-<p><img src="/2022/03/13/0313/1.PNG" alt="1"></p>
-<p>查看数据库发现已经存储。<img src="/2022/03/13/0313/3.PNG" alt="3"></p>
-<h2 id="Medium"><a href="#Medium" class="headerlink" title="Medium"></a>Medium</h2><p>再次输入<script>alert('hack')</script>  测试，发现过滤<script>,</p>
-<p><img src="0313/4.PNG" alt="4"></p>
-<p>因此查看源代码</p>
-<pre><code class="php">
-&lt;?php
-if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
-    // Get input
-    $message = trim( $_POST[ &#39;mtxMessage&#39; ] );
-    $name    = trim( $_POST[ &#39;txtName&#39; ] );
-    // Sanitize message input
-    $message = strip_tags( addslashes( $message ) );
-    $message = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $message ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
-    $message = htmlspecialchars( $message );
-    // Sanitize name input
-    $name = str_replace( &#39;&lt;script&gt;&#39;, &#39;&#39;, $name );
-    $name = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $name ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
-    // Update database
-    $query  = &quot;INSERT INTO guestbook ( comment, name ) VALUES ( &#39;$message&#39;, &#39;$name&#39; );&quot;;
-    $result = mysqli_query($GLOBALS[&quot;___mysqli_ston&quot;],  $query ) or die( &#39;&lt;pre&gt;&#39; . ((is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_error($GLOBALS[&quot;___mysqli_ston&quot;]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . &#39;&lt;/pre&gt;&#39; );
-    //mysql_close();
-&#125;
-
-?&gt; 
-
-</code></pre>
-<p>发现</p>
-<p>addslashes(string) ：函数返回在预定义字符之前添加反斜杠的字符串，预定义字符 ‘ 、” 、\ 、NULL</p>
-<p>strip_tags(string) ：函数剥去string字符串中的 HTML、XML 以及 PHP 的标签</p>
-<p>htmlspecialchars(string)： 把预定义的字符 “&lt;” （小于）、 “&gt;” （大于）、&amp; 、‘’、“” 转换为 HTML 实体，防止浏览器将其作为HTML元素</p>
-<p>当我们再次输入1 和 <script>alert('hack')</script> ，strip_tags函数把<script>标签给剥除了，addslashes函数把 '  转义成了  &#39;</p>
-<p>因此我们尝试在name中构造，但name 中有长度限制。因此利用抓包进行尝试。</p>
-<p><img src="0313/5.PNG" alt="5"></p>
-<p>发现提交的时url编码，因此对<script>alert('hack')</script> 进行url编码%3CSCRIPT%3Ealert(‘hack’)%3C%2FSCRIPT%3E，进行重定向发送。</p>
-<p><img src="/2022/03/13/0313/6.PNG" alt="6"></p>
-<p>最后成功。</p>
-<p><img src="/2022/03/13/0313/7.PNG" alt="7"></p>
-<h2 id="High"><a href="#High" class="headerlink" title="High"></a>High</h2><pre><code class="php">
-&lt;?php
-if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
-    // Get input
-    $message = trim( $_POST[ &#39;mtxMessage&#39; ] );
-    $name    = trim( $_POST[ &#39;txtName&#39; ] );
-    // Sanitize message input
-    $message = strip_tags( addslashes( $message ) );
-    $message = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $message ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
-    $message = htmlspecialchars( $message );
-    // Sanitize name input
-    $name = preg_replace( &#39;/&lt;(.*)s(.*)c(.*)r(.*)i(.*)p(.*)t/i&#39;, &#39;&#39;, $name );
-    $name = ((isset($GLOBALS[&quot;___mysqli_ston&quot;]) &amp;&amp; is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_real_escape_string($GLOBALS[&quot;___mysqli_ston&quot;],  $name ) : ((trigger_error(&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;, E_USER_ERROR)) ? &quot;&quot; : &quot;&quot;));
-    // Update database
-    $query  = &quot;INSERT INTO guestbook ( comment, name ) VALUES ( &#39;$message&#39;, &#39;$name&#39; );&quot;;
-    $result = mysqli_query($GLOBALS[&quot;___mysqli_ston&quot;],  $query ) or die( &#39;&lt;pre&gt;&#39; . ((is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_error($GLOBALS[&quot;___mysqli_ston&quot;]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . &#39;&lt;/pre&gt;&#39; );
-    //mysql_close();
-&#125;
-?&gt;
-</code></pre>
-<p>检查源代码，发现在medium基础上增加了对于name 的正则表达式替换。依然可以使用第二种方法，不过将<script>改成<img src=1  οnerrοr=alert('hack')>的url编码。</p>
-<p>参考文章：<br>原文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36119192/article/details/82935895">https://blog.csdn.net/qq_36119192/article/details/82935895</a></p>
-</script></p>
+                <h1 id="深度学习-神经网络"><a href="#深度学习-神经网络" class="headerlink" title="深度学习/神经网络"></a>深度学习/神经网络</h1><p>特征工程，是非常重要的部分。也就是数据特征决定了模型的上限。</p>
+<h2 id="K近邻算法"><a href="#K近邻算法" class="headerlink" title="K近邻算法"></a>K近邻算法</h2><p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231001114823558.png" alt="image-20231001114823558"></p>
+<p><strong>CIFAR-10数据集</strong>很不错</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231001115135815.png" alt="image-20231001115135815"></p>
+<p>部分结果还可以，但是出现没有分类对的图像。主要原因在于KNN算法不知道背景在哪主题在哪。因此不适用于神经网络。</p>
+<h2 id="神经网络基础"><a href="#神经网络基础" class="headerlink" title="神经网络基础"></a>神经网络基础</h2><h3 id="线性函数"><a href="#线性函数" class="headerlink" title="线性函数"></a>线性函数</h3><p>对于图像，最后得到每一个类别的结果，每一个类别都有对应的权重参数。</p>
+<p>最后b是偏置项，每一个类别不相等。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231001115853678.png" alt="image-20231001115853678"></p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231001120138830.png" alt="image-20231001120138830"></p>
+<p>权重如何选择：刚开始随机3x4，在迭代过程中，不断优化。</p>
+<h3 id="损失函数（有不同的计算方法）"><a href="#损失函数（有不同的计算方法）" class="headerlink" title="损失函数（有不同的计算方法）"></a>损失函数（有不同的计算方法）</h3><p>越低越好，越高错的越离谱。</p>
+<p>第一种：这个等式中的1是delta（容忍程度），表示正确类别要比错误类别高出1才可以使得损失函数=0，表示没有损失，也就是分类结果是正确的。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231001122230595.png" alt="image-20231001122230595"></p>
+<p>第一个图片Loss就是2.9…损失函数可以用于衡量该权重。</p>
+<p>不同的权重有不同的特性，有一些将比较大的数据集中在个别点，容易出现过拟合的情况，于是我们将设置正则化惩罚项。R(W)=所有权重的平方和，前面的系数越大表示，不希望过拟合，将变异消除。前面系数越小，消减变异越少。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231001123459418.png" alt="image-20231001123459418"></p>
+<h3 id="softmax分类器"><a href="#softmax分类器" class="headerlink" title="softmax分类器"></a>softmax分类器</h3><p>将得分值转化为概率值， </p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231007112428646.png" alt="image-20231007112428646"></p>
+<p>exp是e^x（幂函数进行映射放大差异）</p>
+<p>normailze 归一化 24.5÷和得到概率</p>
+<p>观察的时候观察正确类别的概率。目前如果图片是一只猫概率就是0.13</p>
+<p>计算损失就是在0.13基础上取对数并且加负号。</p>
+<h3 id="前向传播"><a href="#前向传播" class="headerlink" title="前向传播"></a>前向传播</h3><p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231007113424143.png" alt="image-20231007113424143"></p>
+<p>得出损失值的整个计算过程就是前向传播。</p>
+<h3 id="梯度下降（反向传播调参的一种方法）"><a href="#梯度下降（反向传播调参的一种方法）" class="headerlink" title="梯度下降（反向传播调参的一种方法）"></a>梯度下降（反向传播调参的一种方法）</h3><p>承担责任大的就需要多调整一点。</p>
+<p>直观调整方法：</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231007173202532.png" alt="image-20231007173202532"></p>
+<p>实际方法：  </p>
+<h3 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h3><p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231007114728133.png" alt="image-20231007114728133"></p>
+<p>梯度是一步一步传递的，得到最后的损失函数f需要前面很多权重参数的参与，为了计算出最小的f，需要求出每一个w（权重参数）对于结果的影响程度，这个影响程度就是采用偏导数的方式进行计算的。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231007115102360.png" alt="image-20231007115102360"></p>
+<p> <img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231007144108407.png" alt="image-20231007144108407"></p>
+<h3 id="神经网络的整体架构"><a href="#神经网络的整体架构" class="headerlink" title="神经网络的整体架构"></a>神经网络的整体架构</h3><p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231007144745780.png" alt="image-20231007144745780"></p>
+<p>input 层输入的是特征x1,x2,x3….</p>
+<p>hidden 层1 中每一个特征来源于Input层中全部特征参与的数学运算的结果。这个权重是反向传播得出的最优解。</p>
+<p>1x3矩阵 * 3x4矩阵 （权重矩阵） 得到hidden layer(1x4矩阵)</p>
+<h4 id="激活函数"><a href="#激活函数" class="headerlink" title="激活函数"></a>激活函数</h4><p>非线性的概念就是每一次矩阵运算之后都要进行一次非线性的变换再进行下一次矩阵运算。sim函数，max函数…</p>
+<p><strong><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231007150605179.png" alt="image-20231007150605179"></strong></p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231007152202212.png" alt="image-20231007152202212"></p>
+<p>sigmod激活函数现在不常用的原因在于会出现梯度消失的现象，也就是说当特征值输入值比较大的时候，梯度值可能会变为0不进行向前传递。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231007152909071.png" alt="image-20231007152909071"></p>
+<p>relu函数是一个改进的函数，现在比较常用。</p>
+<h4 id="神经元数量对结果的影响"><a href="#神经元数量对结果的影响" class="headerlink" title="神经元数量对结果的影响"></a>神经元数量对结果的影响</h4><p>每增加神经元的一个，会增加一组权重矩阵，参数量是比较大的。但是神经元个数多了。拟合效果会更好。64 128 256 512</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231007151823372.png" alt="image-20231007151823372"></p>
+<h4 id="正则化对结果的影响"><a href="#正则化对结果的影响" class="headerlink" title="正则化对结果的影响"></a>正则化对结果的影响</h4><p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231007151600637.png" alt="image-20231007151600637"></p>
+<h4 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h4><p>第一步：去中心化：减去均值得到以原点为中心对称的结果。</p>
+<p>第二步：标准化，除以标准差</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231007153225382.png" alt="image-20231007153225382"></p>
+<h4 id="参数初始化"><a href="#参数初始化" class="headerlink" title="参数初始化"></a>参数初始化</h4><p>随机策略,生成的时候避免参数浮动过大，×0.01</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231007165100079.png" alt="image-20231007165100079"></p>
+<h4 id="drop-out"><a href="#drop-out" class="headerlink" title="drop-out"></a>drop-out</h4><p>在训练过程中随机选取一些神经元在本次迭代中不采用。</p>
+<p>测试过程中直接拿过来测试。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231007171256154.png" alt="image-20231007171256154"></p>
+<h1 id="CNN卷积神经网络"><a href="#CNN卷积神经网络" class="headerlink" title="CNN卷积神经网络"></a>CNN卷积神经网络</h1><h2 id="输入层"><a href="#输入层" class="headerlink" title="输入层"></a>输入层</h2><h2 id="卷积层"><a href="#卷积层" class="headerlink" title="卷积层"></a>卷积层</h2><p>将图像三维的数据分为3x3x3的大小，每一个3x3x3都会利用对应的一组权重参数（蓝色矩阵里面的右下角数字）得到一个特征值的卷积，计算全部最后得出特征图（绿色），这个特征图是执行一次卷积之后的值。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930120400689.png" alt="image-20230930120400689"></p>
+<p>图像颜色通道，RGB3，32x32x3的图像中的3表示的是图像的三个通道。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930120914949.png" alt="image-20230930120914949"></p>
+<p>每个通道实际运算通常是单独计算。最后单独计算的特征值相加R+G+B</p>
+<p>输入的7x7x3。3代表3个通道，暗示卷积核的3x3x3中最后一个数值一定是3</p>
+<p>卷积核：</p>
+<p> filter w0 3x3x3（分块大小）全参数矩阵 ,w0里面包含权重，和原始矩阵进行内积操作之后，三个通道结果相加，最后加上偏置项bias b0 =1，最后结果为3，对应特征图里面第一个值。</p>
+<p>输出3x3x2，2代表的是特征图的个数。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930122426463.png" alt="image-20230930122426463"></p>
+<p>卷积核可能是多个，相当于最后会产生多个特征图。一次卷积得到一个特征图，多个卷积核辅助多次卷积得到多个特征图。</p>
+<p>对应公式：</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930130836527.png" alt="image-20230930130836527"></p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930131204534.png" alt="image-20230930131204534"></p>
+<p>将得到的特征图28x28x6再次进行卷积。也就是堆叠的卷积。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930124540377.png" alt="image-20230930124540377"></p>
+<h5 id="卷积层涉及到的参数"><a href="#卷积层涉及到的参数" class="headerlink" title="卷积层涉及到的参数"></a>卷积层涉及到的参数</h5><ul>
+<li>滑动窗口步长，图像中步长常为1</li>
+</ul>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930124826794.png" alt="image-20230930124826794"></p>
+<ul>
+<li>卷积核长度 一般3x3以上</li>
+<li>边缘填充： +pad 1</li>
+</ul>
+<p>越往中间的点，被最终结果利用的次数越多。边界点，利用次数少。为了达到公平，在周围一圈加上0，弥补边界缺失问题。</p>
+<ul>
+<li>卷积核个数（特征图个数）</li>
+</ul>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930130836527.png" alt="image-20230930130836527"></p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930132641648.png" alt="image-20230930132641648"></p>
+<p>优点：利用卷积参数共享，卷积参数较少！</p>
+<h2 id="池化层"><a href="#池化层" class="headerlink" title="池化层"></a>池化层</h2><p>压缩，下采样</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930132944937.png" alt="image-20230930132944937"></p>
+<p>在从卷积层中得到的特征中进行筛选。</p>
+<p>最大池化：选取每一块的最大值。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930133114868.png" alt="image-20230930133114868"></p>
+<h2 id="全连接层"><a href="#全连接层" class="headerlink" title="全连接层"></a>全连接层</h2><p>三维32x32x10，拉为一维特征向量。最后进行分类。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930133716025.png" alt="image-20230930133716025"></p>
+<h5 id="RELU：激活层？？"><a href="#RELU：激活层？？" class="headerlink" title="RELU：激活层？？"></a>RELU：激活层？？</h5><p>如何计算神经网络层数：只计算带参数的（卷积层+全连接层）</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930133859450.png" alt="image-20230930133859450"></p>
+<p>总述：：</p>
+<p><a target="_blank" rel="noopener" href="https://courses.d2l.ai/zh-v2/">https://courses.d2l.ai/zh-v2/</a></p>
+<p>课程连接</p>
+<p><a target="_blank" rel="noopener" href="https://zh-v2.d2l.ai/">https://zh-v2.d2l.ai/</a></p>
+<p>书本连接</p>
+<h2 id="LeNet"><a href="#LeNet" class="headerlink" title="LeNet"></a>LeNet</h2><p>LeNet-5是一种用于手写体字符识别的非常高效的卷积神经网络。</p>
+<p>知乎文章引用：</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/265236792">CNN经典模型：LeNet - 知乎 (zhihu.com)</a></p>
+<h2 id="Alexnet-了解"><a href="#Alexnet-了解" class="headerlink" title="Alexnet:(了解)"></a>Alexnet:(了解)</h2><p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930134117361.png" alt="image-20230930134117361"></p>
+<p>大刀阔斧提取特征，8层网络，5层卷积+3层全连接</p>
+<h2 id="Vgg-了解"><a href="#Vgg-了解" class="headerlink" title="Vgg:(了解)"></a>Vgg:(了解)</h2><p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930134216246.png" alt="image-20230930134216246"></p>
+<ul>
+<li>卷积大小3x3，细腻度提取。</li>
+<li>16/19层网络，卷积核大小较小</li>
+<li>经过pool，会损失信息，在下一次卷积会翻倍特征图个数进行弥补。</li>
+<li>VGG优于ALENET，但是训练时间太长。</li>
+</ul>
+<p>VGG是当前最流行的CNN模型之一，2014年由Simonyan和Zisserman提出，其命名来源于论文作者所在的实验室Visual Geometry Group。AlexNet模型通过构造多层网络，取得了较好的效果，但是并没有给出深度神经网络设计的方向。VGG通过使用一系列大小为3x3的小尺寸卷积核和pooling层构造深度卷积神经网络，并取得了较好的效果。VGG模型因为结构简单、应用性极强而广受研究者欢迎，尤其是它的网络结构设计方法，为构建深度神经网络提供了方向。</p>
+<p>下图是VGG-16的网络结构示意图，有13层卷积和3层全连接层。VGG网络的设计严格使用3×3的卷积层和池化层来提取特征，并在网络的最后面使用三层全连接层，将最后一层全连接层的输出作为分类的预测。 在VGG中每层卷积将使用ReLU作为激活函数，在全连接层之后添加dropout来抑制过拟合。</p>
+<p>使用小的卷积核能够有效地减少参数的个数，使得训练和测试变得更加有效。比如使用两层3×3卷积层，可以得到感受野为5的特征图，而比使用5×5的卷积层需要更少的参数。由于卷积核比较小，可以堆叠更多的卷积层，加深网络的深度，这对于图像分类任务来说是有利的。VGG模型的成功证明了增加网络的深度，可以更好的学习图像中的特征模式。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231012194339421.png" alt="image-20231012194339421"></p>
+<h2 id="GoogLeNet"><a href="#GoogLeNet" class="headerlink" title="GoogLeNet"></a>GoogLeNet</h2><p><strong>Inception 块</strong></p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231012194940359.png" alt="image-20231012194940359"></p>
+<p>输出的高宽不会发送变化，但是通道数会变多。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231012195224833.png" alt="image-20231012195224833"></p>
+<p>白色的1x1卷积减少通道数。</p>
+<p>蓝色卷积进行特征抽取。</p>
+<p>通道数如何抉择，根据重要程度。</p>
+<p>优点：多样性增加，参数变少。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231012195553626.png" alt="image-20231012195553626"></p>
+<p>算法过程：</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231012195704625.png" alt="image-20231012195704625"></p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231012200146434.png" alt="image-20231012200146434"></p>
+<p>减高宽，增加通道数。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231012200554290.png" alt="image-20231012200554290"></p>
+<p>两次Inception 内容也不一样。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231012200833111.png" alt="image-20231012200833111"></p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231012201018371.png" alt="image-20231012201018371"></p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231012201335251.png" alt="image-20231012201335251"></p>
+<h2 id="Resnet-残差网络（效果比较好）"><a href="#Resnet-残差网络（效果比较好）" class="headerlink" title="Resnet 残差网络（效果比较好）"></a>Resnet 残差网络（效果比较好）</h2><p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930135201162.png" alt="image-20230930135201162"></p>
+<p>深度网络遇到的问题就是层数越多效果反而没有越好，</p>
+<p>解决方案就是使用x层保底，将x和x经过两次卷积的值相加，如果发现F（x)的效果不好，就将权重设置为0，这样训练出来的网络不会比原本的更差。</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231017152757874.png" alt="image-20231017152757874"></p>
+<p> <img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231017153234681.png" alt="image-20231017153234681"></p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20231017153308010.png" alt="image-20231017153308010"></p>
+<p>感受野</p>
+<p>  最后一个数据需要前面多少数据参与计算</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930140220198.png" alt="image-20230930140220198"></p>
+<p>比如该图最后这一小块的感受野就是5x5。</p>
+<p>3次3x3感受野是7x7，一次7x7感受野也是7x7有什么区别？</p>
+<p><img src="/2025/01/24/20230930/Blog\source_posts\20230930.assets\image-20230930141015368.png" alt="image-20230930141015368"></p>
+<h2 id><a href="#" class="headerlink" title></a></h2><h2 id="-1"><a href="#-1" class="headerlink" title></a></h2><h2 id="transformer"><a href="#transformer" class="headerlink" title="transformer"></a>transformer</h2><h2 id="swintransformer"><a href="#swintransformer" class="headerlink" title="swintransformer"></a>swintransformer</h2><h1 id="RNN循环神经网络"><a href="#RNN循环神经网络" class="headerlink" title="RNN循环神经网络"></a>RNN循环神经网络</h1><h2 id="LSTM"><a href="#LSTM" class="headerlink" title="LSTM"></a>LSTM</h2><h2 id="TRUG"><a href="#TRUG" class="headerlink" title="TRUG"></a>TRUG</h2><h2 id="SRU"><a href="#SRU" class="headerlink" title="SRU"></a>SRU</h2><h1 id="GNN图神经网络"><a href="#GNN图神经网络" class="headerlink" title="GNN图神经网络"></a>GNN图神经网络</h1><h2 id="GCN"><a href="#GCN" class="headerlink" title="GCN"></a>GCN</h2><h2 id="GAT"><a href="#GAT" class="headerlink" title="GAT"></a>GAT</h2><h2 id="HAN"><a href="#HAN" class="headerlink" title="HAN"></a>HAN</h2><h1 id="BERT"><a href="#BERT" class="headerlink" title="BERT"></a>BERT</h1>
                 
             </div>
             <hr/>
@@ -560,7 +638,7 @@ if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/03/13/0313/">http://example.com/2022/03/13/0313/</a>
+                    <a href="http://example.com/2025/01/24/20230930/">http://example.com/2025/01/24/20230930/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -771,13 +849,13 @@ if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2022/03/14/0314/">
+                <a href="/2025/01/24/20230930(2)/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="DVWA  CSF Bypass">
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="">
                         
-                        <span class="card-title">DVWA  CSF Bypass</span>
+                        <span class="card-title"></span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -788,7 +866,7 @@ if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-03-14
+                            <i class="far fa-clock fa-fw icon-date"></i>2025-01-24
                         </span>
                         <span class="publish-author">
                             
@@ -808,13 +886,13 @@ if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/03/10/0311/">
+                <a href="/2022/10/25/1025/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="XSS (dom) DVWA">
+                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="1025">
                         
-                        <span class="card-title">XSS (dom) DVWA</span>
+                        <span class="card-title">1025</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -825,7 +903,7 @@ if( isset( $_POST[ &#39;btnSign&#39; ] ) ) &#123;
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-03-10
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-10-25
                             </span>
                         <span class="publish-author">
                             
