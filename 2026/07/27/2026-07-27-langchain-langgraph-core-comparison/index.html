@@ -1,0 +1,1935 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="LangChain 与 LangGraph 核心对比总结, 是小竹不是小猪">
+    <meta name="description" content="
+基于多轮对话深度讨论的精华整理，聚焦三个核心主题：框架区别、记忆机制、错误处理。
+
+
+一、LangChain 与 LangGraph 的区别1.1 核心设计哲学
+
+
+
+LangChain
+LangGraph
+
+
+
+编排方式
+Chain（链">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>LangChain 与 LangGraph 核心对比总结 | 是小竹不是小猪</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">是小竹不是小猪</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">是小竹不是小猪</div>
+        <div class="logo-desc">
+            
+            每一年都奔走在自己的热爱里
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			留言板
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/blinkfox/hexo-theme-matery" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/blinkfox/hexo-theme-matery" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/11.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">LangChain 与 LangGraph 核心对比总结</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        padding: 35px 0 15px 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        padding-bottom: 30px;
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+
+        position: absolute;
+        right: 23.5vw;
+        display: block;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/LangChain/">
+                                <span class="chip bg-color">LangChain</span>
+                            </a>
+                        
+                            <a href="/tags/LangGraph/">
+                                <span class="chip bg-color">LangGraph</span>
+                            </a>
+                        
+                            <a href="/tags/Deep-Agents/">
+                                <span class="chip bg-color">Deep Agents</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-07-27
+                </div>
+                
+
+                
+
+                
+
+                
+
+                
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <blockquote>
+<p>基于多轮对话深度讨论的精华整理，聚焦三个核心主题：框架区别、记忆机制、错误处理。</p>
+</blockquote>
+<hr>
+<h2 id="一、LangChain-与-LangGraph-的区别"><a href="#一、LangChain-与-LangGraph-的区别" class="headerlink" title="一、LangChain 与 LangGraph 的区别"></a>一、LangChain 与 LangGraph 的区别</h2><h3 id="1-1-核心设计哲学"><a href="#1-1-核心设计哲学" class="headerlink" title="1.1 核心设计哲学"></a>1.1 核心设计哲学</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>LangChain</th>
+<th>LangGraph</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>编排方式</strong></td>
+<td>Chain（链式） / Agent（黑盒）</td>
+<td>Graph（图：节点 + 边）</td>
+</tr>
+<tr>
+<td><strong>抽象程度</strong></td>
+<td>高（开箱即用）</td>
+<td>低（需要自己组装）</td>
+</tr>
+<tr>
+<td><strong>学习曲线</strong></td>
+<td>低</td>
+<td>高</td>
+</tr>
+<tr>
+<td><strong>灵活性</strong></td>
+<td>受限于预定义组件</td>
+<td>几乎无限</td>
+</tr>
+<tr>
+<td><strong>适合场景</strong></td>
+<td>简单线性工作流</td>
+<td>复杂条件逻辑、反馈循环、多 Agent 协作</td>
+</tr>
+</tbody></table>
+<h3 id="1-2-组件层级关系"><a href="#1-2-组件层级关系" class="headerlink" title="1.2 组件层级关系"></a>1.2 组件层级关系</h3><p><strong>LangChain：<code>Chain &gt; Agent &gt; Tool</code></strong></p>
+<pre><code>Chain（唯一的容器，最大的编排单元）
+├── 步骤1: LLM 调用
+├── 步骤2: Tool 调用（预定义的）
+├── 步骤3: Agent（Agent 是 Chain 的一个步骤）
+│   ├── 推理
+│   ├── 动态选 Tool
+│   └── 执行 Tool
+├── 步骤4: LLM 调用
+└── 步骤5: 输出
+</code></pre>
+<p><strong>LangGraph：<code>Graph &gt; Node + Edge</code>（没有 Agent 对象）</strong></p>
+<pre><code>Graph（唯一的容器）
+├── Node: &quot;reasoning&quot;（推理节点）
+├── Node: &quot;tool_execute&quot;（工具执行节点）
+├── Edge: reasoning → tool_execute（条件边：选了哪个工具？）
+├── Edge: tool_execute → reasoning（循环边）
+└── Edge: reasoning → END（条件边：可以结束了？）
+</code></pre>
+<p><strong>关键区别</strong>：LangGraph 把 Agent 行为拆成了 <strong>推理节点 + 工具节点 + 循环边</strong> 的组合，不再是一个独立的黑盒对象。</p>
+<h3 id="1-3-代码层面的差异"><a href="#1-3-代码层面的差异" class="headerlink" title="1.3 代码层面的差异"></a>1.3 代码层面的差异</h3><pre><code class="python"># LangChain：Agent 是一个对象，内部循环不可见
+agent = create_agent(model=&quot;gpt-4o&quot;, tools=[search, calculate])
+result = agent.invoke(&#123;&quot;messages&quot;: [user_msg]&#125;)
+
+# LangGraph：Agent = 节点 + 边的拓扑结构
+builder = StateGraph(AgentState)
+builder.add_node(&quot;reasoning&quot;, reasoning_node)
+builder.add_node(&quot;tools&quot;, tool_node)
+builder.add_edge(START, &quot;reasoning&quot;)
+builder.add_conditional_edges(&quot;reasoning&quot;, tools_condition, &#123;
+    &quot;tools&quot;: &quot;tools&quot;,
+    END: END,
+&#125;)
+builder.add_edge(&quot;tools&quot;, &quot;reasoning&quot;)  # 这一行就是循环！
+graph = builder.compile()
+result = graph.invoke(...)
+</code></pre>
+<h3 id="1-4-适用场景"><a href="#1-4-适用场景" class="headerlink" title="1.4 适用场景"></a>1.4 适用场景</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐框架</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>简单的 LLM 对话</td>
+<td>LangChain</td>
+</tr>
+<tr>
+<td>单步工具调用（查天气、搜文档）</td>
+<td>LangChain</td>
+</tr>
+<tr>
+<td>需要记忆的聊天机器人</td>
+<td>都可以（LangChain 更简单）</td>
+</tr>
+<tr>
+<td>多步骤 + 条件分支工作流</td>
+<td>LangGraph</td>
+</tr>
+<tr>
+<td>带反馈循环（LLM 输出→检查→重试）</td>
+<td>LangGraph</td>
+</tr>
+<tr>
+<td>多 Agent 协作</td>
+<td>LangGraph</td>
+</tr>
+<tr>
+<td>需要人工审批节点</td>
+<td>LangGraph</td>
+</tr>
+<tr>
+<td>需要从失败点恢复（而非从头重试）</td>
+<td>LangGraph</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="二、记忆机制"><a href="#二、记忆机制" class="headerlink" title="二、记忆机制"></a>二、记忆机制</h2><h3 id="2-1-LangChain-的-Memory：外部附加组件"><a href="#2-1-LangChain-的-Memory：外部附加组件" class="headerlink" title="2.1 LangChain 的 Memory：外部附加组件"></a>2.1 LangChain 的 Memory：外部附加组件</h3><p><strong>核心逻辑</strong>：Memory 是挂在 Chain 外面的独立对象。每轮对话执行 <code>save_context()</code> 存、<code>load_memory_variables()</code> 取，本质是把历史<strong>拼进 Prompt</strong>。</p>
+<h4 id="八种-Memory-类型"><a href="#八种-Memory-类型" class="headerlink" title="八种 Memory 类型"></a>八种 Memory 类型</h4><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>存储方式</th>
+<th>Prompt 长度</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ConversationBufferMemory</code></td>
+<td>存全部原文</td>
+<td>无限增长</td>
+<td>短对话（&lt;10轮）</td>
+</tr>
+<tr>
+<td><code>ConversationBufferWindowMemory(k=K)</code></td>
+<td>只保留最近 K 轮</td>
+<td>固定</td>
+<td>只需最近上下文</td>
+</tr>
+<tr>
+<td><code>ConversationSummaryMemory</code></td>
+<td>LLM 自动生成摘要</td>
+<td>固定，很短</td>
+<td>超长对话，细节不重要</td>
+</tr>
+<tr>
+<td><code>ConversationSummaryBufferMemory</code></td>
+<td>近期原文 + 远期摘要</td>
+<td>固定，可配置</td>
+<td>长对话，兼顾远近</td>
+</tr>
+<tr>
+<td><code>ConversationTokenBufferMemory</code></td>
+<td>按 Token 数量截断</td>
+<td>固定，精确</td>
+<td>需精确控制 Token 预算</td>
+</tr>
+<tr>
+<td><code>VectorStoreRetrieverMemory</code></td>
+<td>向量语义检索</td>
+<td>只取最相关</td>
+<td>海量历史，精准回忆</td>
+</tr>
+<tr>
+<td>自定义 Memory</td>
+<td>完全自由</td>
+<td>完全自定义</td>
+<td>特殊存储/过滤需求</td>
+</tr>
+<tr>
+<td><code>RunnableWithMessageHistory</code></td>
+<td>任意后端</td>
+<td>看实现</td>
+<td>LangChain 1.0 推荐方式</td>
+</tr>
+</tbody></table>
+<h4 id="存取流程（以-ConversationBufferMemory-为例）"><a href="#存取流程（以-ConversationBufferMemory-为例）" class="headerlink" title="存取流程（以 ConversationBufferMemory 为例）"></a>存取流程（以 <code>ConversationBufferMemory</code> 为例）</h4><pre><code>每一轮对话：
+
+① load_memory_variables()
+   → self.buffer → get_buffer_string(messages)
+   → 返回 &#123;&quot;history&quot;: &quot;Human: xxx\nAI: xxx\n...&quot;&#125;
+
+② 拼进 Prompt（&#123;history&#125; 占位符被替换）
+
+③ LLM 生成回复
+
+④ save_context(inputs=&#123;&quot;input&quot;: &quot;...&quot;&#125;, outputs=&#123;&quot;output&quot;: &quot;...&quot;&#125;)
+   → HumanMessage(input) → append 到 chat_memory.messages
+   → AIMessage(output) → append 到 chat_memory.messages
+</code></pre>
+<p><strong>内部数据结构</strong>：</p>
+<pre><code class="python"># BaseChatMemory.save_context() 的实现：
+self.chat_memory.messages.append(HumanMessage(inputs[&quot;input&quot;]))
+self.chat_memory.messages.append(AIMessage(outputs[&quot;output&quot;]))
+
+# chat_memory 就是 ChatMessageHistory
+# ChatMessageHistory 就是 messages: list[BaseMessage] 的容器
+</code></pre>
+<h4 id="持久化：get-session-history"><a href="#持久化：get-session-history" class="headerlink" title="持久化：get_session_history"></a>持久化：<code>get_session_history</code></h4><p>默认的 Memory 类都存在<strong>进程内存</strong>（一个 Python 变量），进程重启就丢失。要持久化，需要用 <code>RunnableWithMessageHistory</code> + 自己写 <code>get_session_history</code>：</p>
+<pre><code class="python"># 自己实现的读写函数，LangChain 自动调用
+def get_session_history(session_id: str) -&gt; ChatMessageHistory:
+    if session_id not in store:
+        store[session_id] = ChatMessageHistory()
+    return store[session_id]
+
+with_history = RunnableWithMessageHistory(
+    chain,
+    get_session_history,       # ← 你决定存在哪（内存/Redis/PostgreSQL/文件）
+    input_messages_key=&quot;input&quot;,
+    history_messages_key=&quot;history&quot;,
+)
+</code></pre>
+<p><strong>重要区分</strong>：</p>
+<ul>
+<li>**<code>create_agent</code> 创建的 Agent 不需要 <code>get_session_history</code>**，因为 Agent 底层是 LangGraph 图，用 <code>checkpointer</code> 管理记忆</li>
+<li>**普通 Chain 需要 <code>get_session_history</code>**，因为 Chain 没有内置的状态管理</li>
+</ul>
+<h3 id="2-2-LangGraph-的记忆：State-Checkpointer"><a href="#2-2-LangGraph-的记忆：State-Checkpointer" class="headerlink" title="2.2 LangGraph 的记忆：State + Checkpointer"></a>2.2 LangGraph 的记忆：State + Checkpointer</h3><p><strong>核心逻辑</strong>：<strong>State 本身就是记忆</strong>。没有单独的 Memory 对象。加一个 <code>checkpointer</code> 就自动实现持久化。</p>
+<pre><code class="python">class ChatState(TypedDict):
+    messages: Annotated[list[BaseMessage], add_messages]  # 对话历史
+    user_name: str          # 任意字段都是&quot;记忆&quot;
+    task_progress: str      # 任意字段都是&quot;记忆&quot;
+
+checkpointer = MemorySaver()  # 或 SqliteSaver、PostgresSaver
+graph = builder.compile(checkpointer=checkpointer)
+
+# 同一个 thread_id → 自动恢复上次的 State，无需手动读写
+config = &#123;&quot;configurable&quot;: &#123;&quot;thread_id&quot;: &quot;user-001&quot;&#125;&#125;
+graph.invoke(&#123;&quot;messages&quot;: [msg]&#125;, config=config)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>LangChain Memory</th>
+<th>LangGraph State + Checkpointer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>本质</strong></td>
+<td>拼进 Prompt 的历史字符串</td>
+<td>图的原生数据结构，节点间自动流转</td>
+</tr>
+<tr>
+<td><strong>存储内容</strong></td>
+<td>只有对话历史</td>
+<td>对话历史 + 任务进度 + 用户偏好 + 任意字段</td>
+</tr>
+<tr>
+<td><strong>持久化</strong></td>
+<td>手动实现 <code>get_session_history</code></td>
+<td>加 <code>checkpointer</code> 自动完成</td>
+</tr>
+<tr>
+<td><strong>隔离方式</strong></td>
+<td>自己设计 <code>session_id</code> 逻辑</td>
+<td><code>thread_id</code> 天然隔离</td>
+</tr>
+<tr>
+<td><strong>触发时机</strong></td>
+<td>每轮对话结束</td>
+<td>每个 superstep（节点）结束</td>
+</tr>
+</tbody></table>
+<h2 id="2-3-LangChain-Memory-的内部实现解析"><a href="#2-3-LangChain-Memory-的内部实现解析" class="headerlink" title="2.3 LangChain Memory 的内部实现解析"></a>2.3 LangChain Memory 的内部实现解析</h2><h3 id="继承链"><a href="#继承链" class="headerlink" title="继承链"></a>继承链</h3><pre><code>BaseMemory                    ← 抽象基类，定义接口
+  └─ BaseChatMemory           ← 实现 save_context（存）
+       └─ ConversationBufferMemory ← 实现 load_memory_variables（取）+ buffer 格式化
+</code></pre>
+<h3 id="BaseMemory-——-定义接口"><a href="#BaseMemory-——-定义接口" class="headerlink" title="BaseMemory —— 定义接口"></a>BaseMemory —— 定义接口</h3><p>最底层的抽象，只声明了记忆必须具有的能力：</p>
+<pre><code>load_memory_variables()  → 取出历史
+save_context()           → 存入这一轮对话
+</code></pre>
+<h3 id="BaseChatMemory-——-实现存"><a href="#BaseChatMemory-——-实现存" class="headerlink" title="BaseChatMemory —— 实现存"></a>BaseChatMemory —— 实现存</h3><pre><code>class BaseChatMemory(BaseMemory):
+    def __init__(self):
+        self.chat_memory = ChatMessageHistory()  # 核心：就是那个 messages 列表容器
+        self.input_key = &quot;input&quot;                 # 从 inputs 字典取用户消息的 key
+        self.output_key = &quot;output&quot;               # 从 outputs 字典取 AI 回复的 key
+
+    def save_context(self, inputs, outputs):
+        # ① 从字典取出用户消息 → HumanMessage
+        human_message = HumanMessage(content=inputs[self.input_key])
+        # ② 从字典取出 AI 回复 → AIMessage
+        ai_message = AIMessage(content=outputs[self.output_key])
+        # ③ 追加到内存列表
+        self.chat_memory.messages.append(human_message)
+        self.chat_memory.messages.append(ai_message)
+</code></pre>
+<p>ChatMessageHistory 的本质就是一个 messages 列表 + add_user_message / add_ai_message 便捷方法。</p>
+<h3 id="ConversationBufferMemory-——-实现取和格式化"><a href="#ConversationBufferMemory-——-实现取和格式化" class="headerlink" title="ConversationBufferMemory —— 实现取和格式化"></a>ConversationBufferMemory —— 实现取和格式化</h3><pre><code>class ConversationBufferMemory(BaseChatMemory):
+    human_prefix: str = &quot;Human&quot;
+    ai_prefix: str = &quot;AI&quot;
+    memory_key: str = &quot;history&quot;   # 返回时用的 key 名
+
+    @property
+    def buffer(self):
+        if self.return_messages:
+            # 模式1：返回原始消息对象列表
+            return self.chat_memory.messages
+        else:
+            # 模式2（默认）：格式化成字符串
+            return &quot;Human: 我叫张三\nAI: 你好！\n...&quot;
+
+    def load_memory_variables(self, inputs):
+        # 返回 &#123;&quot;history&quot;: &lt;buffer内容&gt;&#125;，这个字典合并进 Prompt 变量
+        return &#123;self.memory_key: self.buffer&#125;
+</code></pre>
+<h3 id="完整存取流程（以两轮对话为例）"><a href="#完整存取流程（以两轮对话为例）" class="headerlink" title="完整存取流程（以两轮对话为例）"></a>完整存取流程（以两轮对话为例）</h3><pre><code>第1轮：chain.predict(input=&quot;我叫张三&quot;)
+
+① load_memory_variables:
+   messages = []  → buffer 为空 → 返回 &#123;&quot;history&quot;: &quot;&quot;&#125;
+
+② 构建 Prompt:
+   &quot;...&#123;history&#125;...Human: &#123;input&#125;...&quot;
+   → &quot;...Human: 我叫张三...&quot;  (history 位置是空的)
+
+③ LLM 生成回复: &quot;你好张三！&quot;
+
+④ save_context(&#123;&quot;input&quot;: &quot;我叫张三&quot;&#125;, &#123;&quot;output&quot;: &quot;你好张三！&quot;&#125;):
+   → self.chat_memory.messages.append(HumanMessage(&quot;我叫张三&quot;))
+   → self.chat_memory.messages.append(AIMessage(&quot;你好张三！&quot;))
+   此时 messages = [HumanMessage(&quot;我叫张三&quot;), AIMessage(&quot;你好张三！&quot;)]
+
+
+第2轮：chain.predict(input=&quot;我刚才说我叫什么？&quot;)
+
+① load_memory_variables:
+   messages = [HumanMessage(&quot;我叫张三&quot;), AIMessage(&quot;你好张三！&quot;)]
+   → get_buffer_string → &quot;Human: 我叫张三\nAI: 你好张三！&quot;
+   → 返回 &#123;&quot;history&quot;: &quot;Human: 我叫张三\nAI: 你好张三！&quot;&#125;
+
+② 构建 Prompt:
+   &quot;Human: 我叫张三\nAI: 你好张三！\nHuman: 我刚才说我叫什么？&quot;
+
+③ LLM 看到历史 → 回答: &quot;你叫张三！&quot;
+
+④ save_context → messages 再追加 2 条 → 现在共 4 条
+</code></pre>
+<p><strong>关键总结</strong>：整个记忆机制就是一个 messages 列表，每轮对话追加两条（Human + AI），取的时候格式化成字符串拼进 Prompt。所有 Memory 类型的区别只是<strong>格式化 / 裁剪 / 压缩这个列表的方式不同</strong>。</p>
+<hr>
+<h2 id="三、Checkpoint-持久化机制（LangGraph-记忆的底层实现）"><a href="#三、Checkpoint-持久化机制（LangGraph-记忆的底层实现）" class="headerlink" title="三、Checkpoint 持久化机制（LangGraph 记忆的底层实现）"></a>三、Checkpoint 持久化机制（LangGraph 记忆的底层实现）</h2><h3 id="3-1-持久化了什么？"><a href="#3-1-持久化了什么？" class="headerlink" title="3.1 持久化了什么？"></a>3.1 持久化了什么？</h3><p><strong>整个 State（TypedDict 里定义的所有字段）</strong>：</p>
+<pre><code>checkpoint = &#123;
+    &quot;channel_values&quot;: &#123;           # ← 核心！State 全部字段的快照
+        &quot;messages&quot;:     [HumanMessage, AIMessage, ...],
+        &quot;step_count&quot;:   3,
+        &quot;user_name&quot;:    &quot;张三&quot;,
+        &quot;任意自定义字段&quot;:  &quot;任意值&quot;
+    &#125;,
+    &quot;channel_versions&quot;: &#123;...&#125;,    # 版本号，用于增量更新
+    &quot;versions_seen&quot;:    &#123;...&#125;,    # 每个节点看到的版本，用于失败恢复
+&#125;
+</code></pre>
+<h3 id="3-2-怎么持久化的？"><a href="#3-2-怎么持久化的？" class="headerlink" title="3.2 怎么持久化的？"></a>3.2 怎么持久化的？</h3><p><strong>每个节点（superstep）执行完毕后，LangGraph 自动调用 <code>checkpointer.put()</code> 存快照</strong>：</p>
+<pre><code>graph.invoke(input, config=&#123;&quot;thread_id&quot;: &quot;user-1&quot;&#125;)
+  │
+  ├── greet 执行完毕 → checkpointer.put(config, checkpoint)  ← 自动！
+  ├── remember_name 执行完毕 → checkpointer.put(config, checkpoint)  ← 自动！
+  └── farewell 执行完毕 → checkpointer.put(config, checkpoint)  ← 自动！
+</code></pre>
+<p>开发者不需要手动调用任何 save 方法。</p>
+<h3 id="3-3-什么时候加载？"><a href="#3-3-什么时候加载？" class="headerlink" title="3.3 什么时候加载？"></a>3.3 什么时候加载？</h3><p>**每次 <code>graph.invoke()</code> 时，根据 config 里的 <code>thread_id</code> 自动调用 <code>checkpointer.get()</code>**：</p>
+<pre><code>graph.invoke(input, config=&#123;&quot;thread_id&quot;: &quot;user-1&quot;&#125;)
+  ↓
+checkpointer.get(config)  ← 根据 thread_id 查上次的 checkpoint
+  ↓
+  ├─ 第一次调用 → 返回 None → 用 input 做初始 State
+  └─ 第 N 次调用 → 返回上次存的完整 State → 以历史 State 为起点继续执行
+</code></pre>
+<h3 id="3-4-关键特性"><a href="#3-4-关键特性" class="headerlink" title="3.4 关键特性"></a>3.4 关键特性</h3><ul>
+<li><strong>同一个 <code>thread_id</code></strong> = 同一个会话 = 自动拼接历史</li>
+<li><strong>不同 <code>thread_id</code></strong> = 完全隔离的记忆空间</li>
+<li><strong>失败恢复</strong>：节点失败 → 从最后一个成功的 checkpoint 恢复，不从头执行</li>
+</ul>
+<hr>
+<h2 id="四、错误处理机制"><a href="#四、错误处理机制" class="headerlink" title="四、错误处理机制"></a>四、错误处理机制</h2><h3 id="4-1-LangChain：Middleware-声明式配置"><a href="#4-1-LangChain：Middleware-声明式配置" class="headerlink" title="4.1 LangChain：Middleware 声明式配置"></a>4.1 LangChain：Middleware 声明式配置</h3><p>通过 Middleware 配置重试策略，只能选择框架提供的选项：</p>
+<pre><code class="python">from langchain.agents.middleware import (
+    ModelRetryMiddleware,
+    ModelFallbackMiddleware,
+    ToolRetryMiddleware,
+)
+
+agent = create_agent(
+    model=&quot;gpt-4o&quot;,
+    tools=[...],
+    middleware=[
+        ModelRetryMiddleware(max_retries=3, backoff_factor=2.0),
+        ModelFallbackMiddleware(&quot;gpt-3.5-turbo&quot;),  # 主模型挂了切备用
+        ToolRetryMiddleware(
+            max_retries=2,
+            tools=[&quot;api_tool&quot;],
+            retry_on=(ConnectionError, TimeoutError),
+            on_failure=&quot;continue&quot;,  # 选项：continue / raise / error
+        ),
+    ],
+)
+</code></pre>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>简单，声明式配置</li>
+<li>你只能选：重试几次、退避策略、失败后继续还是崩溃</li>
+<li>无法根据错误类型做不同处理</li>
+<li>无法在重试前执行额外逻辑（如发告警、记日志）</li>
+</ul>
+<h3 id="4-2-LangGraph：错误处理是一个图节点"><a href="#4-2-LangGraph：错误处理是一个图节点" class="headerlink" title="4.2 LangGraph：错误处理是一个图节点"></a>4.2 LangGraph：错误处理是一个图节点</h3><p>错误处理作为图中的一个独立节点，可以写任意逻辑：</p>
+<pre><code class="python">def error_handler(state):
+    &quot;&quot;&quot;独立的错误处理节点——可以写任意复杂逻辑&quot;&quot;&quot;
+    if state[&quot;error_count&quot;] &gt;= state[&quot;max_retries&quot;]:
+        # 超过重试次数 → 走 fallback
+        return &#123;&quot;messages&quot;: [AIMessage(content=&quot;服务不可用，使用已有知识回答&quot;)]&#125;
+    
+    if &quot;TimeoutError&quot; in state[&quot;last_error&quot;]:
+        # 超时 → 切换到备用 API
+        return &#123;&quot;use_backup_api&quot;: True&#125;
+    
+    if &quot;AuthError&quot; in state[&quot;last_error&quot;]:
+        # 鉴权失败 → 通知运维，暂停执行
+        send_alert(&quot;API 鉴权失败！&quot;)
+        # 可以用 interrupt() 暂停等待人工处理
+    
+    # 还可以：记日志、发告警、切换策略...
+    return &#123;&#125;
+
+# 错误处理作为独立节点接入图
+builder.add_node(&quot;error_decision&quot;, error_handler)
+
+# 决定重试还是放弃
+builder.add_conditional_edges(&quot;error_decision&quot;, after_error_handling, &#123;
+    &quot;reasoning&quot;: &quot;reasoning&quot;,   # 重试
+    &quot;__end__&quot;: END,             # 放弃
+&#125;)
+</code></pre>
+<p><strong>图结构可视化</strong>：</p>
+<pre><code>              ┌──────────┐
+     ┌───────→│reasoning │←──────────────┐
+     │        └────┬─────┘               │
+     │             │                     │
+     │             ↓                     │
+     │      ┌────────────┐              │
+     │      │ execute_tool│              │
+     │      └──┬────┬────┘              │
+     │         │    │                   │
+     │       成功  失败                  │
+     │         │    │                   │
+     │         │    ↓                   │
+     │         │ ┌──────────────┐       │
+     │         │ │错误处理节点    │ ← 独立 │
+     │         │ │              │       │
+     │         │ │· 分类错误类型  │       │
+     │         │ │· 切换备用工具  │       │
+     │         │ │· 发送告警     │       │
+     │         │ │· 人工审批介入  │       │
+     │         │ └──┬────┬──────┘       │
+     │         │    │    │              │
+     │         │  重试  放弃             │
+     └─────────┼────┼────│──────────────┘
+               │    ↓
+               └──→ END
+</code></pre>
+<h3 id="4-3-错误处理对比总结"><a href="#4-3-错误处理对比总结" class="headerlink" title="4.3 错误处理对比总结"></a>4.3 错误处理对比总结</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>LangChain Middleware</th>
+<th>LangGraph Error Node</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>自由度</strong></td>
+<td>配置：重试次数、退避、失败行为</td>
+<td>任意 Python 逻辑</td>
+</tr>
+<tr>
+<td><strong>错误分类</strong></td>
+<td>只能按异常类型过滤</td>
+<td>可以在节点里做任何判断</td>
+</tr>
+<tr>
+<td><strong>人工介入</strong></td>
+<td>❌ 不支持</td>
+<td><code>interrupt()</code> 暂停等人处理</td>
+</tr>
+<tr>
+<td><strong>Fallback 工具</strong></td>
+<td>❌ 不支持</td>
+<td>✅ 可以切换到备用工具</td>
+</tr>
+<tr>
+<td><strong>失败恢复</strong></td>
+<td>只能从头重来</td>
+<td>Checkpoint 让图从失败处继续</td>
+</tr>
+<tr>
+<td><strong>告警/日志</strong></td>
+<td>❌ 不支持</td>
+<td>✅ 任意逻辑</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="五、一句话总结"><a href="#五、一句话总结" class="headerlink" title="五、一句话总结"></a>五、一句话总结</h2><pre><code>LangChain = 给你封装好的&quot;家电&quot;，调开关和旋钮，开箱即用但改不了内部。
+
+LangGraph = 给你&quot;零件&quot;，决定怎么组装，多写代码但完全可控。
+</code></pre>
+<p><strong>记忆</strong>：LangChain 靠外部 Memory 对象拼 Prompt；LangGraph 靠 State 本身 + Checkpointer 自动持久化。</p>
+<p><strong>错误处理</strong>：LangChain 靠 Middleware 配置重试；LangGraph 靠独立的错误处理节点，拥有无限定制的自由。</p>
+<hr>
+<h2 id="六、LangGraph-State-类型详解"><a href="#六、LangGraph-State-类型详解" class="headerlink" title="六、LangGraph State 类型详解"></a>六、LangGraph State 类型详解</h2><h3 id="6-1-State-的本质"><a href="#6-1-State-的本质" class="headerlink" title="6.1 State 的本质"></a>6.1 State 的本质</h3><p>State 是图中所有节点共享的数据容器。每个节点接收 State、返回局部更新，LangGraph 根据规则将更新合并回 State。State 同时承担”记忆”和”节点间通信”两个职责。</p>
+<h3 id="6-2-三种-Schema-定义方式"><a href="#6-2-三种-Schema-定义方式" class="headerlink" title="6.2 三种 Schema 定义方式"></a>6.2 三种 Schema 定义方式</h3><table>
+<thead>
+<tr>
+<th>方式</th>
+<th>访问方式</th>
+<th>校验能力</th>
+<th>推荐程度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>TypedDict</code></td>
+<td><code>state[&quot;key&quot;]</code></td>
+<td>无运行时校验，字段错误抛 <code>KeyError</code></td>
+<td>官方推荐，最轻量</td>
+</tr>
+<tr>
+<td><code>dataclass</code></td>
+<td><code>state.key</code></td>
+<td>无运行时校验，字段错误抛 <code>TypeError</code></td>
+<td>适合需要属性访问的场景</td>
+</tr>
+<tr>
+<td><code>Pydantic BaseModel</code></td>
+<td><code>state.key</code></td>
+<td>有完整校验，字段错误抛 <code>ValidationError</code></td>
+<td>需要严格校验时使用</td>
+</tr>
+</tbody></table>
+<pre><code class="python"># 方式一：TypedDict（官方推荐）
+from typing import TypedDict, Annotated
+from langgraph.graph.message import add_messages
+
+class AgentState(TypedDict):
+    messages: Annotated[list[BaseMessage], add_messages]
+    step_count: int
+    user_name: str
+
+# 方式二：dataclass
+from dataclasses import dataclass
+
+@dataclass
+class AgentState:
+    messages: Annotated[list[BaseMessage], add_messages]
+    step_count: int = 0
+    user_name: str = &quot;&quot;
+
+# 方式三：Pydantic BaseModel
+from pydantic import BaseModel
+
+class AgentState(BaseModel):
+    messages: Annotated[list[BaseMessage], add_messages] = []
+    step_count: int = 0
+    user_name: str = &quot;&quot;
+</code></pre>
+<h3 id="6-3-Reducer-机制"><a href="#6-3-Reducer-机制" class="headerlink" title="6.3 Reducer 机制"></a>6.3 Reducer 机制</h3><p><strong>问题</strong>：多个节点都往 <code>messages</code> 字段写数据，是覆盖还是追加？</p>
+<p><strong>答案</strong>：由 Reducer 决定。</p>
+<pre><code class="python">from typing import Annotated
+from operator import add
+
+class State(TypedDict):
+    # 有 Reducer：新值与旧值合并（这里是列表拼接）
+    messages: Annotated[list[str], add]
+
+    # 无 Reducer：新值直接覆盖旧值（默认行为）
+    current_step: str
+</code></pre>
+<p><strong><code>Annotated[type, reducer]</code> 语法解析</strong>：</p>
+<ul>
+<li><code>Annotated</code> 是 Python 类型标注的扩展，第一个参数是类型，第二个参数是元数据</li>
+<li>LangGraph 读取第二个参数作为该字段的 Reducer 函数</li>
+<li>Reducer 函数签名：<code>(old_value, new_value) -&gt; merged_value</code></li>
+</ul>
+<p><strong><code>add_messages</code> —— 最常用的内置 Reducer</strong>：</p>
+<pre><code class="python">from langgraph.graph.message import add_messages
+
+class State(TypedDict):
+    messages: Annotated[list[BaseMessage], add_messages]
+</code></pre>
+<p><code>add_messages</code> 不是简单的列表拼接，它会：</p>
+<ol>
+<li>按 <code>id</code> 去重：如果新消息的 id 与已有消息相同，则更新而非追加</li>
+<li>自动为无 id 的消息生成 uuid</li>
+<li>支持将 tuple <code>(&quot;ai&quot;, &quot;content&quot;)</code> 自动转换为 <code>AIMessage</code> 对象</li>
+</ol>
+<h3 id="6-4-节点返回值与-State-更新规则"><a href="#6-4-节点返回值与-State-更新规则" class="headerlink" title="6.4 节点返回值与 State 更新规则"></a>6.4 节点返回值与 State 更新规则</h3><pre><code class="python">def my_node(state: AgentState):
+    # 节点只返回&quot;局部更新&quot;，不需要返回完整 State
+    return &#123;&quot;step_count&quot;: state[&quot;step_count&quot;] + 1&#125;  # 只更新这一个字段
+</code></pre>
+<p>规则：</p>
+<ul>
+<li>节点返回 dict → LangGraph 逐字段应用 Reducer 合并到 State</li>
+<li>未返回的字段 → 保持不变</li>
+<li>返回了 State 中未定义的字段 → 静默忽略（不报错）</li>
+</ul>
+<hr>
+<h2 id="七、补充概念"><a href="#七、补充概念" class="headerlink" title="七、补充概念"></a>七、补充概念</h2><h3 id="7-1-DAG-vs-有环图"><a href="#7-1-DAG-vs-有环图" class="headerlink" title="7.1 DAG vs 有环图"></a>7.1 DAG vs 有环图</h3><pre><code>LangChain（DAG）：
+  A → B → C → D（单向流动，不回头）
+
+LangGraph（有环图）：
+  A → B → C → A（C 可以回到 A，形成循环）
+</code></pre>
+<p><strong>为什么这很重要</strong>：Agent 的核心行为就是”推理 → 行动 → 观察 → 再推理”的循环。DAG 无法表达这个模式，所以 LangChain 的 AgentExecutor 只能在 Chain 内部用 while 循环硬编码。LangGraph 把循环提升为一等公民（一条边就能表达），使得循环中的每个节点都可独立观测、测试和替换。</p>
+<h3 id="7-2-interrupt-人工介入机制"><a href="#7-2-interrupt-人工介入机制" class="headerlink" title="7.2 interrupt() 人工介入机制"></a>7.2 interrupt() 人工介入机制</h3><p>LangGraph 支持在图中设置”暂停点”，等待人工审批后继续执行：</p>
+<pre><code class="python">from langgraph.types import interrupt
+
+def approval_node(state):
+    &quot;&quot;&quot;需要人工审批的节点&quot;&quot;&quot;
+    # 执行到这里时，图暂停，State 被 Checkpointer 保存
+    human_decision = interrupt(&#123;
+        &quot;question&quot;: &quot;是否允许执行删除操作？&quot;,
+        &quot;context&quot;: state[&quot;pending_action&quot;],
+    &#125;)
+    # 人工回复后，从这里继续执行
+    if human_decision == &quot;approve&quot;:
+        return &#123;&quot;approved&quot;: True&#125;
+    return &#123;&quot;approved&quot;: False&#125;
+</code></pre>
+<p><strong>工作流程</strong>：</p>
+<ol>
+<li>图执行到 <code>interrupt()</code> → 暂停 → State 自动持久化到 Checkpointer</li>
+<li>外部系统（UI/CLI）收到中断通知，展示给人工</li>
+<li>人工做出决策，调用 <code>graph.invoke(Command(resume=&quot;approve&quot;), config)</code></li>
+<li>图从暂停点恢复执行，<code>interrupt()</code> 返回人工的决策值</li>
+</ol>
+<p><strong>这是 LangChain 完全不具备的能力</strong>。LangChain 的 Middleware 没有暂停-恢复语义。</p>
+<h3 id="7-3-Command-对象（控制流跳转）"><a href="#7-3-Command-对象（控制流跳转）" class="headerlink" title="7.3 Command 对象（控制流跳转）"></a>7.3 Command 对象（控制流跳转）</h3><p>LangGraph 的 <code>Command</code> 允许节点同时更新 State 和指定下一个节点：</p>
+<pre><code class="python">from langgraph.types import Command
+
+def router_node(state):
+    if state[&quot;need_tool&quot;]:
+        # 更新 State 并跳转到 tool 节点
+        return Command(update=&#123;&quot;routed&quot;: True&#125;, goto=&quot;tool_execute&quot;)
+    return Command(goto=END)
+</code></pre>
+<p>相比条件边（<code>add_conditional_edges</code>），<code>Command</code> 把”数据更新”和”路由决策”合并到一个返回值中，适合动态路由场景。</p>
+<hr>
+<h2 id="八、LangChain-公司新框架：Deep-Agents"><a href="#八、LangChain-公司新框架：Deep-Agents" class="headerlink" title="八、LangChain 公司新框架：Deep Agents"></a>八、LangChain 公司新框架：Deep Agents</h2><h3 id="8-1-定位"><a href="#8-1-定位" class="headerlink" title="8.1 定位"></a>8.1 定位</h3><p>Deep Agents 是 LangChain Inc 推出的<strong>企业级 Agent 运行框架</strong>（Agent Harness）。它不是 LangGraph 的替代品，而是建在 LangChain + LangGraph 之上的<strong>更高层封装</strong>。</p>
+<p>三者关系：</p>
+<pre><code>Deep Agents（成品构建器：规划、子代理、记忆、权限一站式）
+    ↓ 构建于
+LangGraph（图运行引擎：状态管理、检查点、循环、中断）
+    ↓ 使用
+LangChain（组件库：模型接入、工具、RAG、Prompt）
+</code></pre>
+<h3 id="8-2-核心特性"><a href="#8-2-核心特性" class="headerlink" title="8.2 核心特性"></a>8.2 核心特性</h3><ul>
+<li><strong>内置规划</strong>：自带 <code>write_todos</code> 工具，Agent 先列待办再逐项推进</li>
+<li><strong>子代理隔离</strong>：通过 <code>task</code> 创建子 Agent，拥有独立上下文和工具集，主 Agent 只拿最终结果</li>
+<li><strong>文件系统能力</strong>：读写、局部编辑、通配搜索；大输出落盘避免撑满上下文</li>
+<li><strong>自动摘要</strong>：旧对话自动压缩，保持上下文窗口可控</li>
+<li><strong>权限与审批</strong>：内置人工审批点和命令沙箱</li>
+<li><strong>原生 LangGraph 支持</strong>：底层复用 LangGraph 的 Checkpointer 和状态管理</li>
+</ul>
+<h3 id="8-3-与-LangGraph-的选择标准"><a href="#8-3-与-LangGraph-的选择标准" class="headerlink" title="8.3 与 LangGraph 的选择标准"></a>8.3 与 LangGraph 的选择标准</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>选择</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>需要完全自定义图拓扑、节点逻辑</td>
+<td>LangGraph</td>
+</tr>
+<tr>
+<td>需要快速搭建一个功能完整的 Agent 产品</td>
+<td>Deep Agents</td>
+</tr>
+<tr>
+<td>需要子代理协作、长任务拆解、文件处理</td>
+<td>Deep Agents</td>
+</tr>
+<tr>
+<td>需要精确控制每一步的状态转移</td>
+<td>LangGraph</td>
+</tr>
+<tr>
+<td>原型验证、简单工具调用</td>
+<td>LangChain</td>
+</tr>
+</tbody></table>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">小竹</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://example.com/2026/07/27/2026-07-27-langchain-langgraph-core-comparison/">http://example.com/2026/07/27/2026-07-27-langchain-langgraph-core-comparison/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">小竹</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/LangChain/">
+                                    <span class="chip bg-color">LangChain</span>
+                                </a>
+                            
+                                <a href="/tags/LangGraph/">
+                                    <span class="chip bg-color">LangGraph</span>
+                                </a>
+                            
+                                <a href="/tags/Deep-Agents/">
+                                    <span class="chip bg-color">Deep Agents</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/07/27/2026-07-27-langchain-langgraph-core-comparison/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="LangChain 与 LangGraph 核心对比总结">
+                        
+                        <span class="card-title">LangChain 与 LangGraph 核心对比总结</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-27
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/LangChain/">
+                        <span class="chip bg-color">LangChain</span>
+                    </a>
+                    
+                    <a href="/tags/LangGraph/">
+                        <span class="chip bg-color">LangGraph</span>
+                    </a>
+                    
+                    <a href="/tags/Deep-Agents/">
+                        <span class="chip bg-color">Deep Agents</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/07/27/claude-code-commands-reference/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="Claude Code 常用命令速查">
+                        
+                        <span class="card-title">Claude Code 常用命令速查</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-27
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Claude-Code/">
+                        <span class="chip bg-color">Claude Code</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+        <link rel="stylesheet" href="/libs/aplayer/APlayer.min.css">
+<style>
+    .aplayer .aplayer-lrc p {
+        
+        display: none;
+        
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 16px !important;
+    }
+
+    .aplayer .aplayer-lrc p.aplayer-lrc-current {
+        
+        display: none;
+        
+        font-size: 15px;
+        color: #42b983;
+    }
+
+    
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body {
+        left: -66px !important;
+    }
+
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body:hover {
+        left: 0px !important;
+    }
+
+    
+</style>
+<div class="">
+    
+    <div class="row">
+        <meting-js class="col l8 offset-l2 m10 offset-m1 s12"
+                   server="netease"
+                   type="playlist"
+                   id="503838841"
+                   fixed='true'
+                   autoplay='false'
+                   theme='#42b983'
+                   loop='all'
+                   order='random'
+                   preload='auto'
+                   volume='0.7'
+                   list-folded='true'
+        >
+        </meting-js>
+    </div>
+</div>
+
+<script src="/libs/aplayer/APlayer.min.js"></script>
+<script src="/libs/aplayer/Meting.min.js"></script>
+
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2021-2026</span>
+            
+            <a href="/about" target="_blank">小竹</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/zhuyanzhen-lab" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
