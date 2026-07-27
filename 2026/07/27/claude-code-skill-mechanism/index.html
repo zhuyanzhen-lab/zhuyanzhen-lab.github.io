@@ -4,9 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Claude Code 记忆机制深度解析, 是小竹不是小猪">
-    <meta name="description" content="Claude Code 记忆机制深度解析LLM 本质上是无状态的。每次对话结束，上下文清空，一切归零。这意味着你上一轮花了 20 分钟教 AI 理解的项目架构、编码规范、调试经验，下一轮全部丢失。
-Claude Code 通过一套分层的记忆">
+    <meta name="keywords" content="Claude Code Skill 机制深度解析, 是小竹不是小猪">
+    <meta name="description" content="Claude Code Skill 机制深度解析CLAUDE.md 解决了”让 AI 记住项目规范”的问题。但现实中的开发任务远不止遵守规范：你需要 AI 按照特定流程部署应用、用固定模板生成代码、遵循团队专属的审查清单。这些多步骤的结构化">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -18,7 +17,7 @@ Claude Code 通过一套分层的记忆">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Claude Code 记忆机制深度解析 | 是小竹不是小猪</title>
+    <title>Claude Code Skill 机制深度解析 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -310,12 +309,12 @@ Claude Code 通过一套分层的记忆">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/18.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Claude Code 记忆机制深度解析</h1>
+                    <h1 class="description center-align post-title">Claude Code Skill 机制深度解析</h1>
                 </div>
             </div>
         </div>
@@ -439,8 +438,8 @@ Claude Code 通过一套分层的记忆">
                                 <span class="chip bg-color">Claude Code</span>
                             </a>
                         
-                            <a href="/tags/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/">
-                                <span class="chip bg-color">上下文工程</span>
+                            <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">
+                                <span class="chip bg-color">工程实践</span>
                             </a>
                         
                     </div>
@@ -476,78 +475,100 @@ Claude Code 通过一套分层的记忆">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="Claude-Code-记忆机制深度解析"><a href="#Claude-Code-记忆机制深度解析" class="headerlink" title="Claude Code 记忆机制深度解析"></a>Claude Code 记忆机制深度解析</h1><p>LLM 本质上是无状态的。每次对话结束，上下文清空，一切归零。这意味着你上一轮花了 20 分钟教 AI 理解的项目架构、编码规范、调试经验，下一轮全部丢失。</p>
-<p>Claude Code 通过一套分层的记忆系统解决了这个问题。这套系统的核心思路很直接：把需要记住的东西写成 Markdown 文件，每次启动时注入到上下文中。没有向量数据库，没有 RAG，没有复杂的记忆检索算法，就是纯文本文件的读取和拼接。</p>
-<h2 id="双轨记忆模型"><a href="#双轨记忆模型" class="headerlink" title="双轨记忆模型"></a>双轨记忆模型</h2><p>Claude Code 的记忆分为两条轨道：</p>
-<p><strong>人工配置轨道</strong>。开发者手动维护的 CLAUDE.md 文件和 rules 规则库。内容是项目架构、编码规范、常用命令等确定性知识。每次会话启动时完整注入上下文。</p>
-<p><strong>AI 自主学习轨道</strong>。Auto Memory 机制。AI 在交互过程中自动记录调试经验、用户偏好纠正、踩过的坑。启动时只加载摘要索引，具体内容按需检索。</p>
-<p>两者的关系是：你定基调，AI 补细节。</p>
-<h2 id="CLAUDE-md：人工记忆的核心载体"><a href="#CLAUDE-md：人工记忆的核心载体" class="headerlink" title="CLAUDE.md：人工记忆的核心载体"></a>CLAUDE.md：人工记忆的核心载体</h2><p>CLAUDE.md 是 Claude Code 记忆系统中最基础也最重要的文件。它的定位是”每次会话都应该知道的事实”。</p>
-<h3 id="四级层级体系"><a href="#四级层级体系" class="headerlink" title="四级层级体系"></a>四级层级体系</h3><p>CLAUDE.md 不只是一个文件，而是一个从宏观到微观的四级体系。系统会沿目录树向上搜集并合并所有找到的文件，后加载的覆盖先加载的：</p>
-<p><strong>企业级</strong>。存放在操作系统级别的受保护目录，如 macOS 的 <code>/Library/Application Support/ClaudeCode/CLAUDE.md</code>。用于公司层面的合规要求，个人无法绕过。</p>
-<p><strong>用户级</strong>。位于 <code>~/.claude/CLAUDE.md</code>，跨所有项目生效。适合存放个人编码偏好，比如”始终使用 TypeScript strict 模式””注释用中文”。</p>
-<p><strong>项目级</strong>。放在工程根目录的 <code>CLAUDE.md</code> 或 <code>.claude/CLAUDE.md</code>，纳入版本控制。这是团队共享的项目规范，包括技术栈说明、架构约定、构建命令等。</p>
-<p><strong>本地覆盖</strong>。带 <code>.local</code> 后缀的同级文件，如 <code>CLAUDE.local.md</code>。专用于本地调试，排除在 Git 提交之外。</p>
-<p>还有一个容易忽略的机制：<strong>子目录级</strong>。项目子目录中也可以放 CLAUDE.md，但不会在启动时全量加载。只有当 AI 访问该目录的代码时，才按需加载对应的配置。这个设计有效控制了 token 消耗。</p>
-<h3 id="编写原则"><a href="#编写原则" class="headerlink" title="编写原则"></a>编写原则</h3><p><strong>控制在 200 行以内</strong>。这是官方建议。文件越长，模型的遵从度越低，注意力越容易分散。</p>
-<p><strong>使用祈使句，提供具体信息</strong>。”使用 pnpm 而非 npm””Python 版本为 3.12””数据库连接字符串从 .env 读取”比”注意使用正确的包管理器”有效得多。</p>
-<p><strong>规则要可验证</strong>。”代码要有良好的错误处理”是模糊的，”所有 API 端点必须包含 try-catch 且返回标准化错误格式”是可验证的。模糊规则等于没有规则。</p>
-<p><strong>用 @ 语法引用外部文档</strong>。如果某个规范太长不适合直接写入 CLAUDE.md，可以用 <code>@docs/api-convention.md</code> 引用。但注意这是全文注入，不会节省上下文空间。</p>
-<h3 id="初始化方式"><a href="#初始化方式" class="headerlink" title="初始化方式"></a>初始化方式</h3><p>在项目根目录执行 <code>/init</code> 命令，AI 会分析当前目录结构并自动生成 CLAUDE.md 骨架。生成后建议手动审查和调整，不要完全依赖自动生成。</p>
-<h2 id="claude-rules-：模块化规则库"><a href="#claude-rules-：模块化规则库" class="headerlink" title=".claude/rules/：模块化规则库"></a>.claude/rules/：模块化规则库</h2><p>当项目规模增大，单一 CLAUDE.md 无法承载所有规范时，可以将规则分散到 <code>.claude/rules/</code> 目录中。</p>
-<p>这个目录的核心特性是<strong>条件触发</strong>。通过 YAML frontmatter 中的 <code>paths</code> 字段定义匹配模式，规则只在 AI 操作相关文件时才被激活：</p>
-<pre><code class="yaml">---
-paths:
-  - &quot;src/api/**/*.ts&quot;
----
-# API 开发规范
-- 端点必须包含输入验证
-- 错误响应统一使用 ApiError 类
-- 所有公开接口需要 JSDoc 注释
+                <h1 id="Claude-Code-Skill-机制深度解析"><a href="#Claude-Code-Skill-机制深度解析" class="headerlink" title="Claude Code Skill 机制深度解析"></a>Claude Code Skill 机制深度解析</h1><p>CLAUDE.md 解决了”让 AI 记住项目规范”的问题。但现实中的开发任务远不止遵守规范：你需要 AI 按照特定流程部署应用、用固定模板生成代码、遵循团队专属的审查清单。这些多步骤的结构化工作流，靠一个 CLAUDE.md 是撑不住的。</p>
+<p>Skill 就是为这个场景设计的。</p>
+<h2 id="Skill-不是什么"><a href="#Skill-不是什么" class="headerlink" title="Skill 不是什么"></a>Skill 不是什么</h2><p>一个常见的误解是把 Skill 当成一个 Markdown 文件。实际上 Skill 是一个完整的目录结构，可以包含核心指引文件、参考资料、可执行脚本和输出模板。系统不会一次性注入所有资源，而是让 AI 根据任务进度按需读取。</p>
+<pre><code>my-skill/
+  SKILL.md          # 必需，核心指引
+  reference.md      # 可选，详细参考文档
+  scripts/          # 可选，工具脚本
+    validate.py
+    deploy.sh
+  templates/        # 可选，输出模板
+    api-endpoint.ts
 </code></pre>
-<p>这比全部塞进 CLAUDE.md 的优势在于：不相关的规则不会占用上下文窗口。一个有 200 个文件的大型项目可能有 20 个规则文件，但每次对话实际加载的可能只有 2 到 3 个。</p>
-<h2 id="Auto-Memory：AI-的自主笔记本"><a href="#Auto-Memory：AI-的自主笔记本" class="headerlink" title="Auto Memory：AI 的自主笔记本"></a>Auto Memory：AI 的自主笔记本</h2><p>Auto Memory 是 Claude Code 在交互过程中自动积累的经验记录。它不需要人工维护，AI 会自己判断哪些信息值得记住。</p>
-<h3 id="存储位置"><a href="#存储位置" class="headerlink" title="存储位置"></a>存储位置</h3><p>数据存储在 <code>~/.claude/projects/&lt;project-hash&gt;/memory/</code> 下，按 Git 仓库路径推导出专属目录。这意味着同一个代码库的不同分支和工作树共享同一份记忆。</p>
-<h3 id="加载机制"><a href="#加载机制" class="headerlink" title="加载机制"></a>加载机制</h3><p>核心文件 MEMORY.md 充当索引，每次会话启动时加载前 200 行或 25KB。如果记忆内容超出这个范围，系统会按主题拆分，详细笔记静默存储，待特定场景下被模型主动检索。</p>
-<h3 id="典型记录内容"><a href="#典型记录内容" class="headerlink" title="典型记录内容"></a>典型记录内容</h3><ul>
-<li>调试过程中发现的坑和解决方案</li>
-<li>用户反复纠正的偏好，比如”不要用 any 类型””错误日志要包含 request id”</li>
-<li>项目特有的构建陷阱</li>
-<li>某次修复的关键步骤</li>
-</ul>
-<h3 id="管理方式"><a href="#管理方式" class="headerlink" title="管理方式"></a>管理方式</h3><p>Auto Memory 默认启用，纯本地存储，不同步到云端或 Git。用户可以通过 <code>/memory</code> 命令查看、编辑、删除记忆条目，也可以通过环境变量 <code>CLAUDE_CODE_DISABLE_MEMORY</code> 全局禁用。</p>
-<h2 id="会话启动时的记忆加载流程"><a href="#会话启动时的记忆加载流程" class="headerlink" title="会话启动时的记忆加载流程"></a>会话启动时的记忆加载流程</h2><p>一次新会话启动时，记忆加载的完整流程如下：</p>
+<p>官方明确指出，充分利用目录结构的 Skill 能发挥最大效能。把所有内容塞进一个文件是最常见的错误用法。</p>
+<h2 id="SKILL-md-的格式"><a href="#SKILL-md-的格式" class="headerlink" title="SKILL.md 的格式"></a>SKILL.md 的格式</h2><p>核心文件由 YAML frontmatter 和 Markdown 正文组成：</p>
+<pre><code class="yaml">---
+description: 根据团队规范生成 REST API 端点。当用户要求创建新 API、添加接口、编写端点时触发。
+allowed-tools:
+  - Bash
+  - Read
+  - Write
+---
+
+# API 端点生成器
+
+## 步骤
+1. 确认接口路径和 HTTP 方法
+2. 生成路由文件，遵循 src/api/ 下的现有命名模式
+3. 运行 scripts/validate.py 检查接口规范合规性
+4. 如果验证失败，修复后重新验证
+
+## 坑点清单
+- 所有端点必须包含 request id 中间件
+- 错误响应统一使用 ApiError 类，不要自定义错误格式
+- 数据库查询必须通过 repository 层，禁止在 controller 中直接操作
+</code></pre>
+<p>frontmatter 中的几个关键字段：</p>
+<p><strong>description</strong>。这是 Skill 能否被正确触发的决定性因素。后面会详细展开。</p>
+<p><strong>allowed-tools</strong>。预授权特定工具，免除每次调用的确认弹窗。对于需要频繁执行命令的 Skill 来说，这个配置直接影响使用体验。</p>
+<p><strong>disable-model-invocation</strong>。设为 true 后禁止 AI 自动触发，只允许用户通过斜杠命令手动调用。适合敏感操作，比如生产环境部署。</p>
+<p><strong>context</strong>。配置为 fork 模式时，Skill 会在隔离的上下文中运行，不污染主对话历史。适合探索性任务或规划类工作。</p>
+<h2 id="触发机制：渐进式披露"><a href="#触发机制：渐进式披露" class="headerlink" title="触发机制：渐进式披露"></a>触发机制：渐进式披露</h2><p>这是 Skill 系统中设计最精巧的部分，也是最容易被忽视的部分。</p>
+<p>AI 并不会在启动时全量读取所有 Skill。系统采用的是<strong>渐进式披露</strong>：初始阶段只加载每个 Skill 的名称和 description。只有当用户输入与某个 description 匹配时，对应的 SKILL.md 正文才会被懒加载。附属的参考文件和脚本则需要 AI 根据根目录自行探索。</p>
+<p>这里有一个硬性的字符预算限制。源码分析显示，系统为 description 列表分配的上下文预算很低，单条 description 存在 250 个字符的截断阈值，超出部分会被直接替换为省略号。如果安装的 Skill 过多，系统甚至会降级为只显示名称，连 description 都不展示。</p>
+<p>这意味着 description 的前几十个字符直接决定了 Skill 的触发率。它应该被设计为<strong>面向模型的触发规则</strong>，而非面向人类的功能摘要。</p>
+<p>好的 description：<code>根据团队规范生成 REST API 端点。当用户要求创建新 API、添加接口、编写端点时触发。</code></p>
+<p>差的 description：<code>这是一个帮助你编写高质量 API 代码的工具，包含了我们团队的最佳实践和规范。</code></p>
+<p>前者包含了明确的触发关键词，后者全是模糊的形容词。</p>
+<h2 id="内容编写原则"><a href="#内容编写原则" class="headerlink" title="内容编写原则"></a>内容编写原则</h2><p>SKILL.md 的正文应该提供 AI 无法自行推断的增量信息。</p>
+<p><strong>高价值内容</strong>包括：特定环境的隐蔽规则、字段映射关系、容易踩的坑、团队独有的约定。比如”这个项目的 user_id 字段在数据库中是 bigint，但 API 层返回的是 string，转换逻辑在 src/utils/id.ts 中”。</p>
+<p><strong>低价值内容</strong>包括：AI 已经知道的通用知识、显而易见的操作步骤。比如”先阅读需求，然后编写代码，最后测试”。</p>
+<p>官方建议提供充足信息但保留执行自由度。不要把 AI 限制在死板的流程轨道上，否则它在遇到未覆盖的情况时会失去应变能力。”做 A，然后做 B，然后做 C”不如”确保 A、B、C 都完成，顺序根据实际情况决定”。</p>
+<p>控制在 500 行以内。超过这个长度，把详细参考资料拆分到独立文件中，让 AI 按需读取。</p>
+<h2 id="九大-Skill-类型"><a href="#九大-Skill-类型" class="headerlink" title="九大 Skill 类型"></a>九大 Skill 类型</h2><p>Anthropic 内部数百个 Skill 被归纳为九种核心类型：</p>
 <ol>
-<li>读取企业级 CLAUDE.md，如果存在</li>
-<li>读取用户级 <code>~/.claude/CLAUDE.md</code></li>
-<li>从当前目录向上遍历，合并所有项目级 CLAUDE.md 和 CLAUDE.local.md</li>
-<li>加载 <code>.claude/rules/</code> 中无条件触发的规则</li>
-<li>读取 Auto Memory 的 MEMORY.md 索引文件</li>
-<li>将以上内容拼接注入 system prompt</li>
+<li><strong>API 参考</strong>。对接特定 API 时的用法指南和常见陷阱。</li>
+<li><strong>产品验证</strong>。让 AI 自主验收工作成果，检查输出是否符合产品要求。</li>
+<li><strong>数据查询</strong>。封装数据库查询或日志检索的标准流程。</li>
+<li><strong>流程自动化</strong>。CI/CD 流程、批量操作等重复性工作。</li>
+<li><strong>代码脚手架</strong>。按团队模板生成项目骨架或模块代码。</li>
+<li><strong>质量审查</strong>。代码审查清单、安全检查项。</li>
+<li><strong>部署</strong>。标准化的部署流程和回滚方案。</li>
+<li><strong>排障手册</strong>。常见故障的诊断和修复流程。</li>
+<li><strong>基础设施运维</strong>。服务器管理、监控配置等运维操作。</li>
 </ol>
-<p>子目录的 CLAUDE.md 和带 paths 条件的 rules 文件在这一步不加载，等 AI 实际访问相关代码时再按需注入。</p>
-<h2 id="记忆失效的场景与应对"><a href="#记忆失效的场景与应对" class="headerlink" title="记忆失效的场景与应对"></a>记忆失效的场景与应对</h2><h3 id="规则被忽略"><a href="#规则被忽略" class="headerlink" title="规则被忽略"></a>规则被忽略</h3><p>常见原因有三个：文件不在有效路径上、指令过于模糊、不同文件之间存在冲突规则。排查方法是用 <code>/memory</code> 命令确认文件是否被加载。</p>
-<p>如果某条规则必须被严格执行，不应依赖 CLAUDE.md，而应使用 <strong>Hooks 机制</strong>。Hooks 可以在工具调用前后执行脚本，实现硬性拦截。比如禁止执行某些命令、自动格式化代码等。Hooks 是确定性的代码执行，不存在”模型可能不遵守”的问题。</p>
-<h3 id="上下文压缩导致遗忘"><a href="#上下文压缩导致遗忘" class="headerlink" title="上下文压缩导致遗忘"></a>上下文压缩导致遗忘</h3><p>长对话中，Claude Code 会执行上下文压缩以节省 token。压缩后的行为：</p>
+<p>其中，<strong>产品验证类</strong>被认为投资回报率最高。它赋予 AI 自主验收的能力，让 AI 在完成工作后自行检查输出是否达标。这相当于给 AI 装了一个内置的 QA 环节，显著减少人工复查的工作量。</p>
+<h2 id="高阶特性"><a href="#高阶特性" class="headerlink" title="高阶特性"></a>高阶特性</h2><h3 id="记忆与持久化"><a href="#记忆与持久化" class="headerlink" title="记忆与持久化"></a>记忆与持久化</h3><p>Skill 可以通过专属环境变量获取持久化数据目录，用于保存日志、配置或中间状态。这些数据在 Skill 版本更新时不会被清除，支持跨会话的状态保持。典型用途是首次使用引导和渐进式配置积累。</p>
+<h3 id="脚本编排"><a href="#脚本编排" class="headerlink" title="脚本编排"></a>脚本编排</h3><p>将底层函数库预置在 scripts 目录中，让 AI 专注于逻辑组合而非重复编写基础代码。比如一个部署 Skill 可以在 scripts/ 中提供 <code>check_health.sh</code>、<code>rollback.sh</code> 等脚本，AI 只需要根据当前状态决定调用顺序。</p>
+<h3 id="动态上下文"><a href="#动态上下文" class="headerlink" title="动态上下文"></a>动态上下文</h3><p>SKILL.md 支持通过特定语法执行 Shell 命令，命令输出会替换文档中的占位符。这意味着 Skill 可以在加载时获取实时数据，比如当前的 Git 分支、环境变量或配置文件内容。</p>
+<h3 id="临时钩子"><a href="#临时钩子" class="headerlink" title="临时钩子"></a>临时钩子</h3><p>Skill 可以在配置中声明仅在激活期间生效的安全拦截或文件修改限制，会话结束后自动失效。这兼顾了安全性和开发体验，不需要为偶尔使用的 Skill 配置全局规则。</p>
+<h3 id="子代理执行"><a href="#子代理执行" class="headerlink" title="子代理执行"></a>子代理执行</h3><p>通过 context fork 配置，Skill 可以将任务委派给专门的子代理。子代理拥有独立的上下文窗口，完成后只将结果返回主会话。这对探索性任务和规划类工作特别有用，避免了大量中间过程污染主对话历史。</p>
+<h2 id="团队共享与管理"><a href="#团队共享与管理" class="headerlink" title="团队共享与管理"></a>团队共享与管理</h2><p>Skill 的作用域由存储位置决定：</p>
 <ul>
-<li>根目录的 CLAUDE.md 和 rules 会自动重新加载，具备抗压缩能力</li>
-<li>子目录的配置需要等 AI 再次访问该目录才能重新激活</li>
-<li>Auto Memory 的索引会保留，但详细笔记需要重新检索</li>
+<li><code>~/.claude/skills/</code> 下为个人级别，跨项目生效</li>
+<li>项目根目录 <code>.claude/skills/</code> 下为团队级别，纳入版本控制</li>
+<li>子目录中的 Skill 支持 Monorepo 场景，处理对应目录文件时自动激活</li>
 </ul>
-<p>这意味着核心规则应该放在根目录，而非子目录。</p>
-<h2 id="设计思路的启示"><a href="#设计思路的启示" class="headerlink" title="设计思路的启示"></a>设计思路的启示</h2><p>Claude Code 的记忆系统没有使用向量数据库或语义检索，而是选择了最朴素的方案：Markdown 文件加文本注入。这个选择背后有几个考量：</p>
-<p><strong>可调试性</strong>。所有记忆都是纯文本文件，开发者可以直接查看、编辑、版本控制。不存在黑盒。</p>
-<p><strong>确定性</strong>。文件在不在、内容是什么、加载了什么，都是确定的。不像向量检索那样存在相关性排序的不确定性。</p>
-<p><strong>可控性</strong>。四级层级体系加上条件触发，开发者可以精确控制什么信息在什么时候被加载。</p>
-<p><strong>成本可控</strong>。按需加载和路径限制避免了上下文窗口被无关规则占满的问题。</p>
-<p>这套方案对于构建其他 AI Agent 系统也有参考价值。记忆不一定要用复杂的检索系统，简单的文件加载在大多数场景下就足够了。关键在于分层设计和按需加载的策略。</p>
+<p>初期可以直接将 Skill 放入代码仓库。规模化后建议建立内部插件市场，按需安装。Anthropic 内部采用类似开源社区的自然演化模式，通过沙盒测试和口碑传播来决定是否纳入正式市场。</p>
+<p>Skill 之间的依赖不需要复杂的原生管理机制。如果一个 Skill 需要调用另一个 Skill，直接在文档中用自然语言声明即可，AI 会自行处理调用链。</p>
+<h2 id="使用度量与优化"><a href="#使用度量与优化" class="headerlink" title="使用度量与优化"></a>使用度量与优化</h2><p>通过工具调用前的钩子记录 Skill 使用日志，可以识别两类问题：</p>
+<p><strong>高频使用的优质 Skill</strong>。验证了设计方向，可以进一步打磨和扩展。</p>
+<p><strong>触发不足的问题 Skill</strong>。通常不是 Skill 本身没用，而是 description 编写不当导致 AI 未能识别。这是最常见的 Skill 失效原因。优化 description 中的关键词覆盖，通常就能解决大部分问题。</p>
+<p>数据闭环是持续优化的基础。没有使用数据，就无法区分”Skill 写得不好”和”Skill 根本没被触发”这两种完全不同的失败模式。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>Skill 是 Claude Code 从”通用助手”进化为”专业工程师”的关键机制。它的设计哲学可以概括为三点：</p>
+<p><strong>分层加载</strong>。不用的不加载，用到的才注入，控制上下文成本。</p>
+<p><strong>增量信息</strong>。只写 AI 不知道的，不重复常识。</p>
+<p><strong>验证闭环</strong>。最有价值的 Skill 是让 AI 自己检查自己的工作。</p>
+<p>好的 Skill 始于简单的经验记录，在解决边界问题的过程中逐步完善。不需要一开始就设计完美的系统，先把你反复纠正 AI 的那些问题沉淀下来，就是一个合格的 Skill。</p>
 <hr>
 <p><strong>参考链接：</strong></p>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://code.claude.com/docs/zh-CN/claude-directory">Claude Code 官方文档：.claude 目录</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/sinat_38500308/article/details/161487580">彻底搞懂 Claude Code 的记忆机制</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.eimoon.com/p/claude-code-memory-guide/">Claude Code 怎么记住你的项目：CLAUDE.md 与自动记忆完全指南</a></li>
-<li><a target="_blank" rel="noopener" href="https://m.runoob.com/claude-code/claude-code-memory.html">Claude Code 记忆系统 Memory</a></li>
+<li><a target="_blank" rel="noopener" href="https://code.claude.com/docs/zh-CN/skills">Claude Code 官方文档：Skills</a></li>
+<li><a target="_blank" rel="noopener" href="https://xiaolinnote.com/claudecode/playbook/cc_skills.html">Claude Code Skill 深度解析</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7648832804669538367">给 Claude Code 装技能包：Skills 实战</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/BADAO_LIUMANG_QIZHI/article/details/162055628">Claude Code Skills 完全指南</a></li>
 </ul>
 
                 
@@ -575,7 +596,7 @@ paths:
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2026/07/27/claude-code-memory-mechanism/">http://example.com/2026/07/27/claude-code-memory-mechanism/</a>
+                    <a href="http://example.com/2026/07/27/claude-code-skill-mechanism/">http://example.com/2026/07/27/claude-code-skill-mechanism/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -621,8 +642,8 @@ paths:
                                     <span class="chip bg-color">Claude Code</span>
                                 </a>
                             
-                                <a href="/tags/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/">
-                                    <span class="chip bg-color">上下文工程</span>
+                                <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">
+                                    <span class="chip bg-color">工程实践</span>
                                 </a>
                             
                         </div>
@@ -794,9 +815,10 @@ paths:
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2026/07/27/claude-code-skill-mechanism/">
                     <div class="card-image">
@@ -814,9 +836,9 @@ paths:
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2026-07-27
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-27
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -825,6 +847,7 @@ paths:
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -851,13 +874,13 @@ paths:
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2026/07/27/ai-coding-agent-security/">
+                <a href="/2026/07/27/claude-code-memory-mechanism/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="终端 AI 编程助手安全体系：威胁模型、防御机制与沙箱原理">
+                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="Claude Code 记忆机制深度解析">
                         
-                        <span class="card-title">终端 AI 编程助手安全体系：威胁模型、防御机制与沙箱原理</span>
+                        <span class="card-title">Claude Code 记忆机制深度解析</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -885,16 +908,12 @@ paths:
                         <span class="chip bg-color">AI Agent</span>
                     </a>
                     
-                    <a href="/tags/Security/">
-                        <span class="chip bg-color">Security</span>
+                    <a href="/tags/Claude-Code/">
+                        <span class="chip bg-color">Claude Code</span>
                     </a>
                     
-                    <a href="/tags/Sandbox/">
-                        <span class="chip bg-color">Sandbox</span>
-                    </a>
-                    
-                    <a href="/tags/Prompt-Injection/">
-                        <span class="chip bg-color">Prompt Injection</span>
+                    <a href="/tags/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/">
+                        <span class="chip bg-color">上下文工程</span>
                     </a>
                     
                 </div>
