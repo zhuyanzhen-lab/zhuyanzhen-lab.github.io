@@ -4,11 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Demystifying Evals for AI Agents 学习笔记, 是小竹不是小猪">
-    <meta name="description" content="Demystifying Evals for AI Agents 学习笔记
-原文：Demystifying evals for AI agents — Anthropic Engineering Blog
-
-这篇来自 Anthropic 工">
+    <meta name="keywords" content="MCP 协议深度解析：从架构设计到工程实践, 是小竹不是小猪">
+    <meta name="description" content="MCP 协议深度解析：从架构设计到工程实践
+MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，是一套 AI 应用与外部工具之间的标准化集成协议。本文从架构动机、通信机制、上下">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -20,7 +18,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Demystifying Evals for AI Agents 学习笔记 | 是小竹不是小猪</title>
+    <title>MCP 协议深度解析：从架构设计到工程实践 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -312,12 +310,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/20.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Demystifying Evals for AI Agents 学习笔记</h1>
+                    <h1 class="description center-align post-title">MCP 协议深度解析：从架构设计到工程实践</h1>
                 </div>
             </div>
         </div>
@@ -437,12 +435,12 @@
                                 <span class="chip bg-color">AI Agent</span>
                             </a>
                         
-                            <a href="/tags/%E8%AF%84%E6%B5%8B/">
-                                <span class="chip bg-color">评测</span>
+                            <a href="/tags/MCP/">
+                                <span class="chip bg-color">MCP</span>
                             </a>
                         
-                            <a href="/tags/Anthropic/">
-                                <span class="chip bg-color">Anthropic</span>
+                            <a href="/tags/%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1/">
+                                <span class="chip bg-color">协议设计</span>
                             </a>
                         
                     </div>
@@ -457,7 +455,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2026-07-24
+                    2026-07-27
                 </div>
                 
 
@@ -478,120 +476,152 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="Demystifying-Evals-for-AI-Agents-学习笔记"><a href="#Demystifying-Evals-for-AI-Agents-学习笔记" class="headerlink" title="Demystifying Evals for AI Agents 学习笔记"></a>Demystifying Evals for AI Agents 学习笔记</h1><blockquote>
-<p>原文：<a target="_blank" rel="noopener" href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents">Demystifying evals for AI agents</a> — Anthropic Engineering Blog</p>
+                <h1 id="MCP-协议深度解析：从架构设计到工程实践"><a href="#MCP-协议深度解析：从架构设计到工程实践" class="headerlink" title="MCP 协议深度解析：从架构设计到工程实践"></a>MCP 协议深度解析：从架构设计到工程实践</h1><blockquote>
+<p>MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，是一套 AI 应用与外部工具之间的标准化集成协议。本文从架构动机、通信机制、上下文优化、容错设计四个维度展开分析。</p>
 </blockquote>
-<p>这篇来自 Anthropic 工程团队的文章，系统性地讲解了如何为 AI Agent 构建有效的评测体系。对于正在做 Agent 开发或者想把 Agent 从 Demo 推向生产的人来说，这篇文章几乎是必读材料。以下是我的学习笔记。</p>
-<h2 id="为什么-Agent-评测这么难"><a href="#为什么-Agent-评测这么难" class="headerlink" title="为什么 Agent 评测这么难"></a>为什么 Agent 评测这么难</h2><p>传统的 LLM 评测相对简单：给一个 prompt，看一个 response，打个分就行了。但 Agent 不一样——它会跨多轮对话、调用工具、修改外部状态，整个执行过程是一个动态链条。这意味着：</p>
+<h2 id="一、为什么需要-MCP"><a href="#一、为什么需要-MCP" class="headerlink" title="一、为什么需要 MCP"></a>一、为什么需要 MCP</h2><h3 id="M×N-集成困境"><a href="#M×N-集成困境" class="headerlink" title="M×N 集成困境"></a>M×N 集成困境</h3><p>在 MCP 出现之前，AI 应用与外部工具的集成完全依赖自定义适配。一个编程助手要对接 GitHub 需要编写专用连接器，对接数据库又需要另一套。不同的 AI 产品做同样的事，代码无法复用。假设存在 M 个 AI 应用和 N 个工具，最坏情况需要 M×N 个独立集成。这不仅是开发成本问题，更是维护噩梦，任何工具的 API 变更都可能引发多个应用同时故障。</p>
+<p>MCP 的核心思路是将 M×N 降为 M+N。每个工具提供方只需实现一个 MCP Server，每个 AI 应用只需实现一个 MCP Client，双方通过统一协议通信。</p>
+<h3 id="三层架构"><a href="#三层架构" class="headerlink" title="三层架构"></a>三层架构</h3><p>MCP 定义了 Host、Client、Server 三层架构：</p>
+<pre><code>用户 ←→ Host ←→ Client ←→ Server
+</code></pre>
 <ul>
-<li>同一个输入可能产生不同的执行路径</li>
-<li>中间步骤的正确性同样重要（不仅仅是最终结果）</li>
-<li>系统行为受到模型、prompt、工具链、环境状态的共同影响</li>
+<li><strong>Host</strong>：面向用户的 AI 应用，如 Claude Desktop、Cursor，负责发起连接。</li>
+<li><strong>Client</strong>：Host 内部的连接器实例，每个 Client 与一个 Server 保持 1:1 的有状态连接，负责协议协商和消息路由。</li>
+<li><strong>Server</strong>：外部服务，向 Host 暴露 Tools、Resources 和 Prompts 三类能力。</li>
 </ul>
-<p>文章指出，很多团队在早期靠直觉和手动检查来评估 Agent，这在原型阶段还行，但一旦要规模化部署就会”盲飞”——用户报告问题时根本不知道是 regression 还是 random noise。</p>
-<h2 id="核心术语速查"><a href="#核心术语速查" class="headerlink" title="核心术语速查"></a>核心术语速查</h2><p>文章先统一了一套术语体系，理解这些概念是后续讨论的基础：</p>
-<table>
+<p>MCP 的连接是有状态的长连接，而非无状态的请求响应。双方在建连时进行能力协商，声明各自支持的功能，后续消息流双向传输，统一使用 JSON-RPC 2.0 格式。</p>
+<p>MCP 不是简单的 API 网关。Server 可以主动向 Host 推送通知和采样请求，这种双向性是早期集成方案不具备的。</p>
+<h3 id="使用-MCP-的工程优势"><a href="#使用-MCP-的工程优势" class="headerlink" title="使用 MCP 的工程优势"></a>使用 MCP 的工程优势</h3><p>除了将 M×N 降为 M+N 的集成效率，MCP 在实际工程中还有几个关键优势：</p>
+<p><strong>社区共享与复用</strong>。MCP Server 是独立于 Agent 的可复用单元。一个团队实现了 GitHub MCP Server，社区内所有 Agent 都可以直接使用，无需重复开发。这使得工具集成从”每个应用各写一遍”变为”实现一次，处处可用”。</p>
+<p><strong>配置即生效，无需修改 Agent 代码</strong>。新增一个工具不需要改动 Agent 的任何代码，只需在配置文件中注册对应的 MCP Server。Agent 在运行时通过协议自动发现可用工具。这种插件化架构带来了良好的可扩展性，工具的增减对 Agent 核心逻辑完全透明。</p>
+<p><strong>容器级权限隔离</strong>。MCP Server 可以运行在独立的进程或容器中。不同 Server 之间的资源访问权限天然隔离，一个 Server 的异常不会影响其他 Server 的正常运行。这为多租户部署和最小权限原则提供了架构层面的保障。</p>
+<h2 id="二、MCP-支持的通信方式"><a href="#二、MCP-支持的通信方式" class="headerlink" title="二、MCP 支持的通信方式"></a>二、MCP 支持的通信方式</h2><p>MCP 在协议层面是传输无关的，JSON-RPC 消息的内容不依赖具体传输方式。规范定义了以下几种传输机制。</p>
+<h3 id="stdio"><a href="#stdio" class="headerlink" title="stdio"></a>stdio</h3><p>Client 将 Server 作为子进程启动，通过 stdin 发送消息，stdout 接收消息。每条 JSON-RPC 消息以换行符分隔，stderr 用于日志输出。</p>
+<p>适用于本地工具集成，包括文件系统、本地数据库、CLI 工具和代码执行。Claude Desktop 主要使用这种传输方式。</p>
+<p>核心特点：无需网络和端口，无需认证，生命周期强耦合，Client 退出则 Server 终止，严格 1:1 关系。规范建议优先使用 stdio。</p>
+<h3 id="Streamable-HTTP"><a href="#Streamable-HTTP" class="headerlink" title="Streamable HTTP"></a>Streamable HTTP</h3><p>2025-03-26 规范引入，是当前推荐的远程传输方式。</p>
+<p>使用单一 HTTP 端点，同时接受 GET 和 POST 请求。POST 携带 Client 到 Server 的 JSON-RPC 消息，Server 可选择直接返回 HTTP 响应或开启 SSE 流。GET 打开 Server 到 Client 的 SSE 事件流，用于接收通知和 Server 主动发起的请求。</p>
+<p>通过 <code>Mcp-Session-Id</code> 请求头管理有状态会话。通过 <code>Last-Event-Id</code> 实现断线重连，连接断开后 Client 发送最后收到的事件 ID，Server 只重放丢失的事件。</p>
+<p>适用于远程和云端 MCP Server，支持多客户端并发、流式传输和断线重连。本地运行时应绑定 <code>127.0.0.1</code> 而非 <code>0.0.0.0</code>，必须进行 Origin 头验证以防止 DNS 重绑定攻击。</p>
+<h3 id="旧版-HTTP-SSE"><a href="#旧版-HTTP-SSE" class="headerlink" title="旧版 HTTP+SSE"></a>旧版 HTTP+SSE</h3><p>2024-11-05 规范定义，已废弃。使用两个独立端点，一个 SSE 端点用于 Server 到 Client 流，一个 HTTP 端点用于 Client 到 Server POST 请求。已被 Streamable HTTP 取代，仅保留向后兼容。现代 Client 通过先尝试 POST 来判断 Server 是否使用旧版协议，返回 4xx 错误时回退到 GET+SSE 模式。</p>
+<h3 id="对比总结"><a href="#对比总结" class="headerlink" title="对比总结"></a>对比总结</h3><table>
 <thead>
 <tr>
-<th>术语</th>
-<th>含义</th>
+<th>维度</th>
+<th>stdio</th>
+<th>Streamable HTTP</th>
 </tr>
 </thead>
 <tbody><tr>
-<td><strong>Task</strong></td>
-<td>一个具体的测试用例，包含输入和成功标准</td>
+<td><strong>部署位置</strong></td>
+<td>本地</td>
+<td>本地或远程</td>
 </tr>
 <tr>
-<td><strong>Trial</strong></td>
-<td>一次执行尝试</td>
+<td><strong>认证需求</strong></td>
+<td>通常不需要</td>
+<td>需要，OAuth 或 API Key</td>
 </tr>
 <tr>
-<td><strong>Grader</strong></td>
-<td>评估性能的逻辑（可以是代码、模型或人类）</td>
+<td><strong>生命周期</strong></td>
+<td>Client 管理 Server 进程</td>
+<td>Server 独立运行</td>
 </tr>
 <tr>
-<td><strong>Transcript</strong></td>
-<td>完整的交互记录，包括推理过程和工具调用</td>
+<td><strong>并发能力</strong></td>
+<td>1:1</td>
+<td>多 Client 多 Server</td>
 </tr>
 <tr>
-<td><strong>Outcome</strong></td>
-<td>最终的环境状态（不是 Agent 说了什么，而是实际做了什么）</td>
+<td><strong>断线重连</strong></td>
+<td>不支持</td>
+<td>支持 Last-Event-Id</td>
 </tr>
 <tr>
-<td><strong>Evaluation harness</strong></td>
-<td>执行测试的基础设施</td>
-</tr>
-<tr>
-<td><strong>Agent harness</strong></td>
-<td>让模型能够行动的脚手架（工具调用、上下文管理等）</td>
-</tr>
-<tr>
-<td><strong>Evaluation suite</strong></td>
-<td>一组针对特定行为的测试集合</td>
+<td><strong>典型场景</strong></td>
+<td>桌面应用、本地工具</td>
+<td>SaaS 集成、云端服务</td>
 </tr>
 </tbody></table>
-<p>这里有一个我觉得很重要的区分：<strong>Transcript</strong> 和 <strong>Outcome</strong> 是不同的。一个 Agent 可能最终达成了正确结果但中间过程一塌糊涂，也可能中间步骤很优雅但最终失败了。好的评测应该同时关注这两者。</p>
-<h2 id="三种-Grader-类型"><a href="#三种-Grader-类型" class="headerlink" title="三种 Grader 类型"></a>三种 Grader 类型</h2><p>这是文章的一个核心框架。评测 Agent 的打分方式主要有三种，各有优劣：</p>
-<h3 id="1-代码打分（Code-based）"><a href="#1-代码打分（Code-based）" class="headerlink" title="1. 代码打分（Code-based）"></a>1. 代码打分（Code-based）</h3><p>用正则表达式、lint 检查、单元测试等确定性逻辑来判定。优点是快、无偏见、可重复；缺点是无法处理主观性判断。</p>
-<p>适用场景：代码正确性验证、格式检查、工具调用参数验证。</p>
-<h3 id="2-模型打分（Model-based）"><a href="#2-模型打分（Model-based）" class="headerlink" title="2. 模型打分（Model-based）"></a>2. 模型打分（Model-based）</h3><p>用另一个 LLM 作为裁判，配合评分 rubric 来打分。擅长处理主观任务（比如”回复是否友好”），但需要确保裁判模型和人类判断的一致性。</p>
-<p>关键技巧：给 LLM 裁判一个 “I don’t know” 选项，避免它在不确定的时候胡编评分。</p>
-<h3 id="3-人类打分（Human）"><a href="#3-人类打分（Human）" class="headerlink" title="3. 人类打分（Human）"></a>3. 人类打分（Human）</h3><p>请领域专家或众包工人来评判。信号质量最高，但又贵又慢。</p>
-<p><strong>实际建议</strong>：三种方式组合使用。代码打分处理确定性检查，模型打分处理主观判断，人类打分做定期校准。</p>
-<h2 id="Capability-Test-vs-Regression-Test"><a href="#Capability-Test-vs-Regression-Test" class="headerlink" title="Capability Test vs. Regression Test"></a>Capability Test vs. Regression Test</h2><p>这个分类很实用：</p>
+<h2 id="三、延迟加载：工具数量与上下文窗口的矛盾"><a href="#三、延迟加载：工具数量与上下文窗口的矛盾" class="headerlink" title="三、延迟加载：工具数量与上下文窗口的矛盾"></a>三、延迟加载：工具数量与上下文窗口的矛盾</h2><p>这是 MCP 工程实践中一个现实问题。</p>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>MCP 允许注册任意数量的外部工具服务器。当一个 MCP Server 暴露 50+ 工具时，所有工具的完整 JSON Schema 在每轮对话中都会被注入 system prompt，占用约 15K 到 30K tokens。200K 上下文窗口的 15% 被工具定义占满，用户尚未开始对话。</p>
+<p>更关键的是，这个占用是每轮都在的。不管当前对话是否需要工具，schema 始终占据上下文空间。</p>
+<h3 id="方案：两层分级加载"><a href="#方案：两层分级加载" class="headerlink" title="方案：两层分级加载"></a>方案：两层分级加载</h3><p>将工具分为两层：</p>
+<p><strong>Immediate 层</strong>，始终加载。少量核心工具，完整 schema 始终注入 system prompt。这些是 Agent 高频使用的基础能力，如文件读写、命令执行、搜索。</p>
+<p><strong>Deferred 层</strong>，延迟加载。所有 MCP 工具和低频扩展工具。在 system prompt 中只列出名称和一行描述，每个工具约 10 tokens。LLM 通过 ToolSearch 工具按需加载具体工具的完整 schema。</p>
+<p>工作流程是这样的：</p>
+<pre><code>用户提问 → LLM 判断需要某个 MCP 工具
+         → 调用 ToolSearch（按关键词或名称搜索）
+         → ToolSearch 返回完整 schema
+         → schema 缓存到当前会话
+         → LLM 调用实际工具
+</code></pre>
+<h3 id="取舍"><a href="#取舍" class="headerlink" title="取舍"></a>取舍</h3><p>该设计引入了一次额外的 tool call 开销。LLM 需要先调 ToolSearch 再调实际工具，增加了一步间接调用。但换来的是初始上下文占用降低约 85%。</p>
+<p>实测数据：初始 system prompt 中的工具 schema 从约 30K tokens 降到约 4.5K tokens。挂载 3 个主要 MCP 集成的场景下，可用上下文从 92K tokens 提升至 195K tokens。</p>
+<p>工具数量少于 10 个时，该机制属于过度设计。多一次 tool call 的延迟换来的上下文节省微乎其微。但目标场景是支持用户自由挂载多个 MCP 服务器时，延迟加载几乎成为必需品。</p>
+<h3 id="加载策略配置"><a href="#加载策略配置" class="headerlink" title="加载策略配置"></a>加载策略配置</h3><p>实际实现中通常提供以下模式：</p>
 <ul>
-<li><strong>Capability Test</strong>（能力测试）：衡量系统能做什么。初始通过率很低（比如 20%），随着迭代逐步提升。适合用来驱动开发方向。</li>
-<li><strong>Regression Test</strong>（回归测试）：确保已经能做的事情不会退化。目标通过率接近 100%。</li>
+<li><strong>全延迟</strong>：所有外部工具均通过 ToolSearch 加载</li>
+<li><strong>自动模式</strong>：外部工具 schema 总量超过上下文 10% 时自动启用延迟</li>
+<li><strong>标准模式</strong>：全部内联加载，适合工具数量少的场景</li>
+<li><strong>白名单模式</strong>：高频工具标记为 <code>alwaysLoad: true</code>，跳过延迟</li>
 </ul>
-<p>一个重要实践：<strong>当某个 capability test 的通过率稳定在高位时，就应该把它迁移到 regression suite 中</strong>。这样 regression suite 会随着产品成熟不断壮大，形成越来越厚的安全网。</p>
-<h2 id="不同场景的评测策略"><a href="#不同场景的评测策略" class="headerlink" title="不同场景的评测策略"></a>不同场景的评测策略</h2><p>文章针对几种典型的 Agent 场景给出了具体建议：</p>
-<h3 id="编程类-Agent"><a href="#编程类-Agent" class="headerlink" title="编程类 Agent"></a>编程类 Agent</h3><p>使用确定性单元测试作为主要 grader（比如 SWE-bench 的做法）。但不仅要看最终代码是否通过测试，还要看交互轨迹——Agent 是优雅地解决了问题，还是暴力试错碰巧通过？</p>
-<p>推荐组合：单元测试 + 静态分析 + LLM 评分（代码质量）。</p>
-<h3 id="对话类-Agent"><a href="#对话类-Agent" class="headerlink" title="对话类 Agent"></a>对话类 Agent</h3><p>需要多维度打分：状态变更是否正确、对话轮数是否合理、语气是否得当。通常用另一个 LLM 模拟用户角色。</p>
-<p>推荐组合：状态验证 + 轮数限制检查 + 语气评分。</p>
-<h3 id="研究类-Agent"><a href="#研究类-Agent" class="headerlink" title="研究类 Agent"></a>研究类 Agent</h3><p>质量高度主观。需要评估内容的 groundedness（是否有据可依）、fact coverage（信息覆盖度）和 source authority（来源权威性）。LLM 裁判需要频繁和人类做校准。</p>
-<h3 id="计算机操作类-Agent"><a href="#计算机操作类-Agent" class="headerlink" title="计算机操作类 Agent"></a>计算机操作类 Agent</h3><p>Agent 通过 GUI 与系统交互。评测时需要在 DOM 提取（token 密集但精确）和截图（慢但高效）之间找平衡。</p>
-<h2 id="处理非确定性：pass-k-和-pass-k"><a href="#处理非确定性：pass-k-和-pass-k" class="headerlink" title="处理非确定性：pass@k 和 pass^k"></a>处理非确定性：pass@k 和 pass^k</h2><p>Agent 的输出天然是非确定性的。同一个任务跑 10 次可能得到 7 次成功 3 次失败。文章引入了两个关键指标：</p>
+<h3 id="对-MCP-Server-开发者的启示"><a href="#对-MCP-Server-开发者的启示" class="headerlink" title="对 MCP Server 开发者的启示"></a>对 MCP Server 开发者的启示</h3><p>延迟加载机制对 MCP Server 开发提出了更高要求：</p>
 <ul>
-<li><strong>pass@k</strong>：k 次尝试中至少成功一次的概率。适合”只要有一次对就行”的场景（比如代码生成）。</li>
-<li><strong>pass^k</strong>：k 次尝试全部成功的概率。适合面向用户的场景——用户不会容忍”偶尔失败”。</li>
+<li><strong>工具描述需要清晰且关键词丰富</strong>。这是 ToolSearch 准确定位工具的唯一依据。</li>
+<li><strong>schema 应尽量精简</strong>。避免冗长的参数描述。</li>
+<li><strong>填充 <code>serverInstructions</code> 字段</strong>。提供 Server 的整体功能摘要，帮助延迟加载系统判断加载时机。</li>
 </ul>
-<p>这两个指标的差异非常重要。一个 Agent 的 pass@10 可能是 95%，但 pass^10 可能只有 30%。前者告诉你”它有能力做到”，后者告诉你”它在实际使用中靠不靠谱”。</p>
-<p><strong>面向用户的系统应该关注 pass^k，而不是 pass@k。</strong></p>
-<h2 id="从零到一的实施路线图"><a href="#从零到一的实施路线图" class="headerlink" title="从零到一的实施路线图"></a>从零到一的实施路线图</h2><p>这是文章最实用的部分，给出了 8 个递进步骤：</p>
-<p><strong>Step 0：立刻开始。</strong> 不要追求完美，先用一小批真实失败案例建起初始测试集。</p>
-<p><strong>Step 1：自动化已有检查。</strong> 把手动 QA 流程、Bug 报告转化为自动测试。</p>
-<p><strong>Step 2：设计清晰的任务。</strong> 每个 task 应该有明确的输入和已知的正确输出。模糊的任务会产生噪音指标。提供参考答案（reference solution）来证明这个任务确实可解。</p>
-<p><strong>Step 3：构建平衡的数据集。</strong> 不仅测试”应该使用工具”的场景，还要测试”不应该使用工具”的场景，避免单向优化。</p>
-<p><strong>Step 4：隔离测试环境。</strong> 防止共享状态导致测试结果互相干扰或产生关联失败。</p>
-<p><strong>Step 5：设计灵活的 Grader。</strong> 评估最终结果而非固定路径。允许部分得分。给 LLM 裁判 “unknown” 选项来避免幻觉评分。</p>
-<p><strong>Step 6：阅读执行轨迹。</strong> 不要只看分数。检查失败案例是真正的 Agent 错误还是 Grader 的 bug。</p>
-<p><strong>Step 7：关注饱和。</strong> 当某个测试集通过率稳定在 100%，它就不再驱动改进了——需要更难的任务。</p>
-<p><strong>Step 8：长期维护。</strong> 把评测当作标准的单元测试来维护，鼓励跨团队贡献测试用例。</p>
-<h2 id="瑞士奶酪模型：多层防护"><a href="#瑞士奶酪模型：多层防护" class="headerlink" title="瑞士奶酪模型：多层防护"></a>瑞士奶酪模型：多层防护</h2><p>文章最后推荐了一个整体性的质量保障框架——<strong>瑞士奶酪模型（Swiss Cheese Model）</strong>。每一层都有洞，但多层叠在一起就能覆盖大多数问题：</p>
+<h2 id="四、MCP-Server-启动失败时的处理策略"><a href="#四、MCP-Server-启动失败时的处理策略" class="headerlink" title="四、MCP Server 启动失败时的处理策略"></a>四、MCP Server 启动失败时的处理策略</h2><p>MCP Server 可能因依赖缺失、网络故障、配置错误等原因启动失败或中途断开。这对 Agent 的可靠性构成真实挑战。</p>
+<h3 id="启动阶段的失败处理"><a href="#启动阶段的失败处理" class="headerlink" title="启动阶段的失败处理"></a>启动阶段的失败处理</h3><p>Client 尝试通过 stdio 启动 MCP Server 时，如果 Server 未能返回有效的初始化响应，处理流程如下：</p>
 <ol>
-<li><strong>自动化测试</strong>：快速迭代，发布前的基本保障</li>
-<li><strong>生产监控</strong>：真实世界的 ground truth</li>
-<li><strong>A/B 测试</strong>：衡量实际用户指标</li>
-<li><strong>用户反馈</strong>：捕获意想不到的边界情况</li>
-<li><strong>手动轨迹审查</strong>：建立开发者对系统的直觉</li>
-<li><strong>系统性人类研究</strong>：评估主观、复杂的领域</li>
+<li>记录失败日志，将该 Server 标记为不可用</li>
+<li>告知用户哪些工具和能力当前不可用</li>
+<li>使用其他成功启动的 Server 继续运行</li>
+<li>可选地提供重试逻辑，延迟后尝试重启</li>
 </ol>
-<p>没有任何单一方法能覆盖所有问题，但这个组合能形成足够的安全网。</p>
-<h2 id="个人总结"><a href="#个人总结" class="headerlink" title="个人总结"></a>个人总结</h2><p>这篇文章最大的价值在于它提供了一个<strong>从理念到落地的完整框架</strong>。不是告诉你”评测很重要”就结束了，而是给了你具体的术语、方法、指标和实施步骤。</p>
-<p>几个我觉得值得记住的要点：</p>
-<ol>
-<li><strong>评测不是上线前才做的事，而是从第一天就该开始的实践</strong>（eval-driven development）</li>
-<li><strong>区分 Transcript 和 Outcome</strong>——过程正确但结果错误，和过程混乱但结果正确，需要不同的修复策略</li>
-<li><strong>pass^k 比 pass@k 更能反映真实可靠性</strong>——用户不会因为你”偶尔能做到”就满意</li>
-<li><strong>Grader 本身也会出 bug</strong>——一定要定期 review 评测逻辑，而不只是看分数</li>
-<li><strong>基础设施（Harbor、Braintrust、LangSmith 等）是手段，核心投资应该在高质量的 Task 和 Grader 上</strong></li>
-</ol>
+<p>核心原则：一个 Server 的失败不应拖垮整个 Agent。这是舱壁隔离模式的应用。</p>
+<h3 id="运行时的失败处理"><a href="#运行时的失败处理" class="headerlink" title="运行时的失败处理"></a>运行时的失败处理</h3><p>工具调用在对话中途失败是更常见也更棘手的场景。</p>
+<p><strong>将错误返回给模型</strong>。工具调用结果包含错误信息，由 LLM 自行决定下一步，尝试替代方案、告知用户或跳过该步骤。这是最常见的做法，利用 LLM 的推理能力做动态决策。</p>
+<p><strong>指数退避重试</strong>。针对瞬态故障，如网络超时和速率限制，在上报失败前自动重试。间隔按 1s、2s、4s、8s 递增，加入随机抖动防止惊群效应，通常最多重试 3 次。</p>
+<p><strong>熔断器模式</strong>。连续失败多次后暂时停止调用该 Server，标记为不可用，定期探测是否恢复。</p>
+<h3 id="Fail-Fast-还是优雅降级"><a href="#Fail-Fast-还是优雅降级" class="headerlink" title="Fail-Fast 还是优雅降级"></a>Fail-Fast 还是优雅降级</h3><p>取决于工具的关键程度：</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>行为</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Fail-Fast</strong></td>
+<td>立即停止并报错，不重试不回退</td>
+<td>关键工具，错误或不完整的结果比没有结果更危险</td>
+</tr>
+<tr>
+<td><strong>优雅降级</strong></td>
+<td>继续运行但降低能力，使用回退方案</td>
+<td>非关键工具，部分结果仍有价值</td>
+</tr>
+</tbody></table>
+<h3 id="设计可降级的-Agent"><a href="#设计可降级的-Agent" class="headerlink" title="设计可降级的 Agent"></a>设计可降级的 Agent</h3><p>工程上成熟的 Agent 在 MCP 容错方面通常包含以下设计：</p>
+<p><strong>工具分级</strong>。将每个工具标记为 essential、important 或 optional。essential 工具失败时 halt，optional 工具失败时 log and skip。</p>
+<p><strong>无工具回退路径</strong>。Agent 应能在所有工具都失败时仅依靠自身知识推理。这不是理想状态，但必须是可用状态。</p>
+<p><strong>部分结果保留</strong>。超时时提取并返回已获取的部分数据，而非全部丢弃。</p>
+<p><strong>降级标记</strong>。回退数据产生的输出应明确标记，让下游消费者知晓数据可靠性可能降低。</p>
+<p><strong>超时分层设计</strong>。不使用统一超时值。Socket 连接超时 5 到 10s，首次响应超时 10 到 30s，消息间隔超时和整体操作超时分层设置，基于工具的 P99 延迟确定。快速查询工具可能 5s 超时，代码分析工具可能需要 60s。</p>
+<p><strong>幂等性检查</strong>。非幂等工具，即会创建或修改状态的工具，不能盲目重试，否则会产生重复副作用。只有幂等工具适合自动重试。</p>
+<h3 id="长耗时操作的处理"><a href="#长耗时操作的处理" class="headerlink" title="长耗时操作的处理"></a>长耗时操作的处理</h3><p>如果工具调用预计耗时超过 5 秒，应该使用异步 HandleId 模式：Server 立即返回一个 job ID，Agent 通过轮询状态端点等待完成。这避免了 MCP 连接阻塞和超时问题。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>MCP 解决的是 AI 与工具集成的标准化问题。理解它需要关注三个层面：协议本身，包括 JSON-RPC 2.0、能力协商和有状态连接；传输机制，stdio 的简单与 Streamable HTTP 的灵活；工程落地中的实际问题，上下文爆炸用延迟加载解决，Server 不可用用分级降级应对。</p>
+<p>作为开放协议，MCP 的价值随生态扩大而增长。无论是构建 MCP Server 还是在 Agent 中集成 MCP Client，理解设计背后的取舍比记住规范条文更重要。</p>
 <hr>
 <p><strong>参考链接：</strong></p>
 <ul>
-<li>原文：<a target="_blank" rel="noopener" href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents">Demystifying evals for AI agents</a></li>
-<li>Anthropic 工程博客：<a target="_blank" rel="noopener" href="https://www.anthropic.com/engineering">anthropic.com/engineering</a></li>
+<li><a target="_blank" rel="noopener" href="https://modelcontextprotocol.io/specification/2025-03-26">MCP 官方规范</a></li>
+<li><a target="_blank" rel="noopener" href="https://modelcontextprotocol.io/introduction">MCP 官方介绍</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.anthropic.com/news/model-context-protocol">Anthropic MCP 发布公告</a></li>
+<li><a target="_blank" rel="noopener" href="https://modelcontextprotocol.io/specification/2025-03-26/basic/transports">MCP Transport 规范</a></li>
 </ul>
 
                 
@@ -619,7 +649,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2026/07/24/demystifying-evals-for-ai-agents/">http://example.com/2026/07/24/demystifying-evals-for-ai-agents/</a>
+                    <a href="http://example.com/2026/07/27/mcp-protocol-deep-dive/">http://example.com/2026/07/27/mcp-protocol-deep-dive/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -661,12 +691,12 @@
                                     <span class="chip bg-color">AI Agent</span>
                                 </a>
                             
-                                <a href="/tags/%E8%AF%84%E6%B5%8B/">
-                                    <span class="chip bg-color">评测</span>
+                                <a href="/tags/MCP/">
+                                    <span class="chip bg-color">MCP</span>
                                 </a>
                             
-                                <a href="/tags/Anthropic/">
-                                    <span class="chip bg-color">Anthropic</span>
+                                <a href="/tags/%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1/">
+                                    <span class="chip bg-color">协议设计</span>
                                 </a>
                             
                         </div>
@@ -838,9 +868,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2026/07/27/mcp-protocol-deep-dive/">
                     <div class="card-image">
@@ -858,9 +889,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2026-07-27
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-27
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -869,6 +900,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -895,13 +927,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2026/07/24/hexo-blog-automation-with-qoderwork/">
+                <a href="/2026/07/24/demystifying-evals-for-ai-agents/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="用 QoderWork 实现 Hexo 博客端到端自动化">
+                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="Demystifying Evals for AI Agents 学习笔记">
                         
-                        <span class="card-title">用 QoderWork 实现 Hexo 博客端到端自动化</span>
+                        <span class="card-title">Demystifying Evals for AI Agents 学习笔记</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -925,16 +957,16 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Hexo/">
-                        <span class="chip bg-color">Hexo</span>
+                    <a href="/tags/AI-Agent/">
+                        <span class="chip bg-color">AI Agent</span>
                     </a>
                     
-                    <a href="/tags/%E6%95%88%E7%8E%87%E5%B7%A5%E5%85%B7/">
-                        <span class="chip bg-color">效率工具</span>
+                    <a href="/tags/%E8%AF%84%E6%B5%8B/">
+                        <span class="chip bg-color">评测</span>
                     </a>
                     
-                    <a href="/tags/QoderWork/">
-                        <span class="chip bg-color">QoderWork</span>
+                    <a href="/tags/Anthropic/">
+                        <span class="chip bg-color">Anthropic</span>
                     </a>
                     
                 </div>
