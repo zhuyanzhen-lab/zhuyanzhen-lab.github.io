@@ -4,8 +4,10 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Claude Code Skill 机制深度解析, 是小竹不是小猪">
-    <meta name="description" content="Claude Code Skill 机制深度解析CLAUDE.md 解决了”让 AI 记住项目规范”的问题。但现实中的开发任务远不止遵守规范：你需要 AI 按照特定流程部署应用、用固定模板生成代码、遵循团队专属的审查清单。这些多步骤的结构化">
+    <meta name="keywords" content="Claude Code 常用命令速查, 是小竹不是小猪">
+    <meta name="description" content="Claude Code 常用命令速查Claude Code 的命令体系覆盖了对话管理、开发工作流、权限控制和自动化四个层面。本文逐一梳理各命令的功能、执行结果和典型用法。
+对话管理/clear结束当前会话，开启全新对话窗口。
+执行后对话历史">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +19,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Claude Code Skill 机制深度解析 | 是小竹不是小猪</title>
+    <title>Claude Code 常用命令速查 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -309,12 +311,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/18.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/6.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Claude Code Skill 机制深度解析</h1>
+                    <h1 class="description center-align post-title">Claude Code 常用命令速查</h1>
                 </div>
             </div>
         </div>
@@ -430,16 +432,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/AI-Agent/">
-                                <span class="chip bg-color">AI Agent</span>
-                            </a>
-                        
                             <a href="/tags/Claude-Code/">
                                 <span class="chip bg-color">Claude Code</span>
-                            </a>
-                        
-                            <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">
-                                <span class="chip bg-color">工程实践</span>
                             </a>
                         
                     </div>
@@ -475,101 +469,129 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="Claude-Code-Skill-机制深度解析"><a href="#Claude-Code-Skill-机制深度解析" class="headerlink" title="Claude Code Skill 机制深度解析"></a>Claude Code Skill 机制深度解析</h1><p>CLAUDE.md 解决了”让 AI 记住项目规范”的问题。但现实中的开发任务远不止遵守规范：你需要 AI 按照特定流程部署应用、用固定模板生成代码、遵循团队专属的审查清单。这些多步骤的结构化工作流，靠一个 CLAUDE.md 是撑不住的。</p>
-<p>Skill 就是为这个场景设计的。</p>
-<h2 id="Skill-不是什么"><a href="#Skill-不是什么" class="headerlink" title="Skill 不是什么"></a>Skill 不是什么</h2><p>一个常见的误解是把 Skill 当成一个 Markdown 文件。实际上 Skill 是一个完整的目录结构，可以包含核心指引文件、参考资料、可执行脚本和输出模板。系统不会一次性注入所有资源，而是让 AI 根据任务进度按需读取。</p>
-<pre><code>my-skill/
-  SKILL.md          # 必需，核心指引
-  reference.md      # 可选，详细参考文档
-  scripts/          # 可选，工具脚本
-    validate.py
-    deploy.sh
-  templates/        # 可选，输出模板
-    api-endpoint.ts
+                <h1 id="Claude-Code-常用命令速查"><a href="#Claude-Code-常用命令速查" class="headerlink" title="Claude Code 常用命令速查"></a>Claude Code 常用命令速查</h1><p>Claude Code 的命令体系覆盖了对话管理、开发工作流、权限控制和自动化四个层面。本文逐一梳理各命令的功能、执行结果和典型用法。</p>
+<h2 id="对话管理"><a href="#对话管理" class="headerlink" title="对话管理"></a>对话管理</h2><h3 id="clear"><a href="#clear" class="headerlink" title="/clear"></a>/clear</h3><p>结束当前会话，开启全新对话窗口。</p>
+<p>执行后对话历史全部清空，但环境上下文和长期记忆会在新一轮自动重新注入，System prompt 不变。代价是当前对话中建立的所有上下文理解随之丢失。</p>
+<p>用法：每个独立任务开始前执行。修完 bug A 后 <code>/clear</code>，再开始修 bug B，防止上下文污染。</p>
+<h3 id="compact"><a href="#compact" class="headerlink" title="/compact"></a>/compact</h3><p>当对话接近 token 上限时，用一个独立 LLM 调用将整段对话历史总结为结构化摘要，替换原对话。</p>
+<p>压缩后对话从数万条消息缩减为三条：摘要、恢复上下文、提示。Token 占用降低约 70%。摘要按九个维度结构化：任务意图、技术概念、文件路径、错误与修复、解决过程、用户原话、待办、当前工作、下一步。恢复上下文包含最近读过的文件快照、已激活技能和工具列表。LLM 被告知需要原文时重新 ReadFile。</p>
+<p>触发时机有两种：手动执行 <code>/compact</code>，或 token 接近上限时自动触发，用户无感知。</p>
+<h3 id="claude-c"><a href="#claude-c" class="headerlink" title="claude -c"></a>claude -c</h3><p>从磁盘恢复最近一次对话。Claude Code 自动保存 session，包括对话历史、上下文和项目状态。重新打开后 Claude 看到完整的前次对话，像没关过一样继续工作。</p>
+<p>适用场景：关机或重启后继续之前的开发。</p>
+<h2 id="开发工作流"><a href="#开发工作流" class="headerlink" title="开发工作流"></a>开发工作流</h2><h3 id="plan"><a href="#plan" class="headerlink" title="/plan"></a>/plan</h3><p>切换到只读规划模式。LLM 只能读代码和搜索，不允许编辑文件或执行修改性命令。</p>
+<p>进入后工具集收缩为：读文件、搜索、AskUserQuestion、Explore/Plan 子 Agent。唯一可写的文件是计划文件。System prompt 替换为五阶段流程：探索、设计、审查、输出、提交审批。</p>
+<p>典型流程：</p>
+<pre><code>用户: /plan 重构认证模块
+Claude: [进入 Plan 模式]
+  → 启动 Explore Agent 并行研究代码
+  → 启动 Plan Agent 设计方案
+  → 输出计划到 plan 文件
+  → ExitPlanMode → 用户审批
+
+用户: [审批通过]
+Claude: [退出 Plan 模式，按计划逐步实施]
 </code></pre>
-<p>官方明确指出，充分利用目录结构的 Skill 能发挥最大效能。把所有内容塞进一个文件是最常见的错误用法。</p>
-<h2 id="SKILL-md-的格式"><a href="#SKILL-md-的格式" class="headerlink" title="SKILL.md 的格式"></a>SKILL.md 的格式</h2><p>核心文件由 YAML frontmatter 和 Markdown 正文组成：</p>
-<pre><code class="yaml">---
-description: 根据团队规范生成 REST API 端点。当用户要求创建新 API、添加接口、编写端点时触发。
-allowed-tools:
-  - Bash
-  - Read
-  - Write
----
+<h3 id="rewind"><a href="#rewind" class="headerlink" title="/rewind"></a>/rewind</h3><p>撤销最近的对话轮次和对应的代码修改，回到之前保存的检查点。</p>
+<p>与手动 <code>git checkout</code> 的关键区别：git checkout 只回退文件，LLM 在对话中仍记得错误尝试，后续推理可能被误导。<code>/rewind</code> 同时回退对话历史和文件状态，LLM 完全忘记刚才的尝试。</p>
+<p>适用场景：改完发现方向错了，或 Claude 连续几轮在错误轨道上，回到分叉点重新来。</p>
+<h3 id="init"><a href="#init" class="headerlink" title="/init"></a>/init</h3><p>自动分析项目结构，生成或追加 CLAUDE.md。</p>
+<p>分析内容包括：项目技术栈（从 package.json、pyproject.toml、go.mod 等自动检测）、目录结构及各目录职责、构建/测试/部署命令、编码规范和约定。</p>
+<p>用法：新项目执行 <code>/init</code> 自动生成；后续再执行可追加新模块说明；也可以手动编辑 CLAUDE.md，Claude 每轮都会读取。</p>
+<h3 id="review"><a href="#review" class="headerlink" title="/review"></a>/review</h3><p>审查当前分支相对于 main 的 diff，按多个维度给出意见。</p>
+<p>审查维度：正确性 bug（空指针、边界条件、并发问题）、简化机会（重复代码、多余抽象）、效率问题（不必要的循环、N+1 查询）、安全风险（注入、权限绕过）。</p>
+<p>参数说明：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/review</code></td>
+<td>审查当前 diff，输出报告</td>
+</tr>
+<tr>
+<td><code>/review --comment</code></td>
+<td>作为 PR 评论直接贴到 GitHub</td>
+</tr>
+<tr>
+<td><code>/review --fix</code></td>
+<td>自动修复高置信度问题</td>
+</tr>
+</tbody></table>
+<p>输出为结构化审查报告，每个发现包含严重程度、文件路径、行号和修复建议。</p>
+<h2 id="辅助交互"><a href="#辅助交互" class="headerlink" title="辅助交互"></a>辅助交互</h2><h3 id="btw"><a href="#btw" class="headerlink" title="/btw"></a>/btw</h3><p>在对话中插入一条低优先级的附加信息，不打断 Claude 当前工作流。</p>
+<p>与普通输入的区别：普通输入会被理解为主任务切换，Claude 可能放下手里的事；<code>/btw</code> 注入的消息以 side note 形式存在，Claude 识别为”做完当前事情后再考虑”。</p>
+<h3 id="mcp"><a href="#mcp" class="headerlink" title="/mcp"></a>/mcp</h3><p>管理 MCP 服务器，即外部工具提供者。</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/mcp list</code></td>
+<td>列出所有已连接/未连接的 MCP server</td>
+</tr>
+<tr>
+<td><code>/mcp connect &lt;name&gt;</code></td>
+<td>连接一个 MCP server，加载其工具</td>
+</tr>
+<tr>
+<td><code>/mcp disconnect &lt;name&gt;</code></td>
+<td>断开连接</td>
+</tr>
+<tr>
+<td><code>/mcp status</code></td>
+<td>查看连接状态</td>
+</tr>
+</tbody></table>
+<p>连接后，MCP server 提供的工具以 <code>mcp__</code> 前缀出现在工具列表中，可与内置工具一样调用。</p>
+<h3 id="Shift-Tab"><a href="#Shift-Tab" class="headerlink" title="Shift + Tab"></a>Shift + Tab</h3><p>循环切换当前 session 的权限模式，无需手动改配置文件。</p>
+<p>切换顺序：Default（读放行，写需确认，命令需确认）→ AcceptEdits（读放行，写放行，命令需确认）→ DontAsk（全部放行）→ Plan（只读，全拒绝）→ 回到 Default。</p>
+<p>即时生效，影响当轮的工具权限检查。典型用法：默认模式下谨慎确认每次写文件，改到熟悉的模块后切换 AcceptEdits 加速。</p>
+<h2 id="自动化"><a href="#自动化" class="headerlink" title="自动化"></a>自动化</h2><h3 id="claude-p"><a href="#claude-p" class="headerlink" title="claude -p"></a>claude -p</h3><p>非交互的一次性模式。发一个 prompt，Claude 完成后输出结果到 stdout，随即退出。</p>
+<pre><code class="bash"># CI 自动修复
+claude -p &quot;根据以下测试失败日志修复 bug: $(cat test-output.log)&quot; --permission-mode dontAsk
 
-# API 端点生成器
+# PR 自动审查
+git diff main | claude -p &quot;审查这个 diff，输出 Markdown 格式的审查报告&quot;
 
-## 步骤
-1. 确认接口路径和 HTTP 方法
-2. 生成路由文件，遵循 src/api/ 下的现有命名模式
-3. 运行 scripts/validate.py 检查接口规范合规性
-4. 如果验证失败，修复后重新验证
-
-## 坑点清单
-- 所有端点必须包含 request id 中间件
-- 错误响应统一使用 ApiError 类，不要自定义错误格式
-- 数据库查询必须通过 repository 层，禁止在 controller 中直接操作
+# Git hook 预检查
+claude -p &quot;检查当前修改是否有安全风险&quot; --permission-mode plan --max-turns 5
 </code></pre>
-<p>frontmatter 中的几个关键字段：</p>
-<p><strong>description</strong>。这是 Skill 能否被正确触发的决定性因素。后面会详细展开。</p>
-<p><strong>allowed-tools</strong>。预授权特定工具，免除每次调用的确认弹窗。对于需要频繁执行命令的 Skill 来说，这个配置直接影响使用体验。</p>
-<p><strong>disable-model-invocation</strong>。设为 true 后禁止 AI 自动触发，只允许用户通过斜杠命令手动调用。适合敏感操作，比如生产环境部署。</p>
-<p><strong>context</strong>。配置为 fork 模式时，Skill 会在隔离的上下文中运行，不污染主对话历史。适合探索性任务或规划类工作。</p>
-<h2 id="触发机制：渐进式披露"><a href="#触发机制：渐进式披露" class="headerlink" title="触发机制：渐进式披露"></a>触发机制：渐进式披露</h2><p>这是 Skill 系统中设计最精巧的部分，也是最容易被忽视的部分。</p>
-<p>AI 并不会在启动时全量读取所有 Skill。系统采用的是<strong>渐进式披露</strong>：初始阶段只加载每个 Skill 的名称和 description。只有当用户输入与某个 description 匹配时，对应的 SKILL.md 正文才会被懒加载。附属的参考文件和脚本则需要 AI 根据根目录自行探索。</p>
-<p>这里有一个硬性的字符预算限制。源码分析显示，系统为 description 列表分配的上下文预算很低，单条 description 存在 250 个字符的截断阈值，超出部分会被直接替换为省略号。如果安装的 Skill 过多，系统甚至会降级为只显示名称，连 description 都不展示。</p>
-<p>这意味着 description 的前几十个字符直接决定了 Skill 的触发率。它应该被设计为<strong>面向模型的触发规则</strong>，而非面向人类的功能摘要。</p>
-<p>好的 description：<code>根据团队规范生成 REST API 端点。当用户要求创建新 API、添加接口、编写端点时触发。</code></p>
-<p>差的 description：<code>这是一个帮助你编写高质量 API 代码的工具，包含了我们团队的最佳实践和规范。</code></p>
-<p>前者包含了明确的触发关键词，后者全是模糊的形容词。</p>
-<h2 id="内容编写原则"><a href="#内容编写原则" class="headerlink" title="内容编写原则"></a>内容编写原则</h2><p>SKILL.md 的正文应该提供 AI 无法自行推断的增量信息。</p>
-<p><strong>高价值内容</strong>包括：特定环境的隐蔽规则、字段映射关系、容易踩的坑、团队独有的约定。比如”这个项目的 user_id 字段在数据库中是 bigint，但 API 层返回的是 string，转换逻辑在 src/utils/id.ts 中”。</p>
-<p><strong>低价值内容</strong>包括：AI 已经知道的通用知识、显而易见的操作步骤。比如”先阅读需求，然后编写代码，最后测试”。</p>
-<p>官方建议提供充足信息但保留执行自由度。不要把 AI 限制在死板的流程轨道上，否则它在遇到未覆盖的情况时会失去应变能力。”做 A，然后做 B，然后做 C”不如”确保 A、B、C 都完成，顺序根据实际情况决定”。</p>
-<p>控制在 500 行以内。超过这个长度，把详细参考资料拆分到独立文件中，让 AI 按需读取。</p>
-<h2 id="九大-Skill-类型"><a href="#九大-Skill-类型" class="headerlink" title="九大 Skill 类型"></a>九大 Skill 类型</h2><p>Anthropic 内部数百个 Skill 被归纳为九种核心类型：</p>
-<ol>
-<li><strong>API 参考</strong>。对接特定 API 时的用法指南和常见陷阱。</li>
-<li><strong>产品验证</strong>。让 AI 自主验收工作成果，检查输出是否符合产品要求。</li>
-<li><strong>数据查询</strong>。封装数据库查询或日志检索的标准流程。</li>
-<li><strong>流程自动化</strong>。CI/CD 流程、批量操作等重复性工作。</li>
-<li><strong>代码脚手架</strong>。按团队模板生成项目骨架或模块代码。</li>
-<li><strong>质量审查</strong>。代码审查清单、安全检查项。</li>
-<li><strong>部署</strong>。标准化的部署流程和回滚方案。</li>
-<li><strong>排障手册</strong>。常见故障的诊断和修复流程。</li>
-<li><strong>基础设施运维</strong>。服务器管理、监控配置等运维操作。</li>
-</ol>
-<p>其中，<strong>产品验证类</strong>被认为投资回报率最高。它赋予 AI 自主验收的能力，让 AI 在完成工作后自行检查输出是否达标。这相当于给 AI 装了一个内置的 QA 环节，显著减少人工复查的工作量。</p>
-<h2 id="高阶特性"><a href="#高阶特性" class="headerlink" title="高阶特性"></a>高阶特性</h2><h3 id="记忆与持久化"><a href="#记忆与持久化" class="headerlink" title="记忆与持久化"></a>记忆与持久化</h3><p>Skill 可以通过专属环境变量获取持久化数据目录，用于保存日志、配置或中间状态。这些数据在 Skill 版本更新时不会被清除，支持跨会话的状态保持。典型用途是首次使用引导和渐进式配置积累。</p>
-<h3 id="脚本编排"><a href="#脚本编排" class="headerlink" title="脚本编排"></a>脚本编排</h3><p>将底层函数库预置在 scripts 目录中，让 AI 专注于逻辑组合而非重复编写基础代码。比如一个部署 Skill 可以在 scripts/ 中提供 <code>check_health.sh</code>、<code>rollback.sh</code> 等脚本，AI 只需要根据当前状态决定调用顺序。</p>
-<h3 id="动态上下文"><a href="#动态上下文" class="headerlink" title="动态上下文"></a>动态上下文</h3><p>SKILL.md 支持通过特定语法执行 Shell 命令，命令输出会替换文档中的占位符。这意味着 Skill 可以在加载时获取实时数据，比如当前的 Git 分支、环境变量或配置文件内容。</p>
-<h3 id="临时钩子"><a href="#临时钩子" class="headerlink" title="临时钩子"></a>临时钩子</h3><p>Skill 可以在配置中声明仅在激活期间生效的安全拦截或文件修改限制，会话结束后自动失效。这兼顾了安全性和开发体验，不需要为偶尔使用的 Skill 配置全局规则。</p>
-<h3 id="子代理执行"><a href="#子代理执行" class="headerlink" title="子代理执行"></a>子代理执行</h3><p>通过 context fork 配置，Skill 可以将任务委派给专门的子代理。子代理拥有独立的上下文窗口，完成后只将结果返回主会话。这对探索性任务和规划类工作特别有用，避免了大量中间过程污染主对话历史。</p>
-<h2 id="团队共享与管理"><a href="#团队共享与管理" class="headerlink" title="团队共享与管理"></a>团队共享与管理</h2><p>Skill 的作用域由存储位置决定：</p>
-<ul>
-<li><code>~/.claude/skills/</code> 下为个人级别，跨项目生效</li>
-<li>项目根目录 <code>.claude/skills/</code> 下为团队级别，纳入版本控制</li>
-<li>子目录中的 Skill 支持 Monorepo 场景，处理对应目录文件时自动激活</li>
-</ul>
-<p>初期可以直接将 Skill 放入代码仓库。规模化后建议建立内部插件市场，按需安装。Anthropic 内部采用类似开源社区的自然演化模式，通过沙盒测试和口碑传播来决定是否纳入正式市场。</p>
-<p>Skill 之间的依赖不需要复杂的原生管理机制。如果一个 Skill 需要调用另一个 Skill，直接在文档中用自然语言声明即可，AI 会自行处理调用链。</p>
-<h2 id="使用度量与优化"><a href="#使用度量与优化" class="headerlink" title="使用度量与优化"></a>使用度量与优化</h2><p>通过工具调用前的钩子记录 Skill 使用日志，可以识别两类问题：</p>
-<p><strong>高频使用的优质 Skill</strong>。验证了设计方向，可以进一步打磨和扩展。</p>
-<p><strong>触发不足的问题 Skill</strong>。通常不是 Skill 本身没用，而是 description 编写不当导致 AI 未能识别。这是最常见的 Skill 失效原因。优化 description 中的关键词覆盖，通常就能解决大部分问题。</p>
-<p>数据闭环是持续优化的基础。没有使用数据，就无法区分”Skill 写得不好”和”Skill 根本没被触发”这两种完全不同的失败模式。</p>
-<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>Skill 是 Claude Code 从”通用助手”进化为”专业工程师”的关键机制。它的设计哲学可以概括为三点：</p>
-<p><strong>分层加载</strong>。不用的不加载，用到的才注入，控制上下文成本。</p>
-<p><strong>增量信息</strong>。只写 AI 不知道的，不重复常识。</p>
-<p><strong>验证闭环</strong>。最有价值的 Skill 是让 AI 自己检查自己的工作。</p>
-<p>好的 Skill 始于简单的经验记录，在解决边界问题的过程中逐步完善。不需要一开始就设计完美的系统，先把你反复纠正 AI 的那些问题沉淀下来，就是一个合格的 Skill。</p>
-<hr>
-<p><strong>参考链接：</strong></p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://code.claude.com/docs/zh-CN/skills">Claude Code 官方文档：Skills</a></li>
-<li><a target="_blank" rel="noopener" href="https://xiaolinnote.com/claudecode/playbook/cc_skills.html">Claude Code Skill 深度解析</a></li>
-<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7648832804669538367">给 Claude Code 装技能包：Skills 实战</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/BADAO_LIUMANG_QIZHI/article/details/162055628">Claude Code Skills 完全指南</a></li>
-</ul>
+<p>与交互模式的对比：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>claude（交互模式）</th>
+<th>claude -p（脚本模式）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对话</td>
+<td>多轮，持续交互</td>
+<td>单次，返回结果即退出</td>
+</tr>
+<tr>
+<td>用户确认</td>
+<td>可能需要</td>
+<td>通常配 –permission-mode dontAsk</td>
+</tr>
+<tr>
+<td>输出</td>
+<td>终端对话中</td>
+<td>stdout</td>
+</tr>
+<tr>
+<td>适用</td>
+<td>手动开发、探索</td>
+<td>CI/CD、脚本、自动化</td>
+</tr>
+</tbody></table>
 
                 
             </div>
@@ -596,7 +618,7 @@ allowed-tools:
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2026/07/27/claude-code-skill-mechanism/">http://example.com/2026/07/27/claude-code-skill-mechanism/</a>
+                    <a href="http://example.com/2026/07/27/claude-code-commands-reference/">http://example.com/2026/07/27/claude-code-commands-reference/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -634,16 +656,8 @@ allowed-tools:
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/AI-Agent/">
-                                    <span class="chip bg-color">AI Agent</span>
-                                </a>
-                            
                                 <a href="/tags/Claude-Code/">
                                     <span class="chip bg-color">Claude Code</span>
-                                </a>
-                            
-                                <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">
-                                    <span class="chip bg-color">工程实践</span>
                                 </a>
                             
                         </div>
@@ -815,9 +829,10 @@ allowed-tools:
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2026/07/27/claude-code-commands-reference/">
                     <div class="card-image">
@@ -835,9 +850,9 @@ allowed-tools:
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2026-07-27
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-27
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -846,6 +861,7 @@ allowed-tools:
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -864,13 +880,13 @@ allowed-tools:
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2026/07/27/claude-code-memory-mechanism/">
+                <a href="/2026/07/27/claude-code-skill-mechanism/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="Claude Code 记忆机制深度解析">
+                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="Claude Code Skill 机制深度解析">
                         
-                        <span class="card-title">Claude Code 记忆机制深度解析</span>
+                        <span class="card-title">Claude Code Skill 机制深度解析</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -902,8 +918,8 @@ allowed-tools:
                         <span class="chip bg-color">Claude Code</span>
                     </a>
                     
-                    <a href="/tags/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/">
-                        <span class="chip bg-color">上下文工程</span>
+                    <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">
+                        <span class="chip bg-color">工程实践</span>
                     </a>
                     
                 </div>

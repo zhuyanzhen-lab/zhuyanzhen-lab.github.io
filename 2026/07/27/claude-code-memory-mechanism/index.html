@@ -516,6 +516,36 @@ paths:
 <li>某次修复的关键步骤</li>
 </ul>
 <h3 id="管理方式"><a href="#管理方式" class="headerlink" title="管理方式"></a>管理方式</h3><p>Auto Memory 默认启用，纯本地存储，不同步到云端或 Git。用户可以通过 <code>/memory</code> 命令查看、编辑、删除记忆条目，也可以通过环境变量 <code>CLAUDE_CODE_DISABLE_MEMORY</code> 全局禁用。</p>
+<h3 id="保存机制：什么值得记住"><a href="#保存机制：什么值得记住" class="headerlink" title="保存机制：什么值得记住"></a>保存机制：什么值得记住</h3><p>Auto Memory 不是什么都记。系统遵循一条核心原则：<strong>只保存无法从项目当前状态推导出的信息</strong>。代码里能 grep 到的、git 历史能查到的、标准工具能获取的，一律不存。</p>
+<p>具体保存的信息分为四类：</p>
+<ul>
+<li><strong>用户偏好</strong>：编码风格、工具选择（如 pnpm 而非 npm）、格式化习惯。</li>
+<li><strong>行为纠正</strong>：用户对 AI 的纠正反馈，如”不要用 any 类型””错误日志要包含 request id”。系统同时记录正面验证和负面纠正，避免 Agent 因只记错误而变得过度保守。</li>
+<li><strong>项目上下文</strong>：构建陷阱、部署经验、团队约定等无法从代码中直接推断的背景知识。</li>
+<li><strong>外部引用</strong>：文档链接、架构决策记录等指针性信息。</li>
+</ul>
+<p>保存动作在每轮用户交互之后由一个后台提取 Agent 静默执行。该 Agent 的权限被严格限制：只允许读操作和写入 memory 目录，不允许修改源代码或访问网络。写入顺序是先写主题文件到磁盘，再更新 MEMORY.md 索引，保证数据一致性。</p>
+<h3 id="检索机制：两条互补路径"><a href="#检索机制：两条互补路径" class="headerlink" title="检索机制：两条互补路径"></a>检索机制：两条互补路径</h3><p>MEMORY.md 索引在每次会话启动时注入上下文，但索引只是指针，每条记录约 150 字符，只存位置和摘要，不存完整内容。当模型需要具体知识时，有两条检索路径：</p>
+<p><strong>路径一：模型主动拉取。</strong> 模型根据索引中的摘要判断相关性，使用标准的文件读取工具加载对应主题文件。这是”拉”模式，由模型自主决定读什么。</p>
+<p><strong>路径二：Sonnet Bypass 自动注入。</strong> 这是一个更精巧的机制。对每一条用户 prompt，系统用一个轻量模型（Sonnet 级别）扫描 memory 目录下最多 200 个主题文件的 frontmatter（前 30 行），做字面关键词匹配，选出最相关的最多 5 个文件，将其完整内容作为 <code>relevant_memories</code> 注入上下文。这不是语义搜索，是纯关键词匹配。最近已经注入过的文件会被跳过，避免重复。</p>
+<p>这种两阶段过滤的设计（廉价关键词扫描 frontmatter → 注入 top 匹配文件的完整内容）在成本和效果之间取得了平衡。没有向量数据库，没有 embedding 计算，就是对 Markdown 文件的文本匹配。</p>
+<p><strong>时间衰减。</strong> 检索时系统会标注记忆的时间新鲜度。超过 1 天的记忆会附加”可能已过时”的警告。超过 30 天的记忆被标记为需要谨慎对待，模型被指示先对照实际代码验证再行动。</p>
+<h3 id="记忆的完整生命周期"><a href="#记忆的完整生命周期" class="headerlink" title="记忆的完整生命周期"></a>记忆的完整生命周期</h3><p>将保存和检索串联起来，一次完整会话中记忆的闭环如下：</p>
+<pre><code>会话启动
+  → 加载 CLAUDE.md 层级 + MEMORY.md 索引（前 200 行）
+  → 用户发送 prompt
+  → Sonnet Bypass 扫描主题文件 frontmatter，注入 top 5 匹配
+  → 模型处理 prompt + 注入的记忆 + 上下文
+  → 后台提取 Agent 审查本轮交互
+  → 发现不可推导信息？
+     是 → 写主题文件 → 更新 MEMORY.md 索引
+     否 → 跳过
+  → Token 用量接近上限（~92%）？
+     是 → 触发上下文压缩（见下文）
+  → 会话结束
+  → 满足 24h + 5 会话条件？
+     是 → 触发 AutoDream 整合
+</code></pre>
 <h2 id="会话启动时的记忆加载流程"><a href="#会话启动时的记忆加载流程" class="headerlink" title="会话启动时的记忆加载流程"></a>会话启动时的记忆加载流程</h2><p>一次新会话启动时，记忆加载的完整流程如下：</p>
 <ol>
 <li>读取企业级 CLAUDE.md，如果存在</li>
@@ -526,6 +556,29 @@ paths:
 <li>将以上内容拼接注入 system prompt</li>
 </ol>
 <p>子目录的 CLAUDE.md 和带 paths 条件的 rules 文件在这一步不加载，等 AI 实际访问相关代码时再按需注入。</p>
+<h2 id="AutoDream：记忆的后台整合"><a href="#AutoDream：记忆的后台整合" class="headerlink" title="AutoDream：记忆的后台整合"></a>AutoDream：记忆的后台整合</h2><p>记忆在每次会话中持续追加，时间久了必然出现重复、过时、矛盾的内容。AutoDream 是 Claude Code 的自动整合机制，类比人类的 REM 睡眠，在后台完成记忆的清理和合并。</p>
+<h3 id="触发条件"><a href="#触发条件" class="headerlink" title="触发条件"></a>触发条件</h3><p>AutoDream 通过五层门控决定是否触发：</p>
+<ol>
+<li><strong>环境检查</strong>：确认 AutoDream 功能已启用，且不在远程模式或守护进程模式下。</li>
+<li><strong>时间门控</strong>：距上次整合超过 24 小时（通过锁文件的 mtime 判断，不需要额外存储时间戳）。</li>
+<li><strong>扫描节流</strong>：两次扫描之间至少有 10 分钟冷却期，防止快速无效的扫描循环。</li>
+<li><strong>会话门控</strong>：距上次整合至少产生了 5 个新会话（通过扫描 JSONL 会话记录文件计数）。</li>
+<li><strong>文件锁</strong>：获取进程级互斥锁，防止多个 Claude Code 实例同时整合。</li>
+</ol>
+<p>这些阈值不是硬编码的，由远程 Feature Flag 控制，可以动态调整。</p>
+<h3 id="四阶段整合算法"><a href="#四阶段整合算法" class="headerlink" title="四阶段整合算法"></a>四阶段整合算法</h3><p>AutoDream 由一个受限子 Agent 执行，该 Agent 无权修改源代码，也无网络访问权限。整合分四个阶段：</p>
+<p><strong>阶段一：Orient。</strong> 读取 MEMORY.md 索引，映射当前记忆目录的完整结构。</p>
+<p><strong>阶段二：Gather。</strong> 在本地 JSONL 会话记录中做定向 grep 搜索，提取用户纠正、显式保存请求、关键决策等新信号。不全文读取会话记录，只用窄搜索控制成本。</p>
+<p><strong>阶段三：Consolidate。</strong> 合并重叠条目。将相对日期（”昨天””上周”）转换为绝对日期（”2026-07-20”），防止时间逻辑错乱。解决不同文件之间的矛盾信息。删除已被当前代码推翻的过时事实。</p>
+<p><strong>阶段四：Prune and Index。</strong> 重建 MEMORY.md 索引，强制控制在 200 行或 25KB 以内。删除指向已删主题文件的死链接，压缩冗长的摘要描述。</p>
+<h3 id="崩溃恢复"><a href="#崩溃恢复" class="headerlink" title="崩溃恢复"></a>崩溃恢复</h3><p>整合过程使用锁文件 <code>memory/.consolidate-lock</code> 保护。锁文件存储当前进程 PID，文件的 mtime 同时充当”上次整合时间”的时间戳。如果整合过程中进程崩溃，锁在 1 小时后自动过期。如果整合失败，系统回滚锁文件的 mtime，使其看起来整合从未发生，下次会话会重新尝试。</p>
+<h2 id="上下文压缩的五层管线"><a href="#上下文压缩的五层管线" class="headerlink" title="上下文压缩的五层管线"></a>上下文压缩的五层管线</h2><p>长对话中 token 用量会逼近上下文窗口上限。当使用率达到约 92% 时，Claude Code 触发一个五层压缩管线：</p>
+<p><strong>第一层：预算裁剪。</strong> 截断过长的文件读取结果，保留前 N 行，剩余内容留在 JSONL 原始记录中备查。</p>
+<p><strong>第二层：工具输出裁剪。</strong> 优先丢弃体积大的工具输出结果。</p>
+<p><strong>第三层：MicroCompact。</strong> 针对 Prompt Cache 优化，优先压缩后部内容以保护缓存前缀不被破坏。</p>
+<p><strong>第四层：上下文折叠。</strong> 创建只读投影，不修改底层 JSONL 存储。</p>
+<p><strong>第五层：AutoCompact。</strong> 对完整对话做 LLM 摘要，将对话历史压缩到原始体积的约 10%。</p>
+<p>压缩后，根目录的 CLAUDE.md 和 MEMORY.md 索引会从磁盘重新注入，具备抗压缩能力。子目录的 CLAUDE.md、带 paths 条件的 rules、未使用的技能描述和完整工具输出在压缩中丢失。用户可以通过 <code>/compact focus on XXX</code> 指令显式指定需要保留的内容。</p>
 <h2 id="记忆失效的场景与应对"><a href="#记忆失效的场景与应对" class="headerlink" title="记忆失效的场景与应对"></a>记忆失效的场景与应对</h2><h3 id="规则被忽略"><a href="#规则被忽略" class="headerlink" title="规则被忽略"></a>规则被忽略</h3><p>常见原因有三个：文件不在有效路径上、指令过于模糊、不同文件之间存在冲突规则。排查方法是用 <code>/memory</code> 命令确认文件是否被加载。</p>
 <p>如果某条规则必须被严格执行，不应依赖 CLAUDE.md，而应使用 <strong>Hooks 机制</strong>。Hooks 可以在工具调用前后执行脚本，实现硬性拦截。比如禁止执行某些命令、自动格式化代码等。Hooks 是确定性的代码执行，不存在”模型可能不遵守”的问题。</p>
 <h3 id="上下文压缩导致遗忘"><a href="#上下文压缩导致遗忘" class="headerlink" title="上下文压缩导致遗忘"></a>上下文压缩导致遗忘</h3><p>长对话中，Claude Code 会执行上下文压缩以节省 token。压缩后的行为：</p>
@@ -535,12 +588,124 @@ paths:
 <li>Auto Memory 的索引会保留，但详细笔记需要重新检索</li>
 </ul>
 <p>这意味着核心规则应该放在根目录，而非子目录。</p>
+<h2 id="对照：mem0-的数据库记忆方案"><a href="#对照：mem0-的数据库记忆方案" class="headerlink" title="对照：mem0 的数据库记忆方案"></a>对照：mem0 的数据库记忆方案</h2><p>Claude Code 选择了文件加文本注入的朴素路线。另一个值得关注的方案是 mem0，一个开源的 AI 记忆层，GitHub 51000+ star，代表了完全不同的设计哲学。</p>
+<h3 id="存储策略"><a href="#存储策略" class="headerlink" title="存储策略"></a>存储策略</h3><p>mem0 的记忆存储分为三个环节：提取、向量化、图谱化。</p>
+<p><strong>提取环节。</strong> 当一轮对话结束后，mem0 用一次 LLM 调用从对话上下文中提取结构化事实。输入由两部分拼接：异步维护的对话摘要，以及最近 N 条消息的滑动窗口。LLM 被提示为”个人信息整理器”，按习惯、计划、专业信息、偏好等维度提取具体细节，输出为 JSON 格式的 <code>facts</code> 数组。例如，从对话”我最近在用 pnpm，之前的 npm 太慢了”中提取出 <code>[&quot;用户使用 pnpm 作为包管理器&quot;, &quot;用户认为 npm 速度慢&quot;]</code>。每轮对话的提取成本约 7000 token。</p>
+<p><strong>向量化存储。</strong> 每条提取出的自然语言事实被送入 embedding 模型（默认 OpenAI <code>text-embedding-3-small</code>，也支持 Qwen、AWS Bedrock 等）生成稠密向量，写入向量数据库。支持的向量数据库包括 Qdrant（托管服务默认）、Pinecone、Milvus、pgvector、FAISS 等。每条记忆附带时间戳、用户 ID、会话 ID 等元数据。</p>
+<p><strong>图谱存储。</strong> V3 之前，mem0 集成外部图谱数据库（Neo4j、Memgraph、Kuzu、Amazon Neptune）存储实体关系。V3 版本（2026 年发布）废弃了外部图谱驱动，改为内置实体链接：用二级向量集合存储实体嵌入，通过向量相似度发现交叉引用关系，不再需要独立的图谱基础设施。图谱的构建分两步：实体提取器识别对话中的关键元素和类别，关系生成器构建语义三元组（如”用户 → 偏好 → pnpm”）。启用图谱后每轮对话的提取成本翻倍，约 14000 token。</p>
+<p><strong>作用域。</strong> mem0 支持四级记忆作用域：User Memory 跨所有会话持久化用户偏好；Session Memory 限定在单次会话内；Agent Memory 存储 Agent 级别的状态和学习到的事实；Run Memory 限定在单次执行中。多用户场景下通过 user_id 隔离，天然支持群聊记忆。</p>
+<h3 id="检索策略"><a href="#检索策略" class="headerlink" title="检索策略"></a>检索策略</h3><p>mem0 的检索是一个多信号并行评分、融合排序的管线。V3 版本的具体流程：</p>
+<p><strong>第一步：查询编码。</strong> 用户的当前 prompt 被送入 embedding 模型生成稠密查询向量。</p>
+<p><strong>第二步：三路并行检索。</strong></p>
+<ul>
+<li>语义相似度路径：查询向量与存储的事实向量计算余弦距离，返回 top-K 最相似的自然语言事实。这是稠密检索，擅长捕捉语义层面的关联。</li>
+<li>BM25 路径：对查询做稀疏词法匹配，基于 TF-IDF 变体对记忆库做关键词检索。擅长精确匹配专有名词、技术术语等向量容易丢失的细节。</li>
+<li>实体匹配路径：从查询中提取实体，遍历实体向量集合找到关联的实体和关系三元组。擅长回答”用户的 X 是什么”这类结构化查询。</li>
+</ul>
+<p><strong>第三步：时间权重提升（Temporal Boosting）。</strong> 每条候选记忆根据时间新鲜度加权。近期记忆的得分被提升，久远记忆的得分被衰减。mem0 支持配置记忆衰减策略，包括 TTL 过期机制和不可变标记（immutability flags）。标记为不可变的记忆不参与衰减。</p>
+<p><strong>第四步：融合排序。</strong> 三路得分与时间权重合并，生成最终排序。可选的 <code>explain</code> 参数暴露每条记忆的评分细项，供调试使用。</p>
+<p><strong>第五步：Reranking（可选）。</strong> 托管平台提供内置 reranker 模型做精排。自部署版本可配置自定义 reranker。</p>
+<p>与 Claude Code 的 Sonnet Bypass 对比：Claude Code 只扫描 frontmatter 做字面关键词匹配，mem0 的三路融合检索覆盖面更广，但也意味着每次检索需要多次向量查询和 LLM 调用，延迟和成本更高。</p>
+<h3 id="冲突解决"><a href="#冲突解决" class="headerlink" title="冲突解决"></a>冲突解决</h3><p>mem0 的冲突解决经历了从”写入时裁决”到”检索时推理”的范式转变。</p>
+<p><strong>V1/V2：写入时四操作模型。</strong> 新事实被提取后，系统用一次 LLM 调用将其与已有记忆逐条比较，通过 tool call 选择四种操作之一：</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>语义</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ADD</td>
+<td>新建记忆</td>
+<td>首次记录”用户使用 pnpm”</td>
+</tr>
+<tr>
+<td>UPDATE</td>
+<td>修改已有记忆，保留原始 ID，替换为信息量更大的版本</td>
+<td>“用户使用 pnpm” → “用户使用 pnpm 9.x，要求 monorepo 工作区”</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>删除被推翻的事实</td>
+<td>用户明确说”我不用 pnpm 了” → 删除 pnpm 相关记忆</td>
+</tr>
+<tr>
+<td>NOOP</td>
+<td>事实已被覆盖，无需操作</td>
+<td>重复记录”用户使用 pnpm”</td>
+</tr>
+</tbody></table>
+<p>这个模型的问题在于：每次写入都需要 LLM 评估新事实与所有相关记忆的关系，成本高且评估不稳定。如果 LLM 误判为 NOOP，有价值的信息会丢失；如果误判为 UPDATE，可能破坏仍有价值的旧记忆。</p>
+<p><strong>V3：ADD-only 追加策略。</strong> V3 放弃了写入时的 UPDATE 和 DELETE 操作。所有提取出的事实一律追加，不与已有记忆做比较。冲突在检索时通过时间推理动态解决：当多条记忆在语义上相似但在事实上矛盾时（如”用户偏好浅色模式”和”用户偏好深色模式”），检索管线根据时间戳和上下文相关性返回最匹配当前查询的版本。</p>
+<p>这个设计的动机是：记忆的价值取决于使用时刻的上下文，而非写入时刻的判断。一条看似过时的记忆在特定场景下可能仍然有用。写入时删除它是不可逆的损失，而检索时忽略它只是暂时的过滤。</p>
+<p><strong>图谱冲突处理。</strong> 图谱中的矛盾关系不会被删除，而是被 LLM 标记为 invalid。例如”用户 → 偏好 → 浅色模式”被标记为 <code>[invalidated]</code>，但它仍然存在于图谱中。这样做的目的是保留时间上下文：系统可以追溯偏好的变化历史，而不是只看到最新状态。</p>
+<p><strong>记忆衰减与过期。</strong> V3 引入了可配置的记忆衰减。每条记忆可以设置 TTL（生存时间），超过 TTL 的记忆在检索时被降权但不删除。标记为不可变的记忆（如”用户的生日”）不受衰减影响。这种设计让系统在保持记忆完整性的同时，自然地将注意力集中在近期信息上。</p>
+<p>Claude Code 的冲突解决相比之下简单得多：AutoDream 的 Consolidate 阶段由模型自主判断合并和删除，没有显式的操作分类，也没有图谱级别的关系追踪。本质上完全依赖模型的理解力。</p>
+<h3 id="核心取舍"><a href="#核心取舍" class="headerlink" title="核心取舍"></a>核心取舍</h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Claude Code（文件方案）</th>
+<th>mem0（数据库方案）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>存储</strong></td>
+<td>纯 Markdown 文件</td>
+<td>向量数据库 + 实体链接</td>
+</tr>
+<tr>
+<td><strong>检索</strong></td>
+<td>关键词匹配 frontmatter</td>
+<td>语义 + BM25 + 实体融合检索</td>
+</tr>
+<tr>
+<td><strong>基础设施</strong></td>
+<td>零（一个文本文件即可）</td>
+<td>需要向量数据库、embedding 模型、提取 LLM</td>
+</tr>
+<tr>
+<td><strong>人类可读性</strong></td>
+<td>完全可读、可 diff、可 Git 版本控制</td>
+<td>向量不可读，需要工具辅助</td>
+</tr>
+<tr>
+<td><strong>自动提取</strong></td>
+<td>后台 Agent 提取，质量依赖模型能力</td>
+<td>管线化提取，结构化程度更高</td>
+</tr>
+<tr>
+<td><strong>可扩展性</strong></td>
+<td>文件线性增长，大规模时消耗上下文 token</td>
+<td>向量搜索可高效扩展到百万级记忆</td>
+</tr>
+<tr>
+<td><strong>token 效率</strong></td>
+<td>整个文件注入上下文</td>
+<td>只返回相关片段，节省 90%+ token</td>
+</tr>
+<tr>
+<td><strong>多用户支持</strong></td>
+<td>单用户设计</td>
+<td>内置 user/session/agent 多级作用域</td>
+</tr>
+<tr>
+<td><strong>时间感知</strong></td>
+<td>手动写入日期 + 检索时新鲜度标注</td>
+<td>内置时间戳、衰减、过期、temporal boosting</td>
+</tr>
+</tbody></table>
+<p>两者的根本取舍是<strong>能力 vs 简洁</strong>。mem0 在自动提取、可扩展检索、时间推理上有明显优势，适合多用户、高频交互、大规模记忆的生产环境。Claude Code 的文件方案在可调试性、确定性、零基础设施依赖上有不可替代的价值，适合单用户开发场景。</p>
+<p>一个有趣的趋势是：mem0 V3 转向 ADD-only 追加策略，在哲学上更接近文件系统的 append-only 日志；而 Claude Code 的 AutoDream 整合机制，本质上也引入了结构化的记忆维护流程。两个方案在向对方靠近。</p>
 <h2 id="设计思路的启示"><a href="#设计思路的启示" class="headerlink" title="设计思路的启示"></a>设计思路的启示</h2><p>Claude Code 的记忆系统没有使用向量数据库或语义检索，而是选择了最朴素的方案：Markdown 文件加文本注入。这个选择背后有几个考量：</p>
 <p><strong>可调试性</strong>。所有记忆都是纯文本文件，开发者可以直接查看、编辑、版本控制。不存在黑盒。</p>
 <p><strong>确定性</strong>。文件在不在、内容是什么、加载了什么，都是确定的。不像向量检索那样存在相关性排序的不确定性。</p>
 <p><strong>可控性</strong>。四级层级体系加上条件触发，开发者可以精确控制什么信息在什么时候被加载。</p>
 <p><strong>成本可控</strong>。按需加载和路径限制避免了上下文窗口被无关规则占满的问题。</p>
-<p>这套方案对于构建其他 AI Agent 系统也有参考价值。记忆不一定要用复杂的检索系统，简单的文件加载在大多数场景下就足够了。关键在于分层设计和按需加载的策略。</p>
+<p>但 AutoDream 和 mem0 的存在也揭示了文件方案的局限。当记忆规模增长到数百条，200 行的索引和关键词匹配会逐渐力不从心。AutoDream 通过定期整合延缓了这个问题，但没有根本解决。mem0 的向量检索和时间推理则展示了数据库方案在规模化和精度上的优势。</p>
+<p>对于构建 AI Agent 系统，选择哪种方案取决于场景。单用户开发工具，Claude Code 的文件方案足够好，零基础设施、完全透明。多用户生产系统，mem0 这类结构化记忆层是更合适的选择。两种方案正在相互借鉴：文件方案在引入自动整合，数据库方案在引入追加语义。记忆系统的演进方向，可能是两者的融合。</p>
 <hr>
 <p><strong>参考链接：</strong></p>
 <ul>
@@ -548,6 +713,11 @@ paths:
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/sinat_38500308/article/details/161487580">彻底搞懂 Claude Code 的记忆机制</a></li>
 <li><a target="_blank" rel="noopener" href="https://blog.eimoon.com/p/claude-code-memory-guide/">Claude Code 怎么记住你的项目：CLAUDE.md 与自动记忆完全指南</a></li>
 <li><a target="_blank" rel="noopener" href="https://m.runoob.com/claude-code/claude-code-memory.html">Claude Code 记忆系统 Memory</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/evilstar2015/article/details/159997088">AutoDream 深度解析：Claude Code 跨会话记忆整合引擎</a></li>
+<li><a target="_blank" rel="noopener" href="https://aicoding.csdn.net/69d61b1854b52172bc67beb1.html">Claude Code 源码解构：记忆系统三阶生命周期</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/mem0ai/mem0">mem0 GitHub</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2504.19413">mem0: A Memory Layer for AI Agents (arXiv)</a></li>
+<li><a target="_blank" rel="noopener" href="https://mem0.ai/blog/how-hermes-and-claude-handle-context-compression-in-real-production-agents-(and-what-you-should-extract)">Context Compression: Hermes vs Claude Code (mem0 blog)</a></li>
 </ul>
 
                 
