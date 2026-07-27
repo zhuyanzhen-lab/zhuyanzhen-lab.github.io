@@ -4,9 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="MCP 协议深度解析：从架构设计到工程实践, 是小竹不是小猪">
-    <meta name="description" content="MCP 协议深度解析：从架构设计到工程实践
-MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，是一套 AI 应用与外部工具之间的标准化集成协议。本文从架构动机、通信机制、上下">
+    <meta name="keywords" content="Claude Code 记忆机制深度解析, 是小竹不是小猪">
+    <meta name="description" content="Claude Code 记忆机制深度解析LLM 本质上是无状态的。每次对话结束，上下文清空，一切归零。这意味着你上一轮花了 20 分钟教 AI 理解的项目架构、编码规范、调试经验，下一轮全部丢失。
+Claude Code 通过一套分层的记忆">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -18,7 +18,7 @@ MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，�
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>MCP 协议深度解析：从架构设计到工程实践 | 是小竹不是小猪</title>
+    <title>Claude Code 记忆机制深度解析 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -310,12 +310,12 @@ MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，�
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">MCP 协议深度解析：从架构设计到工程实践</h1>
+                    <h1 class="description center-align post-title">Claude Code 记忆机制深度解析</h1>
                 </div>
             </div>
         </div>
@@ -435,12 +435,12 @@ MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，�
                                 <span class="chip bg-color">AI Agent</span>
                             </a>
                         
-                            <a href="/tags/MCP/">
-                                <span class="chip bg-color">MCP</span>
+                            <a href="/tags/Claude-Code/">
+                                <span class="chip bg-color">Claude Code</span>
                             </a>
                         
-                            <a href="/tags/%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1/">
-                                <span class="chip bg-color">协议设计</span>
+                            <a href="/tags/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/">
+                                <span class="chip bg-color">上下文工程</span>
                             </a>
                         
                     </div>
@@ -476,152 +476,78 @@ MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，�
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="MCP-协议深度解析：从架构设计到工程实践"><a href="#MCP-协议深度解析：从架构设计到工程实践" class="headerlink" title="MCP 协议深度解析：从架构设计到工程实践"></a>MCP 协议深度解析：从架构设计到工程实践</h1><blockquote>
-<p>MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，是一套 AI 应用与外部工具之间的标准化集成协议。本文从架构动机、通信机制、上下文优化、容错设计四个维度展开分析。</p>
-</blockquote>
-<h2 id="一、为什么需要-MCP"><a href="#一、为什么需要-MCP" class="headerlink" title="一、为什么需要 MCP"></a>一、为什么需要 MCP</h2><h3 id="M×N-集成困境"><a href="#M×N-集成困境" class="headerlink" title="M×N 集成困境"></a>M×N 集成困境</h3><p>在 MCP 出现之前，AI 应用与外部工具的集成完全依赖自定义适配。一个编程助手要对接 GitHub 需要编写专用连接器，对接数据库又需要另一套。不同的 AI 产品做同样的事，代码无法复用。假设存在 M 个 AI 应用和 N 个工具，最坏情况需要 M×N 个独立集成。这不仅是开发成本问题，更是维护噩梦，任何工具的 API 变更都可能引发多个应用同时故障。</p>
-<p>MCP 的核心思路是将 M×N 降为 M+N。每个工具提供方只需实现一个 MCP Server，每个 AI 应用只需实现一个 MCP Client，双方通过统一协议通信。</p>
-<h3 id="三层架构"><a href="#三层架构" class="headerlink" title="三层架构"></a>三层架构</h3><p>MCP 定义了 Host、Client、Server 三层架构：</p>
-<pre><code>用户 ←→ Host ←→ Client ←→ Server
+                <h1 id="Claude-Code-记忆机制深度解析"><a href="#Claude-Code-记忆机制深度解析" class="headerlink" title="Claude Code 记忆机制深度解析"></a>Claude Code 记忆机制深度解析</h1><p>LLM 本质上是无状态的。每次对话结束，上下文清空，一切归零。这意味着你上一轮花了 20 分钟教 AI 理解的项目架构、编码规范、调试经验，下一轮全部丢失。</p>
+<p>Claude Code 通过一套分层的记忆系统解决了这个问题。这套系统的核心思路很直接：把需要记住的东西写成 Markdown 文件，每次启动时注入到上下文中。没有向量数据库，没有 RAG，没有复杂的记忆检索算法，就是纯文本文件的读取和拼接。</p>
+<h2 id="双轨记忆模型"><a href="#双轨记忆模型" class="headerlink" title="双轨记忆模型"></a>双轨记忆模型</h2><p>Claude Code 的记忆分为两条轨道：</p>
+<p><strong>人工配置轨道</strong>。开发者手动维护的 CLAUDE.md 文件和 rules 规则库。内容是项目架构、编码规范、常用命令等确定性知识。每次会话启动时完整注入上下文。</p>
+<p><strong>AI 自主学习轨道</strong>。Auto Memory 机制。AI 在交互过程中自动记录调试经验、用户偏好纠正、踩过的坑。启动时只加载摘要索引，具体内容按需检索。</p>
+<p>两者的关系是：你定基调，AI 补细节。</p>
+<h2 id="CLAUDE-md：人工记忆的核心载体"><a href="#CLAUDE-md：人工记忆的核心载体" class="headerlink" title="CLAUDE.md：人工记忆的核心载体"></a>CLAUDE.md：人工记忆的核心载体</h2><p>CLAUDE.md 是 Claude Code 记忆系统中最基础也最重要的文件。它的定位是”每次会话都应该知道的事实”。</p>
+<h3 id="四级层级体系"><a href="#四级层级体系" class="headerlink" title="四级层级体系"></a>四级层级体系</h3><p>CLAUDE.md 不只是一个文件，而是一个从宏观到微观的四级体系。系统会沿目录树向上搜集并合并所有找到的文件，后加载的覆盖先加载的：</p>
+<p><strong>企业级</strong>。存放在操作系统级别的受保护目录，如 macOS 的 <code>/Library/Application Support/ClaudeCode/CLAUDE.md</code>。用于公司层面的合规要求，个人无法绕过。</p>
+<p><strong>用户级</strong>。位于 <code>~/.claude/CLAUDE.md</code>，跨所有项目生效。适合存放个人编码偏好，比如”始终使用 TypeScript strict 模式””注释用中文”。</p>
+<p><strong>项目级</strong>。放在工程根目录的 <code>CLAUDE.md</code> 或 <code>.claude/CLAUDE.md</code>，纳入版本控制。这是团队共享的项目规范，包括技术栈说明、架构约定、构建命令等。</p>
+<p><strong>本地覆盖</strong>。带 <code>.local</code> 后缀的同级文件，如 <code>CLAUDE.local.md</code>。专用于本地调试，排除在 Git 提交之外。</p>
+<p>还有一个容易忽略的机制：<strong>子目录级</strong>。项目子目录中也可以放 CLAUDE.md，但不会在启动时全量加载。只有当 AI 访问该目录的代码时，才按需加载对应的配置。这个设计有效控制了 token 消耗。</p>
+<h3 id="编写原则"><a href="#编写原则" class="headerlink" title="编写原则"></a>编写原则</h3><p><strong>控制在 200 行以内</strong>。这是官方建议。文件越长，模型的遵从度越低，注意力越容易分散。</p>
+<p><strong>使用祈使句，提供具体信息</strong>。”使用 pnpm 而非 npm””Python 版本为 3.12””数据库连接字符串从 .env 读取”比”注意使用正确的包管理器”有效得多。</p>
+<p><strong>规则要可验证</strong>。”代码要有良好的错误处理”是模糊的，”所有 API 端点必须包含 try-catch 且返回标准化错误格式”是可验证的。模糊规则等于没有规则。</p>
+<p><strong>用 @ 语法引用外部文档</strong>。如果某个规范太长不适合直接写入 CLAUDE.md，可以用 <code>@docs/api-convention.md</code> 引用。但注意这是全文注入，不会节省上下文空间。</p>
+<h3 id="初始化方式"><a href="#初始化方式" class="headerlink" title="初始化方式"></a>初始化方式</h3><p>在项目根目录执行 <code>/init</code> 命令，AI 会分析当前目录结构并自动生成 CLAUDE.md 骨架。生成后建议手动审查和调整，不要完全依赖自动生成。</p>
+<h2 id="claude-rules-：模块化规则库"><a href="#claude-rules-：模块化规则库" class="headerlink" title=".claude/rules/：模块化规则库"></a>.claude/rules/：模块化规则库</h2><p>当项目规模增大，单一 CLAUDE.md 无法承载所有规范时，可以将规则分散到 <code>.claude/rules/</code> 目录中。</p>
+<p>这个目录的核心特性是<strong>条件触发</strong>。通过 YAML frontmatter 中的 <code>paths</code> 字段定义匹配模式，规则只在 AI 操作相关文件时才被激活：</p>
+<pre><code class="yaml">---
+paths:
+  - &quot;src/api/**/*.ts&quot;
+---
+# API 开发规范
+- 端点必须包含输入验证
+- 错误响应统一使用 ApiError 类
+- 所有公开接口需要 JSDoc 注释
 </code></pre>
-<ul>
-<li><strong>Host</strong>：面向用户的 AI 应用，如 Claude Desktop、Cursor，负责发起连接。</li>
-<li><strong>Client</strong>：Host 内部的连接器实例，每个 Client 与一个 Server 保持 1:1 的有状态连接，负责协议协商和消息路由。</li>
-<li><strong>Server</strong>：外部服务，向 Host 暴露 Tools、Resources 和 Prompts 三类能力。</li>
+<p>这比全部塞进 CLAUDE.md 的优势在于：不相关的规则不会占用上下文窗口。一个有 200 个文件的大型项目可能有 20 个规则文件，但每次对话实际加载的可能只有 2 到 3 个。</p>
+<h2 id="Auto-Memory：AI-的自主笔记本"><a href="#Auto-Memory：AI-的自主笔记本" class="headerlink" title="Auto Memory：AI 的自主笔记本"></a>Auto Memory：AI 的自主笔记本</h2><p>Auto Memory 是 Claude Code 在交互过程中自动积累的经验记录。它不需要人工维护，AI 会自己判断哪些信息值得记住。</p>
+<h3 id="存储位置"><a href="#存储位置" class="headerlink" title="存储位置"></a>存储位置</h3><p>数据存储在 <code>~/.claude/projects/&lt;project-hash&gt;/memory/</code> 下，按 Git 仓库路径推导出专属目录。这意味着同一个代码库的不同分支和工作树共享同一份记忆。</p>
+<h3 id="加载机制"><a href="#加载机制" class="headerlink" title="加载机制"></a>加载机制</h3><p>核心文件 MEMORY.md 充当索引，每次会话启动时加载前 200 行或 25KB。如果记忆内容超出这个范围，系统会按主题拆分，详细笔记静默存储，待特定场景下被模型主动检索。</p>
+<h3 id="典型记录内容"><a href="#典型记录内容" class="headerlink" title="典型记录内容"></a>典型记录内容</h3><ul>
+<li>调试过程中发现的坑和解决方案</li>
+<li>用户反复纠正的偏好，比如”不要用 any 类型””错误日志要包含 request id”</li>
+<li>项目特有的构建陷阱</li>
+<li>某次修复的关键步骤</li>
 </ul>
-<p>MCP 的连接是有状态的长连接，而非无状态的请求响应。双方在建连时进行能力协商，声明各自支持的功能，后续消息流双向传输，统一使用 JSON-RPC 2.0 格式。</p>
-<p>MCP 不是简单的 API 网关。Server 可以主动向 Host 推送通知和采样请求，这种双向性是早期集成方案不具备的。</p>
-<h3 id="使用-MCP-的工程优势"><a href="#使用-MCP-的工程优势" class="headerlink" title="使用 MCP 的工程优势"></a>使用 MCP 的工程优势</h3><p>除了将 M×N 降为 M+N 的集成效率，MCP 在实际工程中还有几个关键优势：</p>
-<p><strong>社区共享与复用</strong>。MCP Server 是独立于 Agent 的可复用单元。一个团队实现了 GitHub MCP Server，社区内所有 Agent 都可以直接使用，无需重复开发。这使得工具集成从”每个应用各写一遍”变为”实现一次，处处可用”。</p>
-<p><strong>配置即生效，无需修改 Agent 代码</strong>。新增一个工具不需要改动 Agent 的任何代码，只需在配置文件中注册对应的 MCP Server。Agent 在运行时通过协议自动发现可用工具。这种插件化架构带来了良好的可扩展性，工具的增减对 Agent 核心逻辑完全透明。</p>
-<p><strong>容器级权限隔离</strong>。MCP Server 可以运行在独立的进程或容器中。不同 Server 之间的资源访问权限天然隔离，一个 Server 的异常不会影响其他 Server 的正常运行。这为多租户部署和最小权限原则提供了架构层面的保障。</p>
-<h2 id="二、MCP-支持的通信方式"><a href="#二、MCP-支持的通信方式" class="headerlink" title="二、MCP 支持的通信方式"></a>二、MCP 支持的通信方式</h2><p>MCP 在协议层面是传输无关的，JSON-RPC 消息的内容不依赖具体传输方式。规范定义了以下几种传输机制。</p>
-<h3 id="stdio"><a href="#stdio" class="headerlink" title="stdio"></a>stdio</h3><p>Client 将 Server 作为子进程启动，通过 stdin 发送消息，stdout 接收消息。每条 JSON-RPC 消息以换行符分隔，stderr 用于日志输出。</p>
-<p>适用于本地工具集成，包括文件系统、本地数据库、CLI 工具和代码执行。Claude Desktop 主要使用这种传输方式。</p>
-<p>核心特点：无需网络和端口，无需认证，生命周期强耦合，Client 退出则 Server 终止，严格 1:1 关系。规范建议优先使用 stdio。</p>
-<h3 id="Streamable-HTTP"><a href="#Streamable-HTTP" class="headerlink" title="Streamable HTTP"></a>Streamable HTTP</h3><p>2025-03-26 规范引入，是当前推荐的远程传输方式。</p>
-<p>使用单一 HTTP 端点，同时接受 GET 和 POST 请求。POST 携带 Client 到 Server 的 JSON-RPC 消息，Server 可选择直接返回 HTTP 响应或开启 SSE 流。GET 打开 Server 到 Client 的 SSE 事件流，用于接收通知和 Server 主动发起的请求。</p>
-<p>通过 <code>Mcp-Session-Id</code> 请求头管理有状态会话。通过 <code>Last-Event-Id</code> 实现断线重连，连接断开后 Client 发送最后收到的事件 ID，Server 只重放丢失的事件。</p>
-<p>适用于远程和云端 MCP Server，支持多客户端并发、流式传输和断线重连。本地运行时应绑定 <code>127.0.0.1</code> 而非 <code>0.0.0.0</code>，必须进行 Origin 头验证以防止 DNS 重绑定攻击。</p>
-<h3 id="旧版-HTTP-SSE"><a href="#旧版-HTTP-SSE" class="headerlink" title="旧版 HTTP+SSE"></a>旧版 HTTP+SSE</h3><p>2024-11-05 规范定义，已废弃。使用两个独立端点，一个 SSE 端点用于 Server 到 Client 流，一个 HTTP 端点用于 Client 到 Server POST 请求。已被 Streamable HTTP 取代，仅保留向后兼容。现代 Client 通过先尝试 POST 来判断 Server 是否使用旧版协议，返回 4xx 错误时回退到 GET+SSE 模式。</p>
-<h3 id="对比总结"><a href="#对比总结" class="headerlink" title="对比总结"></a>对比总结</h3><table>
-<thead>
-<tr>
-<th>维度</th>
-<th>stdio</th>
-<th>Streamable HTTP</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>部署位置</strong></td>
-<td>本地</td>
-<td>本地或远程</td>
-</tr>
-<tr>
-<td><strong>认证需求</strong></td>
-<td>通常不需要</td>
-<td>需要，OAuth 或 API Key</td>
-</tr>
-<tr>
-<td><strong>生命周期</strong></td>
-<td>Client 管理 Server 进程</td>
-<td>Server 独立运行</td>
-</tr>
-<tr>
-<td><strong>并发能力</strong></td>
-<td>1:1</td>
-<td>多 Client 多 Server</td>
-</tr>
-<tr>
-<td><strong>断线重连</strong></td>
-<td>不支持</td>
-<td>支持 Last-Event-Id</td>
-</tr>
-<tr>
-<td><strong>典型场景</strong></td>
-<td>桌面应用、本地工具</td>
-<td>SaaS 集成、云端服务</td>
-</tr>
-</tbody></table>
-<h2 id="三、延迟加载：工具数量与上下文窗口的矛盾"><a href="#三、延迟加载：工具数量与上下文窗口的矛盾" class="headerlink" title="三、延迟加载：工具数量与上下文窗口的矛盾"></a>三、延迟加载：工具数量与上下文窗口的矛盾</h2><p>这是 MCP 工程实践中一个现实问题。</p>
-<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>MCP 允许注册任意数量的外部工具服务器。当一个 MCP Server 暴露 50+ 工具时，所有工具的完整 JSON Schema 在每轮对话中都会被注入 system prompt，占用约 15K 到 30K tokens。200K 上下文窗口的 15% 被工具定义占满，用户尚未开始对话。</p>
-<p>更关键的是，这个占用是每轮都在的。不管当前对话是否需要工具，schema 始终占据上下文空间。</p>
-<h3 id="方案：两层分级加载"><a href="#方案：两层分级加载" class="headerlink" title="方案：两层分级加载"></a>方案：两层分级加载</h3><p>将工具分为两层：</p>
-<p><strong>Immediate 层</strong>，始终加载。少量核心工具，完整 schema 始终注入 system prompt。这些是 Agent 高频使用的基础能力，如文件读写、命令执行、搜索。</p>
-<p><strong>Deferred 层</strong>，延迟加载。所有 MCP 工具和低频扩展工具。在 system prompt 中只列出名称和一行描述，每个工具约 10 tokens。LLM 通过 ToolSearch 工具按需加载具体工具的完整 schema。</p>
-<p>工作流程是这样的：</p>
-<pre><code>用户提问 → LLM 判断需要某个 MCP 工具
-         → 调用 ToolSearch（按关键词或名称搜索）
-         → ToolSearch 返回完整 schema
-         → schema 缓存到当前会话
-         → LLM 调用实际工具
-</code></pre>
-<h3 id="取舍"><a href="#取舍" class="headerlink" title="取舍"></a>取舍</h3><p>该设计引入了一次额外的 tool call 开销。LLM 需要先调 ToolSearch 再调实际工具，增加了一步间接调用。但换来的是初始上下文占用降低约 85%。</p>
-<p>实测数据：初始 system prompt 中的工具 schema 从约 30K tokens 降到约 4.5K tokens。挂载 3 个主要 MCP 集成的场景下，可用上下文从 92K tokens 提升至 195K tokens。</p>
-<p>工具数量少于 10 个时，该机制属于过度设计。多一次 tool call 的延迟换来的上下文节省微乎其微。但目标场景是支持用户自由挂载多个 MCP 服务器时，延迟加载几乎成为必需品。</p>
-<h3 id="加载策略配置"><a href="#加载策略配置" class="headerlink" title="加载策略配置"></a>加载策略配置</h3><p>实际实现中通常提供以下模式：</p>
-<ul>
-<li><strong>全延迟</strong>：所有外部工具均通过 ToolSearch 加载</li>
-<li><strong>自动模式</strong>：外部工具 schema 总量超过上下文 10% 时自动启用延迟</li>
-<li><strong>标准模式</strong>：全部内联加载，适合工具数量少的场景</li>
-<li><strong>白名单模式</strong>：高频工具标记为 <code>alwaysLoad: true</code>，跳过延迟</li>
-</ul>
-<h3 id="对-MCP-Server-开发者的启示"><a href="#对-MCP-Server-开发者的启示" class="headerlink" title="对 MCP Server 开发者的启示"></a>对 MCP Server 开发者的启示</h3><p>延迟加载机制对 MCP Server 开发提出了更高要求：</p>
-<ul>
-<li><strong>工具描述需要清晰且关键词丰富</strong>。这是 ToolSearch 准确定位工具的唯一依据。</li>
-<li><strong>schema 应尽量精简</strong>。避免冗长的参数描述。</li>
-<li><strong>填充 <code>serverInstructions</code> 字段</strong>。提供 Server 的整体功能摘要，帮助延迟加载系统判断加载时机。</li>
-</ul>
-<h2 id="四、MCP-Server-启动失败时的处理策略"><a href="#四、MCP-Server-启动失败时的处理策略" class="headerlink" title="四、MCP Server 启动失败时的处理策略"></a>四、MCP Server 启动失败时的处理策略</h2><p>MCP Server 可能因依赖缺失、网络故障、配置错误等原因启动失败或中途断开。这对 Agent 的可靠性构成真实挑战。</p>
-<h3 id="启动阶段的失败处理"><a href="#启动阶段的失败处理" class="headerlink" title="启动阶段的失败处理"></a>启动阶段的失败处理</h3><p>Client 尝试通过 stdio 启动 MCP Server 时，如果 Server 未能返回有效的初始化响应，处理流程如下：</p>
+<h3 id="管理方式"><a href="#管理方式" class="headerlink" title="管理方式"></a>管理方式</h3><p>Auto Memory 默认启用，纯本地存储，不同步到云端或 Git。用户可以通过 <code>/memory</code> 命令查看、编辑、删除记忆条目，也可以通过环境变量 <code>CLAUDE_CODE_DISABLE_MEMORY</code> 全局禁用。</p>
+<h2 id="会话启动时的记忆加载流程"><a href="#会话启动时的记忆加载流程" class="headerlink" title="会话启动时的记忆加载流程"></a>会话启动时的记忆加载流程</h2><p>一次新会话启动时，记忆加载的完整流程如下：</p>
 <ol>
-<li>记录失败日志，将该 Server 标记为不可用</li>
-<li>告知用户哪些工具和能力当前不可用</li>
-<li>使用其他成功启动的 Server 继续运行</li>
-<li>可选地提供重试逻辑，延迟后尝试重启</li>
+<li>读取企业级 CLAUDE.md，如果存在</li>
+<li>读取用户级 <code>~/.claude/CLAUDE.md</code></li>
+<li>从当前目录向上遍历，合并所有项目级 CLAUDE.md 和 CLAUDE.local.md</li>
+<li>加载 <code>.claude/rules/</code> 中无条件触发的规则</li>
+<li>读取 Auto Memory 的 MEMORY.md 索引文件</li>
+<li>将以上内容拼接注入 system prompt</li>
 </ol>
-<p>核心原则：一个 Server 的失败不应拖垮整个 Agent。这是舱壁隔离模式的应用。</p>
-<h3 id="运行时的失败处理"><a href="#运行时的失败处理" class="headerlink" title="运行时的失败处理"></a>运行时的失败处理</h3><p>工具调用在对话中途失败是更常见也更棘手的场景。</p>
-<p><strong>将错误返回给模型</strong>。工具调用结果包含错误信息，由 LLM 自行决定下一步，尝试替代方案、告知用户或跳过该步骤。这是最常见的做法，利用 LLM 的推理能力做动态决策。</p>
-<p><strong>指数退避重试</strong>。针对瞬态故障，如网络超时和速率限制，在上报失败前自动重试。间隔按 1s、2s、4s、8s 递增，加入随机抖动防止惊群效应，通常最多重试 3 次。</p>
-<p><strong>熔断器模式</strong>。连续失败多次后暂时停止调用该 Server，标记为不可用，定期探测是否恢复。</p>
-<h3 id="Fail-Fast-还是优雅降级"><a href="#Fail-Fast-还是优雅降级" class="headerlink" title="Fail-Fast 还是优雅降级"></a>Fail-Fast 还是优雅降级</h3><p>取决于工具的关键程度：</p>
-<table>
-<thead>
-<tr>
-<th>策略</th>
-<th>行为</th>
-<th>适用场景</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Fail-Fast</strong></td>
-<td>立即停止并报错，不重试不回退</td>
-<td>关键工具，错误或不完整的结果比没有结果更危险</td>
-</tr>
-<tr>
-<td><strong>优雅降级</strong></td>
-<td>继续运行但降低能力，使用回退方案</td>
-<td>非关键工具，部分结果仍有价值</td>
-</tr>
-</tbody></table>
-<h3 id="设计可降级的-Agent"><a href="#设计可降级的-Agent" class="headerlink" title="设计可降级的 Agent"></a>设计可降级的 Agent</h3><p>工程上成熟的 Agent 在 MCP 容错方面通常包含以下设计：</p>
-<p><strong>工具分级</strong>。将每个工具标记为 essential、important 或 optional。essential 工具失败时 halt，optional 工具失败时 log and skip。</p>
-<p><strong>无工具回退路径</strong>。Agent 应能在所有工具都失败时仅依靠自身知识推理。这不是理想状态，但必须是可用状态。</p>
-<p><strong>部分结果保留</strong>。超时时提取并返回已获取的部分数据，而非全部丢弃。</p>
-<p><strong>降级标记</strong>。回退数据产生的输出应明确标记，让下游消费者知晓数据可靠性可能降低。</p>
-<p><strong>超时分层设计</strong>。不使用统一超时值。Socket 连接超时 5 到 10s，首次响应超时 10 到 30s，消息间隔超时和整体操作超时分层设置，基于工具的 P99 延迟确定。快速查询工具可能 5s 超时，代码分析工具可能需要 60s。</p>
-<p><strong>幂等性检查</strong>。非幂等工具，即会创建或修改状态的工具，不能盲目重试，否则会产生重复副作用。只有幂等工具适合自动重试。</p>
-<h3 id="长耗时操作的处理"><a href="#长耗时操作的处理" class="headerlink" title="长耗时操作的处理"></a>长耗时操作的处理</h3><p>如果工具调用预计耗时超过 5 秒，应该使用异步 HandleId 模式：Server 立即返回一个 job ID，Agent 通过轮询状态端点等待完成。这避免了 MCP 连接阻塞和超时问题。</p>
-<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>MCP 解决的是 AI 与工具集成的标准化问题。理解它需要关注三个层面：协议本身，包括 JSON-RPC 2.0、能力协商和有状态连接；传输机制，stdio 的简单与 Streamable HTTP 的灵活；工程落地中的实际问题，上下文爆炸用延迟加载解决，Server 不可用用分级降级应对。</p>
-<p>作为开放协议，MCP 的价值随生态扩大而增长。无论是构建 MCP Server 还是在 Agent 中集成 MCP Client，理解设计背后的取舍比记住规范条文更重要。</p>
+<p>子目录的 CLAUDE.md 和带 paths 条件的 rules 文件在这一步不加载，等 AI 实际访问相关代码时再按需注入。</p>
+<h2 id="记忆失效的场景与应对"><a href="#记忆失效的场景与应对" class="headerlink" title="记忆失效的场景与应对"></a>记忆失效的场景与应对</h2><h3 id="规则被忽略"><a href="#规则被忽略" class="headerlink" title="规则被忽略"></a>规则被忽略</h3><p>常见原因有三个：文件不在有效路径上、指令过于模糊、不同文件之间存在冲突规则。排查方法是用 <code>/memory</code> 命令确认文件是否被加载。</p>
+<p>如果某条规则必须被严格执行，不应依赖 CLAUDE.md，而应使用 <strong>Hooks 机制</strong>。Hooks 可以在工具调用前后执行脚本，实现硬性拦截。比如禁止执行某些命令、自动格式化代码等。Hooks 是确定性的代码执行，不存在”模型可能不遵守”的问题。</p>
+<h3 id="上下文压缩导致遗忘"><a href="#上下文压缩导致遗忘" class="headerlink" title="上下文压缩导致遗忘"></a>上下文压缩导致遗忘</h3><p>长对话中，Claude Code 会执行上下文压缩以节省 token。压缩后的行为：</p>
+<ul>
+<li>根目录的 CLAUDE.md 和 rules 会自动重新加载，具备抗压缩能力</li>
+<li>子目录的配置需要等 AI 再次访问该目录才能重新激活</li>
+<li>Auto Memory 的索引会保留，但详细笔记需要重新检索</li>
+</ul>
+<p>这意味着核心规则应该放在根目录，而非子目录。</p>
+<h2 id="设计思路的启示"><a href="#设计思路的启示" class="headerlink" title="设计思路的启示"></a>设计思路的启示</h2><p>Claude Code 的记忆系统没有使用向量数据库或语义检索，而是选择了最朴素的方案：Markdown 文件加文本注入。这个选择背后有几个考量：</p>
+<p><strong>可调试性</strong>。所有记忆都是纯文本文件，开发者可以直接查看、编辑、版本控制。不存在黑盒。</p>
+<p><strong>确定性</strong>。文件在不在、内容是什么、加载了什么，都是确定的。不像向量检索那样存在相关性排序的不确定性。</p>
+<p><strong>可控性</strong>。四级层级体系加上条件触发，开发者可以精确控制什么信息在什么时候被加载。</p>
+<p><strong>成本可控</strong>。按需加载和路径限制避免了上下文窗口被无关规则占满的问题。</p>
+<p>这套方案对于构建其他 AI Agent 系统也有参考价值。记忆不一定要用复杂的检索系统，简单的文件加载在大多数场景下就足够了。关键在于分层设计和按需加载的策略。</p>
 <hr>
 <p><strong>参考链接：</strong></p>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://modelcontextprotocol.io/specification/2025-03-26">MCP 官方规范</a></li>
-<li><a target="_blank" rel="noopener" href="https://modelcontextprotocol.io/introduction">MCP 官方介绍</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.anthropic.com/news/model-context-protocol">Anthropic MCP 发布公告</a></li>
-<li><a target="_blank" rel="noopener" href="https://modelcontextprotocol.io/specification/2025-03-26/basic/transports">MCP Transport 规范</a></li>
+<li><a target="_blank" rel="noopener" href="https://code.claude.com/docs/zh-CN/claude-directory">Claude Code 官方文档：.claude 目录</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/sinat_38500308/article/details/161487580">彻底搞懂 Claude Code 的记忆机制</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.eimoon.com/p/claude-code-memory-guide/">Claude Code 怎么记住你的项目：CLAUDE.md 与自动记忆完全指南</a></li>
+<li><a target="_blank" rel="noopener" href="https://m.runoob.com/claude-code/claude-code-memory.html">Claude Code 记忆系统 Memory</a></li>
 </ul>
 
                 
@@ -649,7 +575,7 @@ MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，�
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2026/07/27/mcp-protocol-deep-dive/">http://example.com/2026/07/27/mcp-protocol-deep-dive/</a>
+                    <a href="http://example.com/2026/07/27/claude-code-memory-mechanism/">http://example.com/2026/07/27/claude-code-memory-mechanism/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -691,12 +617,12 @@ MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，�
                                     <span class="chip bg-color">AI Agent</span>
                                 </a>
                             
-                                <a href="/tags/MCP/">
-                                    <span class="chip bg-color">MCP</span>
+                                <a href="/tags/Claude-Code/">
+                                    <span class="chip bg-color">Claude Code</span>
                                 </a>
                             
-                                <a href="/tags/%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1/">
-                                    <span class="chip bg-color">协议设计</span>
+                                <a href="/tags/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/">
+                                    <span class="chip bg-color">上下文工程</span>
                                 </a>
                             
                         </div>
@@ -868,9 +794,10 @@ MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，�
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2026/07/27/claude-code-memory-mechanism/">
                     <div class="card-image">
@@ -888,9 +815,9 @@ MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，�
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2026-07-27
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-27
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -899,6 +826,7 @@ MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，�
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -925,13 +853,13 @@ MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，�
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2026/07/24/demystifying-evals-for-ai-agents/">
+                <a href="/2026/07/27/mcp-protocol-deep-dive/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="Demystifying Evals for AI Agents 学习笔记">
+                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="MCP 协议深度解析：从架构设计到工程实践">
                         
-                        <span class="card-title">Demystifying Evals for AI Agents 学习笔记</span>
+                        <span class="card-title">MCP 协议深度解析：从架构设计到工程实践</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -942,7 +870,7 @@ MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，�
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-24
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-27
                             </span>
                         <span class="publish-author">
                             
@@ -959,12 +887,12 @@ MCP 全称 Model Context Protocol，由 Anthropic 于 2024 年 11 月开源，�
                         <span class="chip bg-color">AI Agent</span>
                     </a>
                     
-                    <a href="/tags/%E8%AF%84%E6%B5%8B/">
-                        <span class="chip bg-color">评测</span>
+                    <a href="/tags/MCP/">
+                        <span class="chip bg-color">MCP</span>
                     </a>
                     
-                    <a href="/tags/Anthropic/">
-                        <span class="chip bg-color">Anthropic</span>
+                    <a href="/tags/%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1/">
+                        <span class="chip bg-color">协议设计</span>
                     </a>
                     
                 </div>
