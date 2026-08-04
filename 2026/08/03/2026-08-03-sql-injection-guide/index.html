@@ -4,10 +4,10 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="服务器环境配置, 是小竹不是小猪">
-    <meta name="description" content="
-  
-    02fc9e3afc96383e55f9686ebecd1d4f23e58af49ad82486867e07ae0879541288001272e564919b985418675e22daa567b10d7e2dcd152e">
+    <meta name="keywords" content="SQL 注入原理与防御指南, 是小竹不是小猪">
+    <meta name="description" content="SQL 注入是 Web 安全中最经典也最持久的漏洞类型之一。理解它的本质，不需要大量工具记忆，核心在于理解一条原则：当用户输入被当作 SQL 指令执行时，注入就发生了。
+注入原理根本原因SQL 注入的根源是数据与指令的边界混淆。
+在正常的 ">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -19,7 +19,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>服务器环境配置 | 是小竹不是小猪</title>
+    <title>SQL 注入原理与防御指南 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -311,12 +311,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/9.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/15.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">服务器环境配置</h1>
+                    <h1 class="description center-align post-title">SQL 注入原理与防御指南</h1>
                 </div>
             </div>
         </div>
@@ -432,27 +432,14 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/">
-                                <span class="chip bg-color">服务器</span>
-                            </a>
-                        
-                            <a href="/tags/%E7%A7%81%E5%AF%86/">
-                                <span class="chip bg-color">私密</span>
+                            <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                                <span class="chip bg-color">SQL注入</span>
                             </a>
                         
                     </div>
                     
                 </div>
                 <div class="col s5 right-align">
-                    
-                    <div class="post-cate">
-                        <i class="fas fa-bookmark fa-fw icon-category"></i>
-                        
-                            <a href="/categories/%E6%8A%80%E6%9C%AF/" class="post-category">
-                                技术
-                            </a>
-                        
-                    </div>
                     
                 </div>
             </div>
@@ -482,31 +469,101 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <div class="hbe hbe-container" id="hexo-blog-encrypt"
-     data-hbe-format="4"
-     data-wpm="Oh, this is an invalid password. Check and try again, please."
-     data-whm="Oh, this is an invalid password. Check and try again, please."
-     data-salt="9caae434d5e7dca8bb56ab559bf4047bca214d6517ffc4d8619ce8033e5de4b1"
-     data-nonce="734cd27022c5148cb8ba5d5e"
-     data-kdf-iterations="250000"
-     data-auto-save="false">
-  <script id="hbeData" type="hbeData">
-    02fc9e3afc96383e55f9686ebecd1d4f23e58af49ad82486867e07ae0879541288001272e564919b985418675e22daa567b10d7e2dcd152e3972289261dbefa606823c3e27d103c9c3edcfb3c2e4d9fb682240bf65a7bd5b64d5cf8bff170227e7603e98b5c68092bafa8b32f7b813769933c5d4af8e8c7625c2ea493b7ba58a476841998fed6837d79deb453df0b84294500fcb2294eba0981e044f21f9c66712b541e5ac3e36795baf3569278ee654a98f0eabc57355b3225445bfa18c25d2a49ddac0f155eb729ea02d2eb01a3d51bc5b76452bf7b118dcff54fc6ea676bf75cd64c1df9837af46c0ca15a266a9e9241a7e519c19012e3913a94b6de3a8ed982dea0c35f566b0927434b9a50ba8f3d14f59da0c6d39593ae63bc87ca8e9e7d723d69c71a5d7861a46351cee12a3f289a1e56f5048c9aaba0f77d29eb1dabfda2c95cfa61762ef5d1d462d1e011965e87d1bdbda3e741b6229507f880deb5641ae971b7a4907756eb87142391f1b98c747dee9fff375734640d2db26383dcbe5ba8cbeeaa3d590c2671e39e2c9ff81b73d8f8ac29ca24a13c38b8bf42967a39c77c728ab2c7f1bd4f0ad74f2d95db477eac0956bd817b498ef893cd80a877e8e83c1f5fb1f2b7064ee72b98f3a186126f9a6e3192b19b079378d97e251167a9d574a2dff6d8d994b093d0f4e674b2977c2a2d643a5fdf54f068aa495e0907cae9678aeb28d6b997c9246709f0f58b5cfbb9a2dbcc83b348b3854b6f891115d8004b7243825931467fd482257493559192d8d882976e54f26b4684a62d84f06f21ee2281786033b6d1dd1f6f7fee72ee3635666bf55c52d03020ceb6d1eb845d00b45b9fa9b45f4d598cb44fc6b0380e3a1c79519358ddf64e42894a2420a0ae235b1df3186380a9a70671d41acd438a14db31850715f592ef0fb0a2cbb4c139592fed96f058c33b7d8887b9734f581a8931d3bf4b1f3583fa45a748a7bb78bef0f4c935c4b9eeae0a79674bb411fc673aa34ccfa82d06bc35bedb2ab9c416bfacc4671496e42c39c9beba19b968142ca370df99c6c95a78c87b8e6d248f354a4b33dc547c9beaef20d43941d0ff3f9fe6ed7383ab089e9ab69f1032d6cdb6a28d6265a34c7f463e5d62473c2d2d58cdf63264a585907437ad312242a43d2ba9c45525a35b3cab4a8581f3cbafe3b761fe8970709cfa85447d4671a828bdae0360d654e269f5002aced713d4bc5ec6e455b02afd6014fd5afff98f370ba5b5a9b903003e04457666c84ac863f0441b5f384eda3d4dff1fc2f9400ffc5127701fa57098335052489cec79ac46434a6b18d98da9ac16bdfaae8ae4bc32e3b505dd3fdaa05217bc952a9f6554f70107333acd03e1dbd94f7925ac86ea09344dd9261a39bb75791c2f2abd6688b9c3dad7952b2bc2a76f19e98ab862e430b56644f018801ae33de31d58b132e28c6701c9583decefc3262581738dec6027cabf8817b4c69e83bc629979f72bf3347864fec3b06cbd2c3bec686b0439919ee27c7994fa328da6baf775f4f1f247fa79a9ca5ad82836f297463813589598edef2898a86a45a836c699dca91eec6f6ec59a07eb7f67202afba4c65db0e9bb7c875ce003cb5c4fe05f7123ba08798bc0c3638ee20917929a0cf3fac0b6546d72a6de09a8977dbe26e36f1c0b87a6b2f58c3a7e0d5903556f4f485581b193bf70f8c232039f663fcadd4145566fb762af2465541943d500930b83526c97862b313dd617127e1dfc2a89ade8d262ce3fe93f2f416c2a9d27f25e3ef8613575585aee35ec3d19635a533c75b1e486f3737f9e399c69763d4e0b089866ebf5124ceca1e2984c44031fac48e052a1c6e5d325b2abe77ecf485ad7b7945dbae7f7414eda0433fdc526d98048c3ba853d17ff911236c5b78bb02372f0458bbe845961b8edb3960458199bee3c84adcd3e1600a21745b355dbb07bbcb1ecb55e779260289854d2b367217072f8a2aa13beb73386168423e3aea3684823936ba059b247dc2073aae25ad73613a0ec4d469600bd7917eed4f6ea762525ae5f5f92aa334c78b78b0690fd3bcd8dc2b8fcbc29cd38a71696a2d3026e2dab9c95b3fc0778c89ac7072967f168e1943ff0662072110a465a9041670293fbf87e70eb2faa524d544e12eeddd439d191058f5f0cd4e1c14f9830528199f2cbe395a692ecf00ea1c130ce28a0d5d190747d9e28d0e881c4fb0420e7f23c45e738a5fd094d1ac7dbedc97cb4777ba8c91214a0273913e1cc740738f77590580956eeb2365adb805c2ddb0033f729ce2b486b317bb65c100120e7f59c33f23078f3407c210b5909a9155c78dc1fef0c8759ee970375b26513c33709d14d51129d1999c6c9f4cb619bc2d627205ced833a433ec63de689982d36a9e9ca0be369ab433a460226846cb9c8b922496bc4e77fe4d2f48e078822825123e70b9721d31483507206362b6f533a24bab27d943cda2a24f4ee7309e46bbe81094a505d6b45ec4d6a0d33137cc60e60d3f50299e02d629ababdaccaa670d96d543aa47e8dfb334625d5c5430b450ce2c8129c53c24969bff2bbd032bbb7545acc343fa80b6f6e3da514b2b22212009cf9e59e5094b8e7a44d792d9204204c8c6bab10a3dfa080f3d72c9a53bc8a8b6d0203cf40a4654b501165ab3eed312264b52166c6b91ea74d3a2cdab66eb2f898d40da79d55f5e6b8ab68f71627a941f9b2e7e76d6c20c308784f1c643a70f3add644e9a7651d327d7cbe9b0aaf7336e22599b1f6172f7112b5302d1b0e3d32f225c1a21f9e6642338568ef6edbb1e74e744937702d8a76da3c164c7b84fe9e310628e18b452a5728cd4b07606bebea2272fd464a27e4630150b61d06345540753c658801c6d58d4d4908e6fc47a795918b62ed03dfe0d6561b939c91f649d611999195e27d3a7ca19fcacef29c08d6028e6572909b09e3b91bd60d431a2c5f4a9931e957712ef0a20048710d5f50fa60a3b3cf79412ace5d542f9d87a0e926c0826d1d8af793a4e971008fd0461dcb589eedafa943b4ee4ef764ca32b27cad8fa02535fbdb0a96ba7dd9e660c27602609815c0b19fbd4a27366a02f75aa407401ca02ff09b44840b83a939741ba08e6a6676addc58d22647b23d51646a4671a2f8d9c1b6a01776f1e12120eabca4791cd5bff3546b336b1cefd94807cdf4825cb7f8161549d42504ccbe9413c0de9f17f83964a5213f90dbe8abe3b1e5f87a608362bf799d22c63ef2833d293fc522c308ae9e2ac5616b29981985679deef41ba936264a1c546cf2efccfd32172b941edde6a0c6eb1e8c4a53b363bbd0a48971ded3f5d5aa31fd7c2c6e8220e5f33c2477755512571773ae6e1e54930809d2c013420a7e787dce30ab9326b6a6a89158c63ec4c378ea42da4f20caa719438124479f6b783789104e1d093268f82bd3c600591e5f3b84c6f0b5295dee7b87d240e4305e2f5ef331d303cdc3fef256f54cac010f0bbed6c03c8d919073cffaa37586f1312be251b5a6ef360c52456bc2e5f2425f0a9adc7d4be85da7141b8f9025998c7f0a320c55bec83edaeb6c12fc07ee96c8d28ca7822787b5a9f1597da9dc7189f31ef1b58c0d6f9eea991014c586bb6bf5d63249195584d54548be36554082dcfcfbd6617babd9d4c199b71bc1b875129bde21eef6dcbf6f534dacd88e0502fddbabaf8bea9a1740006a4f1fd473a89cacb317ca3f8de65bcd321a0930bafda962cdc39029ed4f3643fb181fde3f012026782b9ac74fd99b8f02571d9b9ce61780ec8cef1b444e0dd4749564d0bee358057eac87095e8f5f5edf54cac7a583dc6f206d01644a97518ee651a9dd2bded775a279eb10731af9e3ccf6c0cf91207c86b284b5c43119b17699a6f6d9940890a8fc0781f3260cb9638b761fe68765899a1e83d08456c14fded76fd06c4736bb28b378bbe1eea5fc116e116589d390d733816542c4ca01f90eacf6458a7f89fcd30295d4becf8a9683d1d37124217658bc18c12c70da2bd58ebe8a9a657427eb5dae20b95f7bff5e10cb7c9c0e1473f21b0b35905c166294c97efcab159e580c01a1b7e0b0bed847b85fc546275bbd1d15ce0f8b98724efd1ff9a20b56ae635f156fdca9817653464c3316ef060df9f85869d20e58b75644fcc7228e87b0ed5778472863065eea095b94d98f84786e9ad95788269ceb5ea5c95d6223df795bcf5645f4add310d104737ab198850d2d57fc82a9aaef1f4682b675f2f73efab629a1eef7ab62dae80704461eb9f1a684e5d4b2e0f77b65877deb691184776a17a6fe032258fbeb049b16513bf67e732efc81e5f755c51e2316fce81d1c42298fd1d1ddd08542ccd9b6c9e331530ab18b2c586c9605d8af56ad3242804d423505039da8ad565538f4e051dec3b26ac2fcd52a022c735f5adb03d85153336461c4db147308115b163ab8ea50139448b89d259320455bcbedabba2f5af52f5d071aaf5606b86ab2cb0b5c4916bc2f1f93ff0e9219cadde649b992d6b73d80fda1a793269d8d286686022d10548c08a99c2cb21e8ff9ee19dd2e92ddef3152743ceeef56ef041e209adbe321cc1c6a90be277b3dc4b5fda8c7ee9d7a534ddf82ed12d7e1cf7f4d9d7cb796bcb4f109bb5e0dd825c8a3c358e5123ba109e9da58075a216d0029d8f3a75b8358e07a1165bbad1e33e79a97097512df6716f19dab5887706b9b763048d5ae95d6da1375cc33841b9a0012fe8ad2bbde790cc085a3a02fa898109b09e734f9c6df8758bf2bb9093dc20ec3e22257a7d4772cf3d2ed82bcb42d8317e5a787f9b92d59a47bfa67c57e4d1c366f80f39a46cdb1caa100ae67db8cb379e8330a58c1e49a025c5a43762a49e33a5f682b630a3f548056d06844df4ac849e3f2dc7314decefceacd9c1be9ecd70e5162312142c0888cdb78d1aa70ed1c2f9dd209b23a1e0eceae4954cd4e02d54b90d30b4079b0cc138644c26e2f3a6e566378de230b392d16f57a1fb7dd46ccdd5552bdba38bd1292e70c64e53bf031a1e89f5b3774a330a9c537c531989010255d6ce9af44b60cb55f81b5dacc39a4f0e4667437ae5bbccd6be7c1778731d0a403688518da680631da9dd7121e3e6bdc58c1cc8982a8ca82b5817f01c9c96aa5ef4bf131bf8fb1b79440bd293c49e4ef7175fae0c56e19f9b20ab5015fa2ddaf142202078290392645819004ac34de1e82f965964cb32f39bfce1be0fe11d1710b64d2eb2c84ff3fd872944b4b35f8e020ee3fc1e7d097532d15463ac599eda8ba11565809369978c26e182d84d7c0bb510af98a923d365838e5d63c54014116aca6dbfeb0dae682bfc9e7d8292ee7e62b9b3e5262b892cf45a3ddff7eb15c221a8681ae0285067517f19ccfe4d99a6e2ff3277391d4f11c6a1337bf11fda7b50b36679cc993f0d50e4dd4d0ed7e7a175bdfb1342ba24f823049f5fb173c2c19d4eee482d11775fac445b1405cab3ca89500d884d658422fa7b9a7700d43e89134855d6d1486c8e7ff3ff9c5cb973fc9b811a7d84730cb45a54c51b84f74d17ba433631e924f3176b253165baa7c87c98206f5127c6980faaa9c889f180acb48aa62f5ca3c1c68b66dc9a93c9cbc1250a786b848a0bc54ed988aa2b681b1b7ce6d1476696e84ed92fb7bf544e232bf5cd7591408993504d998a03d6ec6c0cf5ea8b1ec87f64b9f7e98d2e590419113bcfba729cab89be67c25b5a588d74f85bd9f18fd2756c154ebc168b02f5c67e28ce7a6d0b19f68b3f2042ae157f78aff9fb2249ce8e2d6b7079aacdb7f8f54676da3a52edcc6b966d8932b86146bd5b48b1772599a506b4d5975b580ab50c7cd37b747c930a92c2bb77eec2c1d6f85cbb58ff41e38ff6fcd62df9d5ed77bd08f11b52393ea89bf4bc25abb78ba831f349608fa0ca3bc551fda2ed593b9d7397ad429feed7e046f68ba186b8765f5300af97dd579c753afd33e7ad7d8819543751279a643cd7762b3f465ed0b8cef46ef74596243c6eb88a06cf50e4cc59c4b05b969bad75cf136514cef679ba7fcf342083e37d7803093c8e2751c8c836f64abecb65d68b2efeaf3a4200c2e89d0b991b237387f474cfd90d3847393a9b28eaaa91c70eeccac1bb6bd57f1f3b634ee678eb5d96320e00ab9d2b1df1fda07faeef57516a715420f60215729a04479862d97e6a0b78f916a9564a6ce760b1df856fb3bb5a5f2920b229763b5bb725d05c07c81d7589b5a838d22160dd19c26e91d42a43b13a89d82cd790e53b038378aa1d4ff9f5becec5e091a50d8ec2205aebbdda04b3039c188695be87f0c2f46b10002370dc1de87a1e264748e0fc4c2650db1eff186fc4c3c94035a7582bab4ba1efe3fbac94d9b978dbe0a4a4e35bed60de0b938225c6562bf010f6c077221345cabd6671ff954c7039950a3e175e27cc9bc8b36ce017c02c05d3612c009e6ce22ef350df5f1873e6e1ee9c3b293d5daf83cc8e493a1e69eace63b35c17c22c130376b15c59dbe5668b4119e57da38a6ed226f0082a0a02354c9dae3be26385491682258c7de1e6140c13865188476fd61ff27dd845d3bd00419e291862339e62f8d09a60912f3b4c75d3f376be3a45a6981c18b5efe5377892fb340289a26a361eb65c2d9241499b9c452388bbd682a1c1151e5fd9c5428f094bcc5f2781373c120916d589f80faa73d39cebf721dc10a49915d5b36bc6ecb0c191494c66a1dcfe2ece0cafdc4dcd1164d62a3d2ba7df6a1900070fec3553b2768a809518506ae74cf0feeec024039dd7730c0285f383b99248b72e2564112526d101b939cbfd203bd84f5b06a32a10a345f05360570284c05f5ff41b99fe13e394d652a2b08a33b7f1d39c75d98ff8d2fef19f9b521f79fca6001fde4bc111d0124f8022fc69b5f3bcae8f8db7c7fbe6a913fa6891be65ed68692cc74aff8bbb1cde3c7ce2091364e007c6dce76b67fa2ba1608575fd2609dba7ac080595d471d9827d57a8fcf35c028da0f59c669ac24c7ca51621df4a12d71979a87d85564c682076a3ed04be8d14da8e27e849321443e52c7dce726f3d03259ad26718fbc8c3e702cf52b3b8a35c02c0d7ac738b8a74e92bd94ca3eacd8c80a7f37736ef4d28f87ed0df8508e3e311a0bf36811a3292fe7c580f4dcb1662fa17226e841d0bd5c86378a6c1902115fa261883b2624b03dcceddfabb44df73e73d0ae29d79c42c687ee5cb1662d874c9a84aa61fe5b664e9ebbe9458da2c7e8dd3b768dd0d7d3a82c16a426e2cf02ab2c6920654d4c1b6ec11b8ee971f1c3b1e5db8a361d3d5dd9ecf182c4c331b2b3c28364dcfd2adef8ceeecb3c418bca5c9874a96f4365ad5cd5196e8d32568c1de98301c93c7b1c008716c6264ae6d7c5f3d39793e472af611ecbcf91c63caae57ed3ffab49a4cb03d066bc689ec8cfca939ae8d9168a8d946ebeb3aa6f4ee24b1cbe1887860edfd42785edb875c345f1c0a7b85b437beedb211d372b8969189e49118b1ce5165dd489388de699036007608bfda0addd0deb04b2f6b65aead0c8c07074ee183add01270970c3594cf0277a8705536e575a37d344ab275993491f8d398e2f0d400bce741741cef8cc6af412ce62f0a16b1a3aa43fe8c43fb13d0ebd865ae2aa8334c28d846f311b4a852adc9b8d6ce41084e69670b1e1200d3d1e4bd6f5b1a971cbef5565958dc54690d3742a071f5ca353da3ed2e7db4765a4b38c64762ca325f29153ec494939957eca24894ad1c7dcd1635feaa1d95c17666a35e5ad61d121bac08c1f6ebafa0e27d7023974a665698ffad90088408add7e96388937023ae50e3990fba18d1feaf76ac69b5602da174b38810eec57eee1132e2147ffd4852d27c6bfe7acb1f8b3953378da98cd8580bf5b7cb3ff0955b4d9d58c5674dbb2102be80803ef780afc165d1c5d101b3fa97a6f087401b833c2d0f275de8f2ec0554a3fdaf6ca34bb1d8cf84f4852130a7ce0bcd29d7e023544943d51e5d25a0117465e427c5ea9fb74212273eb8a5fbed8b56c5159590102c77f14613702c470a02a229ed7fe2c0580488798b5d7b46cd68829a40dedb39fc972cfaf573425927c5548bb0809a69e674e5c0f2115cf5a7ed1d43c5f35cb2a9c439adbb84a4a4e07fd6e0fac4f20f2b49b78546df10028e2f4b7905d159a7375f752c3d10948ab976f67076c0cdaea276c91b71fc296c5c2a3330b40f69b7381f582f9ec9edc997f02829016e72da55342b0d32059c2edd687e2c816bf9c2614f0b6aade0d11c01cbf1fea868a19f352d048578c877f3b7f8219288
-  </script>
-  <div class="hbe hbe-content">
-    <form id="hbeForm" class="hbe hbe-form" onsubmit="return false">
-      <div class="hbe hbe-input hbe-input-default">
-      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
-      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
-        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>
-      </label>
-    </div>
-      <button class="hbe hbe-button" type="submit">Decrypt</button>
-      <div class="hbe hbe-error" role="alert" aria-live="polite"></div>
-    </form>
-  </div>
-</div>
-<script data-pjax src="/lib/hbe.9e70f1e1d2.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
+                <p>SQL 注入是 Web 安全中最经典也最持久的漏洞类型之一。理解它的本质，不需要大量工具记忆，核心在于理解一条原则：当用户输入被当作 SQL 指令执行时，注入就发生了。</p>
+<h2 id="注入原理"><a href="#注入原理" class="headerlink" title="注入原理"></a>注入原理</h2><h3 id="根本原因"><a href="#根本原因" class="headerlink" title="根本原因"></a>根本原因</h3><p>SQL 注入的根源是<strong>数据与指令的边界混淆</strong>。</p>
+<p>在正常的 SQL 执行流程中，应用程序将用户输入拼接到 SQL 语句中，数据库引擎解析这条语句并执行。问题在于，数据库引擎在解析时无法区分”开发者写的固定指令”和”用户提供的数据”。当用户输入中包含 SQL 语法字符（如单引号 <code>&#39;</code>、分号 <code>;</code>、注释符 <code>--</code>）时，这些字符会改变原始 SQL 语句的逻辑结构。</p>
+<p>以一个典型的登录查询为例：</p>
+<pre><code class="sql">SELECT * FROM users WHERE username=&#39;[input]&#39; AND password=&#39;[input]&#39;
+</code></pre>
+<p>正常情况下，用户输入 <code>admin</code> 作为用户名，拼接后：</p>
+<pre><code class="sql">SELECT * FROM users WHERE username=&#39;admin&#39; AND password=&#39;[input]&#39;
+</code></pre>
+<p>如果攻击者输入 <code>&#39; OR &#39;1&#39;=&#39;1</code> 作为用户名，拼接后变成：</p>
+<pre><code class="sql">SELECT * FROM users WHERE username=&#39;&#39; OR &#39;1&#39;=&#39;1&#39; AND password=&#39;[input]&#39;
+</code></pre>
+<p><code>&#39;1&#39;=&#39;1&#39;</code> 恒为真，<code>OR</code> 条件使整个 WHERE 子句永远成立，查询返回所有用户记录。攻击者绕过了认证。</p>
+<h3 id="注入的本质"><a href="#注入的本质" class="headerlink" title="注入的本质"></a>注入的本质</h3><p>从更抽象的层面看，SQL 注入是一种<strong>注入攻击（Injection Attack）</strong>的特例。所有注入攻击的共同特征是：外部输入未经充分处理就被嵌入到目标语言的执行上下文中。SQL 注入的目标语言是 SQL，类似的还有命令注入（目标是 Shell）、XSS（目标是浏览器 JS 引擎）、SSTI（目标是模板引擎）。</p>
+<p>理解这一点很重要，因为防御思路是通用的：在数据进入执行上下文之前，消除其作为指令的能力。</p>
+<h2 id="常见注入方法"><a href="#常见注入方法" class="headerlink" title="常见注入方法"></a>常见注入方法</h2><h3 id="联合查询注入（UNION-注入）"><a href="#联合查询注入（UNION-注入）" class="headerlink" title="联合查询注入（UNION 注入）"></a>联合查询注入（UNION 注入）</h3><p>适用条件：页面有回显，且原始查询的列数可知。</p>
+<p>原理：利用 <code>UNION SELECT</code> 将恶意查询结果附加到原始查询结果中，直接在页面上显示。</p>
+<p>步骤：</p>
+<ol>
+<li><p>确定列数。使用 <code>ORDER BY n</code> 逐步增大 n，直到报错，前一个成功的 n 即为列数。或者使用 <code>UNION SELECT NULL,NULL,...</code> 逐个试探。</p>
+</li>
+<li><p>确定回显位置。在 <code>UNION SELECT</code> 的各列中填入不同的可识别值（如 1,2,3），观察页面显示哪些值，这些位置就是可控的回显点。</p>
+</li>
+<li><p>提取数据。在回显点替换为目标查询，如 <code>version()</code>、<code>database()</code>、<code>GROUP_CONCAT(table_name)</code> 等。</p>
+</li>
+</ol>
+<pre><code>?id=1 UNION SELECT 1,username,password,4 FROM users--
+</code></pre>
+<h3 id="布尔盲注"><a href="#布尔盲注" class="headerlink" title="布尔盲注"></a>布尔盲注</h3><p>适用条件：页面无直接数据回显，但能区分查询结果为真或为假时的不同页面状态（如正常显示 vs “记录不存在”）。</p>
+<p>原理：逐位猜测目标数据。每次注入一个布尔条件，根据页面响应判断条件是否成立。</p>
+<pre><code>?id=1 AND SUBSTRING((SELECT password FROM users LIMIT 1),1,1)=&#39;a&#39;
+</code></pre>
+<p>如果页面正常，说明密码第一位是 <code>a</code>；如果页面异常，继续尝试 <code>b</code>、<code>c</code>… 对每一位重复此过程。</p>
+<p>效率优化：使用二分法将每位字符的猜测次数从最多 128 次降到 7 次。</p>
+<pre><code>?id=1 AND ASCII(SUBSTRING((SELECT password FROM users LIMIT 1),1,1))&gt;64
+</code></pre>
+<h3 id="时间盲注"><a href="#时间盲注" class="headerlink" title="时间盲注"></a>时间盲注</h3><p>适用条件：页面既无数据回显，也无法通过布尔条件区分真假（所有响应页面完全相同）。</p>
+<p>原理：利用条件语句控制数据库的延迟响应。通过 <code>SLEEP()</code> 或类似函数，根据响应时间推断数据。</p>
+<pre><code>?id=1 AND IF(ASCII(SUBSTRING(database(),1,1))&gt;100, SLEEP(3), 0)
+</code></pre>
+<p>如果页面响应延迟 3 秒，说明条件成立（数据库名首字符 ASCII 大于 100）。</p>
+<p>时间盲注是效率最低的注入方式，通常需要借助自动化工具（如 sqlmap）批量执行。</p>
+<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><p>适用条件：页面不显示查询结果，但会显示数据库的错误信息。</p>
+<p>原理：构造使数据库引擎报错的表达式，错误信息中携带目标数据。</p>
+<p>MySQL 常用方法：</p>
+<pre><code>?id=1 AND EXTRACTVALUE(1, CONCAT(0x7e, (SELECT database()), 0x7e))
+</code></pre>
+<p><code>EXTRACTVALUE</code> 的第二个参数期望是合法的 XML 路径，传入非 XML 格式的数据会触发错误，错误信息中包含拼接的 <code>database()</code> 结果。</p>
+<p>其他函数：<code>UPDATEXML()</code>、<code>FLOOR()</code> + <code>GROUP BY</code> + <code>COUNT()</code> 利用主键重复报错。</p>
+<h3 id="堆叠注入"><a href="#堆叠注入" class="headerlink" title="堆叠注入"></a>堆叠注入</h3><p>适用条件：数据库引擎和 API 支持执行多条 SQL 语句（用分号分隔）。</p>
+<p>原理：在原始查询后追加新的 SQL 语句，执行任意操作（增删改查、创建用户、写文件等）。</p>
+<pre><code>?id=1; DROP TABLE users--
+</code></pre>
+<p>MySQL 的 <code>mysqli_multi_query()</code> 支持堆叠，但 PDO + MySQL 默认不支持。SQL Server 和 PostgreSQL 默认支持。堆叠注入的危害远大于数据泄露，攻击者可以执行任何数据库操作。</p>
+<h3 id="二次注入"><a href="#二次注入" class="headerlink" title="二次注入"></a>二次注入</h3><p>适用条件：用户输入被存储到数据库，后续被取出拼接成新的 SQL 语句。</p>
+<p>原理：第一次输入时，恶意数据被原样存储（转义处理使其安全入库）。第二次取出使用时，数据被再次拼接到 SQL 语句中，此时没有经过转义，触发注入。</p>
+<p>典型场景：用户注册时用户名为 <code>admin&#39;-- </code>（带尾随空格），系统存储了这个值。后续修改密码时，查询使用 <code>WHERE username=&#39;[从数据库取出的用户名]&#39;</code>，此时 <code>admin&#39;--</code> 导致条件变为 <code>WHERE username=&#39;admin&#39;</code>，修改的是 admin 账户的密码。</p>
+<p>二次注入比反射型注入更隐蔽，因为恶意数据在存储阶段不会触发任何异常。</p>
+<h2 id="防御方法"><a href="#防御方法" class="headerlink" title="防御方法"></a>防御方法</h2><h3 id="参数化查询（预编译语句）"><a href="#参数化查询（预编译语句）" class="headerlink" title="参数化查询（预编译语句）"></a>参数化查询（预编译语句）</h3><p>这是防御 SQL 注入最根本、最有效的方法。</p>
+<p>原理：参数化查询将 SQL 语句的结构定义与数据传递分离。应用程序先将 SQL 模板（带占位符）发送给数据库引擎，引擎解析并编译这条语句的结构。之后，应用程序再发送参数值，引擎将其作为纯数据处理，不会重新解析语句结构。</p>
+<pre><code class="java">// Java JDBC 示例
+String sql = &quot;SELECT * FROM users WHERE username = ? AND password = ?&quot;;
+PreparedStatement stmt = conn.prepareStatement(sql);
+stmt.setString(1, username);
+stmt.setString(2, password);
+ResultSet rs = stmt.executeQuery();
+</code></pre>
+<pre><code class="python"># Python DB-API 示例
+cursor.execute(
+    &quot;SELECT * FROM users WHERE username = %s AND password = %s&quot;,
+    (username, password)
+)
+</code></pre>
+<p>无论用户输入什么内容，<code>?</code> 或 <code>%s</code> 占位符位置的值始终被当作数据处理，不可能改变 SQL 语句的逻辑结构。这是从协议层面消除了注入的可能性。</p>
+<h3 id="输入验证"><a href="#输入验证" class="headerlink" title="输入验证"></a>输入验证</h3><p>作为参数化查询的补充，不单独作为防御手段。</p>
+<p>白名单验证：对已知合法输入定义精确规则。如用户 ID 只允许纯数字，邮箱必须符合 RFC 格式。</p>
+<p>黑名单过滤：移除或转义特定字符（如单引号、分号）。不推荐作为主要防御，因为黑名单难以穷举所有变体（编码绕过、Unicode 混淆等）。</p>
+<p>转义处理：对特殊字符添加转义符（如 <code>&#39;</code> → <code>\&#39;</code>）。MySQL 的 <code>mysql_real_escape_string()</code> 就是这种方式。但转义容易遗漏，且与字符集配置相关，存在绕过风险。</p>
+<h3 id="最小权限原则"><a href="#最小权限原则" class="headerlink" title="最小权限原则"></a>最小权限原则</h3><p>限制数据库账户的权限范围。</p>
+<p>应用程序使用的数据库账户不应拥有 DBA 权限。只授予必要的 SELECT、INSERT、UPDATE、DELETE 权限，禁止 FILE、SUPER、GRANT 等高权限。这样即使发生注入，攻击者的操作范围也受到限制。</p>
+<p>为每个应用或模块使用独立的数据库账户，避免一个账户访问所有表。</p>
+<h3 id="WAF（Web-应用防火墙）"><a href="#WAF（Web-应用防火墙）" class="headerlink" title="WAF（Web 应用防火墙）"></a>WAF（Web 应用防火墙）</h3><p>在网络层对 HTTP 请求进行规则匹配，拦截包含注入特征的请求。</p>
+<p>WAF 可以作为纵深防御的一层，但不应作为唯一防线。绕过 WAF 的技术很多：编码变换（URL 编码、Unicode、Hex）、分块传输（Chunked Transfer）、注释混淆、大小写混合等。</p>
+<h3 id="ORM-框架"><a href="#ORM-框架" class="headerlink" title="ORM 框架"></a>ORM 框架</h3><p>使用 ORM（如 SQLAlchemy、Hibernate、ActiveRecord）操作数据库，ORM 内部默认使用参数化查询，从框架层面避免拼接 SQL。</p>
+<p>注意：ORM 不是万能的。如果开发者在 ORM 中使用了原生 SQL 拼接（如 SQLAlchemy 的 <code>text()</code> 或 <code>execute(raw_sql)</code>），同样会产生注入风险。</p>
+<h2 id="防御优先级"><a href="#防御优先级" class="headerlink" title="防御优先级"></a>防御优先级</h2><p>按有效性排序：</p>
+<ol>
+<li>参数化查询。从协议层面消除注入，是唯一的根本解决方案。</li>
+<li>ORM 框架。封装了参数化查询，降低开发者犯错概率。</li>
+<li>最小权限。限制注入成功后的影响范围。</li>
+<li>输入验证。减少攻击面，作为辅助手段。</li>
+<li>WAF。网络层过滤，作为最后一道防线。</li>
+</ol>
+<p>核心原则只有一条：确保用户输入永远不被当作 SQL 指令执行。参数化查询是唯一从结构上保证这一点的方法，其他手段都是补充或兜底。</p>
+
                 
             </div>
             <hr/>
@@ -532,7 +589,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2026/08/03/2026-08-03-server-environment-config/">http://example.com/2026/08/03/2026-08-03-server-environment-config/</a>
+                    <a href="http://example.com/2026/08/03/2026-08-03-sql-injection-guide/">http://example.com/2026/08/03/2026-08-03-sql-injection-guide/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -570,12 +627,8 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/">
-                                    <span class="chip bg-color">服务器</span>
-                                </a>
-                            
-                                <a href="/tags/%E7%A7%81%E5%AF%86/">
-                                    <span class="chip bg-color">私密</span>
+                                <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                                    <span class="chip bg-color">SQL注入</span>
                                 </a>
                             
                         </div>
@@ -747,9 +800,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2026/08/03/2026-08-03-sql-injection-guide/">
                     <div class="card-image">
@@ -767,9 +821,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2026-08-03
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-03
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -778,6 +832,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -796,29 +851,33 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2026/07/30/mineru-engine-deep-dive/">
+                <a href="/2026/08/03/2026-08-03-server-environment-config/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="MinerU 解析引擎技术剖析：Pipeline、VLM 与 Hybrid">
+                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="服务器环境配置">
                         
-                        <span class="card-title">MinerU 解析引擎技术剖析：Pipeline、VLM 与 Hybrid</span>
+                        <span class="card-title">服务器环境配置</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            
+                            内容已加密，请输入密码查看
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-30
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-03
                             </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-user fa-fw"></i>
-                            小竹
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E6%8A%80%E6%9C%AF/" class="post-category">
+                                    技术
+                                </a>
+                            
                             
                         </span>
                     </div>
@@ -826,16 +885,12 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/MinerU/">
-                        <span class="chip bg-color">MinerU</span>
+                    <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+                        <span class="chip bg-color">服务器</span>
                     </a>
                     
-                    <a href="/tags/%E6%96%87%E6%A1%A3%E8%A7%A3%E6%9E%90/">
-                        <span class="chip bg-color">文档解析</span>
-                    </a>
-                    
-                    <a href="/tags/AI/">
-                        <span class="chip bg-color">AI</span>
+                    <a href="/tags/%E7%A7%81%E5%AF%86/">
+                        <span class="chip bg-color">私密</span>
                     </a>
                     
                 </div>
