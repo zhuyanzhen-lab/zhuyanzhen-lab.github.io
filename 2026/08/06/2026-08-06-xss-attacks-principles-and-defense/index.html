@@ -797,6 +797,9 @@ X-Frame-Options: DENY
 <li><strong>安全响应头</strong>——<code>nosniff</code>、<code>X-Frame-Options</code></li>
 <li><strong>避免危险 sink</strong>——不使用 <code>innerHTML</code>、<code>document.write</code>、<code>eval</code>，改用 <code>textContent</code>、<code>createElement</code></li>
 </ol>
+<hr>
+<h3 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h3><p>XSS 的本质是数据与代码的边界混淆——用户输入被浏览器当作 JavaScript 执行。按恶意数据是否经过服务端，分为反射型（请求参数直接回显）、存储型（恶意内容持久化在数据库中）和 DOM 型（完全在客户端 source-to-sink 流转）三种类型。三者中存储型危害最大，因为一次注入影响所有访问者；DOM 型最隐蔽，因为恶意数据不经过服务端，传统 WAF 无法检测。</p>
+<p>防御的核心思路是纵深防御，不依赖任何单一手段。最根本的是输出编码——根据数据插入的上下文（HTML 标签间、属性内、JS 代码块、URL 参数）选择对应的编码函数，确保数据始终被当作数据处理。在此基础上，使用默认转义的模板引擎减少人为遗漏，部署 CSP 作为浏览器层面的兜底，对富文本场景使用专业清洗库白名单控制，给敏感 Cookie 设置 HttpOnly + Secure + SameSite 降低被窃取后的影响。任何一层被突破，其他层仍然能提供保护。</p>
 
                 
             </div>
