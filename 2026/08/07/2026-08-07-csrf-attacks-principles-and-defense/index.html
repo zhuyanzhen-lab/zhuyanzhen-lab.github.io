@@ -1,0 +1,1585 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="CSRF 跨站请求伪造：原理、攻击与防御, 是小竹不是小猪">
+    <meta name="description" content="一、核心原理CSRF（Cross-Site Request Forgery，跨站请求伪造）的本质是浏览器在跨站请求时自动携带了目标站点的身份凭证（Cookie），服务端无法区分这个请求是用户主动发起的，还是被第三方页面诱导发出的。
+理解 C">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>CSRF 跨站请求伪造：原理、攻击与防御 | 是小竹不是小猪</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">是小竹不是小猪</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">是小竹不是小猪</div>
+        <div class="logo-desc">
+            
+            每一年都奔走在自己的热爱里
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			留言板
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/blinkfox/hexo-theme-matery" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/blinkfox/hexo-theme-matery" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/9.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">CSRF 跨站请求伪造：原理、攻击与防御</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        padding: 35px 0 15px 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        padding-bottom: 30px;
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+
+        position: absolute;
+        right: 23.5vw;
+        display: block;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                <span class="chip bg-color">安全</span>
+                            </a>
+                        
+                            <a href="/tags/Web%E5%AE%89%E5%85%A8/">
+                                <span class="chip bg-color">Web安全</span>
+                            </a>
+                        
+                            <a href="/tags/CSRF/">
+                                <span class="chip bg-color">CSRF</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-08-07
+                </div>
+                
+
+                
+
+                
+
+                
+
+                
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h3 id="一、核心原理"><a href="#一、核心原理" class="headerlink" title="一、核心原理"></a>一、核心原理</h3><p>CSRF（Cross-Site Request Forgery，跨站请求伪造）的本质是<strong>浏览器在跨站请求时自动携带了目标站点的身份凭证（Cookie），服务端无法区分这个请求是用户主动发起的，还是被第三方页面诱导发出的</strong>。</p>
+<p>理解 CSRF 需要抓住一个前提：浏览器的同源策略（Same-Origin Policy）只限制了 JavaScript 读取跨域响应内容，但<strong>不阻止浏览器向其他域发送请求</strong>。也就是说，你的浏览器可以替别人发请求，只是你读不到响应而已。对于 CSRF 攻击来说，它根本不需要读响应——它只需要让请求发出去就够了。</p>
+<p>一个完整的 CSRF 攻击需要满足三个条件：</p>
+<p>第一，用户在目标站点有已认证的会话（浏览器中存有目标站的 Cookie）。第二，目标站点的关键操作仅靠 Cookie 做身份认证，没有额外的校验机制（如 CSRF Token、SameSite Cookie）。第三，攻击者能诱导用户访问一个包含伪造请求的页面（通过链接、邮件、嵌入图片等方式）。</p>
+<p>三个条件同时满足时，攻击者就能以用户的身份执行非预期操作——转账、改密码、删数据、加管理员。</p>
+<hr>
+<h3 id="二、三种-CSRF-完整攻击实例"><a href="#二、三种-CSRF-完整攻击实例" class="headerlink" title="二、三种 CSRF 完整攻击实例"></a>二、三种 CSRF 完整攻击实例</h3><h4 id="2-1-GET-型-CSRF：图片标签触发转账"><a href="#2-1-GET-型-CSRF：图片标签触发转账" class="headerlink" title="2.1 GET 型 CSRF：图片标签触发转账"></a>2.1 GET 型 CSRF：图片标签触发转账</h4><p><strong>场景：</strong> 一个网银系统，转账接口是 GET 请求：<code>https://bank.com/transfer?to=attacker&amp;amount=10000</code>。用户登录后，浏览器持有 bank.com 的会话 Cookie。</p>
+<p><strong>第一步：确认攻击面。</strong> 攻击者注册网银账号，抓包分析转账流程。发现转账操作是一个 GET 请求，参数直接放在 URL 中，服务端只靠 Cookie 验证身份，没有其他校验。</p>
+<p><strong>第二步：构造攻击页面。</strong> 攻击者搭建一个页面 <code>https://attacker.com/prize.html</code>，内容如下：</p>
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;恭喜中奖！&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;恭喜！您获得了 iPhone 16！&lt;/h1&gt;
+  &lt;p&gt;点击下方链接领取奖品...&lt;/p&gt;
+  &lt;!-- 隐藏的图片标签，src 指向转账接口 --&gt;
+  &lt;img src=&quot;https://bank.com/transfer?to=attacker_account&amp;amount=10000&quot; width=&quot;0&quot; height=&quot;0&quot;&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p><strong>第三步：诱导用户访问。</strong> 攻击者通过邮件、论坛私信、群聊发送这个链接。用户点击后打开 <code>attacker.com/prize.html</code>。</p>
+<p><strong>第四步：浏览器自动执行。</strong> 浏览器渲染页面时遇到 <code>&lt;img src=&quot;https://bank.com/transfer?to=attacker_account&amp;amount=10000&quot;&gt;</code>，自动向 bank.com 发起 GET 请求。由于用户已登录 bank.com，浏览器自动携带 bank.com 的 Cookie。bank.com 服务端收到请求，看到有效的会话 Cookie，执行转账操作。</p>
+<p><strong>完整数据流：</strong></p>
+<pre><code>用户点击恶意链接
+  → 浏览器加载 attacker.com/prize.html
+  → 页面中包含 &lt;img src=&quot;https://bank.com/transfer?to=attacker&amp;amount=10000&quot;&gt;
+  → 浏览器向 bank.com 发起 GET 请求，自动携带 bank.com 的 Cookie
+  → bank.com 服务端收到请求，Cookie 有效，执行转账
+  → 攻击者账户收到 10000 元
+  → 用户毫无感知（图片加载失败也不会显示任何提示）
+</code></pre>
+<p><strong>为什么这能成功？</strong> 因为 <code>&lt;img&gt;</code>、<code>&lt;link&gt;</code>、<code>&lt;script&gt;</code> 等标签发起的请求不受同源策略限制——浏览器会正常加载这些资源，并自动携带目标域的 Cookie。服务端看到合法 Cookie，认为这是用户本人的操作。</p>
+<p><strong>GET 型 CSRF 的特点：</strong> 最简单，一个标签就能触发。但只能发 GET 请求，适用于那些把操作参数放在 URL 中的系统（这类系统本身就有设计问题——状态变更操作不应该用 GET）。</p>
+<h4 id="2-2-POST-型-CSRF：自动提交表单"><a href="#2-2-POST-型-CSRF：自动提交表单" class="headerlink" title="2.2 POST 型 CSRF：自动提交表单"></a>2.2 POST 型 CSRF：自动提交表单</h4><p><strong>场景：</strong> 一个邮箱系统，修改密码的接口是 POST 请求：<code>https://mail.com/api/change-password</code>，请求体为 <code>&#123;&quot;newPassword&quot;: &quot;xxx&quot;&#125;</code>。服务端靠 Cookie 验证身份。</p>
+<p><strong>第一步：确认攻击面。</strong> 攻击者分析修改密码的接口，确认是 POST 请求，参数在请求体中，服务端只靠 Cookie 认证。</p>
+<p><strong>第二步：构造攻击页面。</strong> 攻击者搭建 <code>https://attacker.com/verify.html</code>：</p>
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;账号安全验证&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;您的账号存在异常，请立即验证&lt;/h1&gt;
+  &lt;p&gt;点击下方按钮完成安全验证...&lt;/p&gt;
+
+  &lt;!-- 隐藏的自动提交表单 --&gt;
+  &lt;form id=&quot;csrf-form&quot; action=&quot;https://mail.com/api/change-password&quot; method=&quot;POST&quot; style=&quot;display:none&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;newPassword&quot; value=&quot;hacked123&quot;&gt;
+  &lt;/form&gt;
+
+  &lt;button onclick=&quot;document.getElementById(&#39;csrf-form&#39;).submit()&quot;&gt;立即验证&lt;/button&gt;
+
+  &lt;!-- 或者自动提交，不需要用户点击 --&gt;
+  &lt;script&gt;
+    // 页面加载后自动提交
+    window.onload = function() &#123;
+      document.getElementById(&#39;csrf-form&#39;).submit();
+    &#125;;
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p><strong>第三步：诱导用户访问。</strong> 攻击者发送伪装邮件：”您的邮箱存在异常登录，请立即验证账号安全”，附带链接指向 <code>attacker.com/verify.html</code>。</p>
+<p><strong>第四步：自动执行。</strong> 用户点击链接后，页面加载完成，<code>window.onload</code> 触发，隐藏表单自动提交到 <code>mail.com/api/change-password</code>。浏览器携带 mail.com 的 Cookie，服务端验证通过，密码被改为 <code>hacked123</code>。</p>
+<p><strong>完整数据流：</strong></p>
+<pre><code>用户点击钓鱼邮件链接
+  → 浏览器加载 attacker.com/verify.html
+  → 页面 JS 执行，自动提交隐藏表单到 mail.com
+  → 浏览器向 mail.com 发起 POST 请求，Content-Type: application/x-www-form-urlencoded
+  → 请求自动携带 mail.com 的 Cookie
+  → mail.com 服务端收到请求，Cookie 有效，执行密码修改
+  → 用户密码被改为 hacked123
+  → 攻击者用新密码登录用户邮箱
+</code></pre>
+<p><strong>与 GET 型的关键区别：</strong> POST 型能发送请求体，适用于绝大多数 Web 操作（转账、修改信息、删除数据等）。HTML 表单天然支持 POST，所以攻击者不需要任何特殊技术，一个 <code>&lt;form&gt;</code> 标签就够了。</p>
+<p><strong>两种诱导方式的区别：</strong> 一种是页面加载后自动提交（<code>window.onload</code>），用户甚至不需要点击任何东西；另一种是诱导用户点击按钮（伪装成”验证”、”领取”等操作），适用于需要用户交互才能触发的场景。</p>
+<h4 id="2-3-AJAX-型-CSRF：JSON-请求伪造"><a href="#2-3-AJAX-型-CSRF：JSON-请求伪造" class="headerlink" title="2.3 AJAX 型 CSRF：JSON 请求伪造"></a>2.3 AJAX 型 CSRF：JSON 请求伪造</h4><p><strong>场景：</strong> 一个管理后台，添加管理员的接口只接受 JSON 格式的请求：<code>POST https://admin.com/api/users</code>，<code>Content-Type: application/json</code>，请求体 <code>&#123;&quot;role&quot;: &quot;admin&quot;, &quot;email&quot;: &quot;attacker@evil.com&quot;&#125;</code>。</p>
+<p><strong>问题：</strong> 传统 HTML 表单只能发送 <code>application/x-www-form-urlencoded</code>、<code>multipart/form-data</code>、<code>text/plain</code> 三种 Content-Type。如果服务端只接受 <code>application/json</code>，普通表单无法直接伪造。</p>
+<p><strong>攻击方式一：利用 <code>text/plain</code> 绕过。</strong> HTML 表单可以发送 <code>Content-Type: text/plain</code> 的请求。如果服务端在解析 JSON 时不够严格（比如某些框架会自动将 <code>text/plain</code> 的请求体当 JSON 解析），攻击者可以：</p>
+<pre><code class="html">&lt;form action=&quot;https://admin.com/api/users&quot; method=&quot;POST&quot; enctype=&quot;text/plain&quot;&gt;
+  &lt;input name=&#39;&#123;&quot;role&quot;:&quot;admin&quot;,&quot;email&quot;:&quot;attacker@evil.com&quot;,&quot;ignore&quot;:&quot;&#39; value=&#39;&quot;&#125;&#39;&gt;
+&lt;/form&gt;
+</code></pre>
+<p>表单发送的请求体为：<code>&#123;&quot;role&quot;:&quot;admin&quot;,&quot;email&quot;:&quot;attacker@evil.com&quot;,&quot;ignore&quot;:&quot;=&quot;&#125;</code>。如果服务端的 JSON 解析器足够宽容（忽略多余字段），这个请求就能成功。</p>
+<p><strong>攻击方式二：利用 Flash/Java 插件（已淘汰）。</strong> 过去可以通过 Flash 的 <code>navigateToURL</code> 或 Java Applet 发送自定义 Content-Type 的请求。现代浏览器已禁用这些插件，这条路基本不通。</p>
+<p><strong>攻击方式三：利用 CORS 配置错误。</strong> 如果 admin.com 的 CORS 配置为 <code>Access-Control-Allow-Origin: *</code> 且 <code>Access-Control-Allow-Credentials: true</code>（这个组合浏览器实际上会拒绝携带 Cookie，但如果服务端错误地反射了 Origin），攻击者可以直接用 <code>fetch</code> 发 JSON 请求：</p>
+<pre><code class="html">&lt;script&gt;
+fetch(&#39;https://admin.com/api/users&#39;, &#123;
+  method: &#39;POST&#39;,
+  credentials: &#39;include&#39;,  // 携带 Cookie
+  headers: &#123; &#39;Content-Type&#39;: &#39;application/json&#39; &#125;,
+  body: JSON.stringify(&#123; role: &#39;admin&#39;, email: &#39;attacker@evil.com&#39; &#125;)
+&#125;);
+&lt;/script&gt;
+</code></pre>
+<p>如果 admin.com 的 CORS 配置正确（不允许跨域携带凭证），这个请求会被浏览器拦截。但如果 CORS 配置有漏洞（如动态反射 Origin），请求就能成功。</p>
+<p><strong>完整数据流（CORS 配置错误场景）：</strong></p>
+<pre><code>用户访问攻击页面
+  → 页面 JS 执行 fetch 请求到 admin.com
+  → credentials: &#39;include&#39; 让浏览器携带 admin.com 的 Cookie
+  → admin.com 的 CORS 配置错误，允许了跨域请求
+  → 服务端收到 JSON 请求，Cookie 有效，创建管理员账户
+  → 攻击者用新管理员账户登录后台
+</code></pre>
+<p><strong>AJAX 型 CSRF 的现实意义：</strong> 随着 API 的普及，越来越多接口只接受 JSON 格式。这在一定程度上提高了 CSRF 的攻击门槛（普通表单无法直接伪造），但如果 CORS 配置有漏洞，或者服务端对 Content-Type 的处理不够严格，攻击仍然可行。</p>
+<hr>
+<h3 id="三、防御策略详解"><a href="#三、防御策略详解" class="headerlink" title="三、防御策略详解"></a>三、防御策略详解</h3><h4 id="3-1-SameSite-Cookie：从协议层面阻断"><a href="#3-1-SameSite-Cookie：从协议层面阻断" class="headerlink" title="3.1 SameSite Cookie：从协议层面阻断"></a>3.1 SameSite Cookie：从协议层面阻断</h4><p>SameSite 是 Cookie 的一个属性，告诉浏览器在跨站请求时是否携带该 Cookie。这是目前防御 CSRF 最直接、最有效的手段。</p>
+<pre><code>Set-Cookie: session_id=abc123; SameSite=Strict
+</code></pre>
+<p><strong>三个取值的行为差异：</strong></p>
+<p><code>Strict</code>：最严格。任何跨站请求都不携带 Cookie。即使用户从 bank.com 的链接点进来，bank.com 的 Cookie 也不会被发送。这意味着用户每次从外部链接进入都需要重新登录，用户体验较差。</p>
+<p><code>Lax</code>：较宽松。允许顶级导航（用户主动点击链接跳转、地址栏直接输入 URL）携带 Cookie，但阻止 AJAX、<code>&lt;img&gt;</code>、<code>&lt;form&gt;</code> 等跨站请求携带。这是大多数场景的最佳选择——正常的链接跳转不受影响，但 CSRF 攻击常用的表单提交和图片标签无法携带 Cookie。</p>
+<p><code>None</code>：不限制。跨站请求也携带 Cookie，但必须同时设置 <code>Secure</code> 标志（仅 HTTPS 传输）。这是完全不做 CSRF 防护的状态。</p>
+<p><strong>SameSite=Lax 为什么能挡住大部分 CSRF？</strong> 因为 CSRF 攻击的核心是让浏览器在用户不知情的情况下发送跨站请求。<code>&lt;form&gt;</code> 自动提交、<code>&lt;img&gt;</code> 标签加载、<code>fetch</code> 跨域请求——这些都不是顶级导航，SameSite=Lax 下浏览器不会携带 Cookie。没有 Cookie，服务端就无法认证用户身份，CSRF 攻击自然失败。</p>
+<p><strong>局限性：</strong> SameSite 不是万能的。如果攻击者让用户在同站（same-site）上下文中触发请求（比如用户已经在 attacker.com 的子域下），SameSite 不起作用。另外，老版本浏览器（Chrome 80 以下、Safari 12 以下）不支持 SameSite，会回退到默认行为。</p>
+<p><strong>浏览器默认行为变化：</strong> Chrome 80+ 开始，未显式设置 SameSite 的 Cookie 默认视为 <code>Lax</code>。这是一个重要的安全改进——即使开发者忘了设置 SameSite，浏览器也会提供基本的 CSRF 防护。但不能依赖这个默认行为，应该显式设置。</p>
+<h4 id="3-2-CSRF-Token：服务端校验的金标准"><a href="#3-2-CSRF-Token：服务端校验的金标准" class="headerlink" title="3.2 CSRF Token：服务端校验的金标准"></a>3.2 CSRF Token：服务端校验的金标准</h4><p>CSRF Token 的原理是：服务端为每个会话（或每个请求）生成一个随机、不可预测的令牌，嵌入到表单或页面中。提交请求时必须携带这个令牌，服务端校验令牌的有效性。攻击者无法获取这个令牌（受同源策略限制，跨域读不到页面内容），所以无法伪造有效请求。</p>
+<p><strong>同步令牌模式（Synchronizer Token Pattern）：</strong></p>
+<p>服务端在渲染页面时，将 Token 嵌入到表单的隐藏字段中：</p>
+<pre><code class="html">&lt;form action=&quot;/api/transfer&quot; method=&quot;POST&quot;&gt;
+  &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;rAnd0mT0k3nV4lu3&quot;&gt;
+  &lt;input type=&quot;text&quot; name=&quot;to&quot; placeholder=&quot;收款账户&quot;&gt;
+  &lt;input type=&quot;number&quot; name=&quot;amount&quot; placeholder=&quot;金额&quot;&gt;
+  &lt;button type=&quot;submit&quot;&gt;转账&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+<p>服务端校验逻辑：</p>
+<pre><code class="python"># Python Flask 示例
+@app.route(&#39;/api/transfer&#39;, methods=[&#39;POST&#39;])
+def transfer():
+    token = request.form.get(&#39;csrf_token&#39;)
+    if not token or token != session.get(&#39;csrf_token&#39;):
+        abort(403, &#39;CSRF token validation failed&#39;)
+    # 正常处理转账逻辑
+</code></pre>
+<p>攻击者在 <code>attacker.com</code> 构造的表单中没有有效的 <code>csrf_token</code>（因为同源策略阻止了攻击者读取 <code>bank.com</code> 页面中的 Token），请求被服务端拒绝。</p>
+<p><strong>Token 的安全要求：</strong></p>
+<p>随机性——Token 必须是密码学安全的随机数（如 <code>secrets.token_hex(32)</code>），攻击者无法猜测或枚举。</p>
+<p>唯一性——每个会话（或每个请求）使用不同的 Token，防止重放攻击。</p>
+<p>不可预测性——即使攻击者知道自己的一个 Token，也无法推断出其他用户的 Token。</p>
+<p><strong>双重提交 Cookie 模式（Double Submit Cookie）：</strong></p>
+<p>适用于前后端分离的 SPA 架构（服务端不渲染 HTML，无法在表单中嵌入 Token）。</p>
+<p>流程：服务端在用户登录时设置一个 Cookie <code>csrf_token=xxx</code>，前端 JS 读取这个 Cookie 的值，在每次请求中将它放到自定义请求头中：</p>
+<pre><code class="javascript">// 前端：读取 Cookie 中的 Token，放到请求头
+const token = document.cookie.match(/csrf_token=([^;]+)/)[1];
+fetch(&#39;/api/transfer&#39;, &#123;
+  method: &#39;POST&#39;,
+  headers: &#123;
+    &#39;X-CSRF-Token&#39;: token,
+    &#39;Content-Type&#39;: &#39;application/json&#39;
+  &#125;,
+  body: JSON.stringify(&#123; to: &#39;attacker&#39;, amount: 10000 &#125;)
+&#125;);
+</code></pre>
+<pre><code class="python"># 服务端：校验请求头中的 Token 与 Cookie 中的 Token 是否一致
+@app.route(&#39;/api/transfer&#39;, methods=[&#39;POST&#39;])
+def transfer():
+    header_token = request.headers.get(&#39;X-CSRF-Token&#39;)
+    cookie_token = request.cookies.get(&#39;csrf_token&#39;)
+    if not header_token or header_token != cookie_token:
+        abort(403, &#39;CSRF token mismatch&#39;)
+</code></pre>
+<p><strong>为什么这能防 CSRF？</strong> 因为跨站请求无法读取目标站的 Cookie（同源策略限制），攻击者不知道 <code>csrf_token</code> 的值，也就无法在 <code>X-CSRF-Token</code> 请求头中填入正确的值。服务端发现请求头中没有 Token 或 Token 不匹配，拒绝请求。</p>
+<p><strong>注意：</strong> 双重提交模式的安全性依赖于攻击者无法设置目标站的 Cookie。如果存在 Cookie 注入漏洞（如 CRLF 注入），攻击者可能伪造 Token。更安全的做法是服务端存储 Token 并校验（同步令牌模式）。</p>
+<h4 id="3-3-自定义请求头：利用浏览器的跨域限制"><a href="#3-3-自定义请求头：利用浏览器的跨域限制" class="headerlink" title="3.3 自定义请求头：利用浏览器的跨域限制"></a>3.3 自定义请求头：利用浏览器的跨域限制</h4><p>对于前后端分离的 API，要求所有状态变更请求必须携带自定义请求头（如 <code>X-CSRF-Token</code>、<code>X-Requested-With</code>）：</p>
+<pre><code class="javascript">// 前端：所有 API 请求都带上自定义头
+fetch(&#39;/api/transfer&#39;, &#123;
+  method: &#39;POST&#39;,
+  headers: &#123;
+    &#39;X-Requested-With&#39;: &#39;XMLHttpRequest&#39;,
+    &#39;Content-Type&#39;: &#39;application/json&#39;
+  &#125;,
+  body: JSON.stringify(&#123; to: &#39;attacker&#39;, amount: 10000 &#125;)
+&#125;);
+</code></pre>
+<pre><code class="python"># 服务端：校验自定义头
+@app.before_request
+def verify_csrf():
+    if request.method in (&#39;POST&#39;, &#39;PUT&#39;, &#39;DELETE&#39;):
+        if not request.headers.get(&#39;X-Requested-With&#39;):
+            abort(403, &#39;Missing required header&#39;)
+</code></pre>
+<p><strong>为什么这能防 CSRF？</strong> HTML 表单只能发送 <code>application/x-www-form-urlencoded</code>、<code>multipart/form-data</code>、<code>text/plain</code> 三种 Content-Type，无法设置自定义请求头。<code>&lt;img&gt;</code>、<code>&lt;link&gt;</code> 等标签发起的请求也无法携带自定义头。所以，如果服务端要求必须有自定义头才能处理请求，传统的 CSRF 攻击手段（表单提交、图片标签）全部失效。</p>
+<p><strong>与 JSON Content-Type 配合：</strong> 如果服务端只接受 <code>application/json</code> 的 Content-Type，并且要求自定义请求头，攻击者需要同时绕过两个限制。HTML 表单无法发送 <code>application/json</code>，也无法设置自定义头，攻击面被大幅收窄。</p>
+<p><strong>局限性：</strong> 这个防御依赖于 CORS 配置正确。如果目标站的 CORS 允许跨域请求携带自定义头（<code>Access-Control-Allow-Headers: X-Requested-With</code>），攻击者可以通过 <code>fetch</code> 绕过。所以自定义头必须配合正确的 CORS 策略。</p>
+<h4 id="3-4-Referer-Origin-校验：简单但有效的辅助手段"><a href="#3-4-Referer-Origin-校验：简单但有效的辅助手段" class="headerlink" title="3.4 Referer / Origin 校验：简单但有效的辅助手段"></a>3.4 Referer / Origin 校验：简单但有效的辅助手段</h4><p>每个 HTTP 请求都带有 <code>Origin</code> 头（POST 请求）或 <code>Referer</code> 头，表明请求来源。服务端可以校验这些头是否来自本站：</p>
+<pre><code class="python">@app.before_request
+def verify_origin():
+    if request.method in (&#39;POST&#39;, &#39;PUT&#39;, &#39;DELETE&#39;):
+        origin = request.headers.get(&#39;Origin&#39;, request.headers.get(&#39;Referer&#39;, &#39;&#39;))
+        if not origin.startswith(&#39;https://mysite.com&#39;):
+            abort(403, &#39;Invalid origin&#39;)
+</code></pre>
+<p><strong>Origin vs Referer 的区别：</strong></p>
+<p><code>Origin</code> 只在跨域 POST 请求中发送，格式为 <code>scheme://host:port</code>（不含路径），隐私友好。现代浏览器在 CORS 请求中自动添加。</p>
+<p><code>Referer</code> 在所有请求中发送，包含完整 URL（含路径和查询参数）。可能包含敏感信息（如 <code>/user/profile?token=xxx</code>），且用户可以配置浏览器不发送 Referer。</p>
+<p><strong>推荐校验 Origin</strong>，因为它是浏览器自动添加的，攻击者无法在跨站请求中伪造（浏览器会根据请求的实际来源设置 Origin）。</p>
+<p><strong>局限性：</strong> 部分浏览器或隐私插件会剥离 Referer/Origin 头。如果直接拒绝缺少这些头的请求，可能误杀正常用户。所以 Origin/Referer 校验通常作为辅助手段，不单独使用。</p>
+<h4 id="3-5-正确的-CORS-配置"><a href="#3-5-正确的-CORS-配置" class="headerlink" title="3.5 正确的 CORS 配置"></a>3.5 正确的 CORS 配置</h4><p>CORS（Cross-Origin Resource Sharing）配置错误是 CSRF 的帮凶。正确的 CORS 配置是 CSRF 防御的重要一环。</p>
+<p><strong>错误配置示例：</strong></p>
+<pre><code>Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+</code></pre>
+<p>这个组合在规范中是被禁止的——当 <code>Allow-Credentials: true</code> 时，<code>Allow-Origin</code> 不能为 <code>*</code>。但某些服务端框架可能不检查这个约束，导致浏览器在某些情况下仍然允许跨域携带 Cookie。</p>
+<p><strong>更危险的错误配置——动态反射 Origin：</strong></p>
+<pre><code class="python"># 危险：将请求的 Origin 原样返回
+@app.after_request
+def add_cors(response):
+    origin = request.headers.get(&#39;Origin&#39;, &#39;&#39;)
+    response.headers[&#39;Access-Control-Allow-Origin&#39;] = origin
+    response.headers[&#39;Access-Control-Allow-Credentials&#39;] = &#39;true&#39;
+    return response
+</code></pre>
+<p>这等于对所有域开放 CORS，攻击者可以在自己的页面上用 <code>fetch</code> 携带用户的 Cookie 发请求，CSRF Token 和 SameSite Cookie 的防护都可能被绕过。</p>
+<p><strong>正确配置：</strong></p>
+<pre><code class="python"># 安全：白名单控制允许的 Origin
+ALLOWED_ORIGINS = &#123;&#39;https://mysite.com&#39;, &#39;https://admin.mysite.com&#39;&#125;
+
+@app.after_request
+def add_cors(response):
+    origin = request.headers.get(&#39;Origin&#39;, &#39;&#39;)
+    if origin in ALLOWED_ORIGINS:
+        response.headers[&#39;Access-Control-Allow-Origin&#39;] = origin
+        response.headers[&#39;Access-Control-Allow-Credentials&#39;] = &#39;true&#39;
+    return response
+</code></pre>
+<p>只允许已知可信的域发起跨域请求。不在白名单中的域（包括攻击者的域）无法通过 CORS 校验，浏览器会拦截响应。</p>
+<h4 id="3-6-关键操作增加二次验证"><a href="#3-6-关键操作增加二次验证" class="headerlink" title="3.6 关键操作增加二次验证"></a>3.6 关键操作增加二次验证</h4><p>对于高风险操作（转账、修改密码、绑定邮箱、删除账户），仅靠 Cookie 认证是不够的。应该增加额外的验证步骤：</p>
+<p><strong>重新输入密码：</strong> 修改密码、绑定邮箱等操作要求用户重新输入当前密码。攻击者无法知道用户密码，CSRF 攻击失败。</p>
+<pre><code class="html">&lt;form action=&quot;/api/change-password&quot; method=&quot;POST&quot;&gt;
+  &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;xxx&quot;&gt;
+  &lt;input type=&quot;password&quot; name=&quot;currentPassword&quot; placeholder=&quot;请输入当前密码&quot;&gt;
+  &lt;input type=&quot;password&quot; name=&quot;newPassword&quot; placeholder=&quot;新密码&quot;&gt;
+  &lt;button type=&quot;submit&quot;&gt;确认修改&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+<p><strong>短信/邮箱验证码：</strong> 转账、修改绑定手机等操作发送验证码到用户手机或邮箱。攻击者无法获取验证码。</p>
+<p><strong>TOTP（Google Authenticator）：</strong> 高安全级别的操作要求输入 TOTP 动态口令。</p>
+<p><strong>生物识别 / WebAuthn：</strong> 最高安全级别，要求指纹或硬件密钥确认。</p>
+<p><strong>二次验证的定位：</strong> 它不是 CSRF 的专项防御，而是纵深防御的最后一层。即使 CSRF Token、SameSite Cookie、CORS 全部被绕过，攻击者仍然无法通过二次验证。但二次验证有用户体验成本，不适合每个操作都用，应该只用于高风险操作。</p>
+<hr>
+<h3 id="四、CSRF-与其他攻击的对比"><a href="#四、CSRF-与其他攻击的对比" class="headerlink" title="四、CSRF 与其他攻击的对比"></a>四、CSRF 与其他攻击的对比</h3><p>理解 CSRF 的最佳方式是和 XSS、JSONP 劫持做对比：</p>
+<p><strong>XSS vs CSRF：</strong> XSS 是攻击者在目标站的页面中注入代码，利用的是目标站对输出内容的编码不当。CSRF 是攻击者诱导用户访问攻击者控制的页面，利用的是浏览器自动携带 Cookie 的行为。XSS 攻击者需要攻破目标站，CSRF 攻击者不需要。</p>
+<p><strong>CSRF vs JSONP 劫持：</strong> JSONP 通过 <code>&lt;script&gt;</code> 标签跨域获取数据，如果 JSONP 接口携带了用户 Cookie 且没有校验，攻击者可以在自己的页面中用 <code>&lt;script&gt;</code> 标签调用 JSONP 接口窃取数据。CSRF 是”以用户身份执行操作”，JSONP 劫持是”窃取用户数据”。JSONP 已基本被淘汰（被 CORS 取代），但在老系统中仍可能遇到。</p>
+<hr>
+<h3 id="五、各语言-框架的-CSRF-防护"><a href="#五、各语言-框架的-CSRF-防护" class="headerlink" title="五、各语言/框架的 CSRF 防护"></a>五、各语言/框架的 CSRF 防护</h3><h4 id="5-1-Java-Spring"><a href="#5-1-Java-Spring" class="headerlink" title="5.1 Java / Spring"></a>5.1 Java / Spring</h4><p>Spring Security 默认开启 CSRF 防护，使用 <code>CsrfFilter</code> 自动校验 Token：</p>
+<pre><code class="java">// Spring Security 默认配置已包含 CSRF 防护
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter &#123;
+    @Override
+    protected void configure(HttpSecurity http) throws Exception &#123;
+        http
+            // CSRF 防护默认开启，无需显式配置
+            .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            // 对于前后端分离项目，使用 Cookie 模式存储 Token
+            ...;
+    &#125;
+&#125;
+</code></pre>
+<p>对于前后端分离项目，使用 <code>CookieCsrfTokenRepository</code>，前端从 Cookie 中读取 Token 放到请求头中。注意：如果显式调用了 <code>.csrf().disable()</code>，CSRF 防护被关闭，需要确认是否有其他替代措施。</p>
+<h4 id="5-2-Python-Django"><a href="#5-2-Python-Django" class="headerlink" title="5.2 Python / Django"></a>5.2 Python / Django</h4><p>Django 内置 CSRF 中间件和模板标签，默认开启：</p>
+<pre><code class="python"># settings.py 中确认中间件存在
+MIDDLEWARE = [
+    ...
+    &#39;django.middleware.csrf.CsrfViewMiddleware&#39;,
+    ...
+]
+</code></pre>
+<pre><code class="html">&lt;!-- 模板中自动嵌入 Token --&gt;
+&lt;form method=&quot;post&quot;&gt;
+  &#123;% csrf_token %&#125;
+  &lt;input type=&quot;text&quot; name=&quot;username&quot;&gt;
+  &lt;button type=&quot;submit&quot;&gt;提交&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+<p>对于 AJAX 请求，Django 在 Cookie 中设置 <code>csrftoken</code>，前端读取后放到请求头：</p>
+<pre><code class="javascript">// 前端：从 Cookie 读取 csrftoken
+function getCookie(name) &#123;
+  const value = `; $&#123;document.cookie&#125;`;
+  const parts = value.split(`; $&#123;name&#125;=`);
+  if (parts.length === 2) return parts.pop().split(&#39;;&#39;).shift();
+&#125;
+
+fetch(&#39;/api/action&#39;, &#123;
+  method: &#39;POST&#39;,
+  headers: &#123;
+    &#39;X-CSRFToken&#39;: getCookie(&#39;csrftoken&#39;),
+    &#39;Content-Type&#39;: &#39;application/json&#39;
+  &#125;,
+  body: JSON.stringify(&#123; action: &#39;transfer&#39; &#125;)
+&#125;);
+</code></pre>
+<p><strong>常见错误：</strong> 使用 <code>@csrf_exempt</code> 装饰器跳过了 CSRF 校验。如果该视图处理状态变更操作，等于主动放弃防护。</p>
+<h4 id="5-3-Python-Flask"><a href="#5-3-Python-Flask" class="headerlink" title="5.3 Python / Flask"></a>5.3 Python / Flask</h4><p>Flask 本身不内置 CSRF 防护，需要扩展：</p>
+<pre><code class="python"># 使用 Flask-WTF（推荐）
+from flask_wtf.csrf import CSRFProtect
+
+app.secret_key = &#39;secure-random-key&#39;
+csrf = CSRFProtect(app)
+
+# 所有 POST 请求自动校验 CSRF Token
+# 模板中使用 &#123;&#123; form.hidden_tag() &#125;&#125; 或 &#123;&#123; csrf_token() &#125;&#125;
+</code></pre>
+<h4 id="5-4-Node-js-Express"><a href="#5-4-Node-js-Express" class="headerlink" title="5.4 Node.js / Express"></a>5.4 Node.js / Express</h4><pre><code class="javascript">// 使用 csurf 中间件（注意：csurf 已不再维护，推荐 alternatives）
+// 替代方案：自行实现 Token 校验
+const crypto = require(&#39;crypto&#39;);
+
+function generateToken() &#123;
+  return crypto.randomBytes(32).toString(&#39;hex&#39;);
+&#125;
+
+// 中间件：校验 Token
+function csrfProtection(req, res, next) &#123;
+  if ([&#39;POST&#39;, &#39;PUT&#39;, &#39;DELETE&#39;].includes(req.method)) &#123;
+    const token = req.headers[&#39;x-csrf-token&#39;] || req.body._csrf;
+    if (!token || token !== req.session.csrfToken) &#123;
+      return res.status(403).json(&#123; error: &#39;CSRF token invalid&#39; &#125;);
+    &#125;
+  &#125;
+  // 为每个请求生成新 Token
+  req.session.csrfToken = generateToken();
+  res.cookie(&#39;XSRF-TOKEN&#39;, req.session.csrfToken, &#123; sameSite: &#39;lax&#39; &#125;);
+  next();
+&#125;
+</code></pre>
+<hr>
+<h3 id="六、防御优先级总结"><a href="#六、防御优先级总结" class="headerlink" title="六、防御优先级总结"></a>六、防御优先级总结</h3><p>按重要程度排列：</p>
+<ol>
+<li><strong>SameSite Cookie</strong>——设置 <code>SameSite=Lax</code> 或 <code>Strict</code>，从协议层面阻断跨站请求携带 Cookie，是最直接的防御</li>
+<li><strong>CSRF Token</strong>——同步令牌模式或双重提交 Cookie 模式，服务端校验请求的合法性，是金标准</li>
+<li><strong>正确的 CORS 配置</strong>——白名单控制允许的 Origin，不动态反射 Origin，不设置 <code>Allow-Origin: *</code> + <code>Allow-Credentials: true</code></li>
+<li><strong>自定义请求头</strong>——要求状态变更请求携带 <code>X-CSRF-Token</code> 或 <code>X-Requested-With</code>，利用浏览器跨域限制</li>
+<li><strong>Origin/Referer 校验</strong>——作为辅助手段，校验请求来源是否合法</li>
+<li><strong>高风险操作二次验证</strong>——转账、改密码等操作要求重新输入密码或验证码</li>
+<li><strong>避免 GET 请求执行状态变更</strong>——状态变更操作只用 POST/PUT/DELETE，减少攻击面</li>
+</ol>
+<hr>
+<h3 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h3><p>CSRF 的本质是浏览器在跨站请求时自动携带目标站 Cookie，服务端无法区分请求来源是用户主动还是被诱导。攻击者不需要窃取用户的 Cookie，只需要诱导用户访问一个包含伪造请求的页面，浏览器就会替用户发出携带有效凭证的请求。</p>
+<p>按请求构造方式分三种：GET 型用 <code>&lt;img&gt;</code> 或 <code>&lt;link&gt;</code> 标签触发，最简单但只能发 GET 请求；POST 型用隐藏表单自动提交，适用于绝大多数操作；AJAX 型利用 CORS 配置错误发送 JSON 请求，攻击门槛最高但威力也最大。</p>
+<p>防御的核心是纵深防御。SameSite Cookie 从协议层面阻断跨站携带凭证，是第一道防线。CSRF Token 让服务端能校验请求是否来自合法页面，是金标准。正确的 CORS 配置防止攻击者利用跨域能力绕过前两层。高风险操作增加二次验证，作为最后一道兜底。任何一层缺失都可能被突破，组合使用才能有效防御。</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">小竹</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://example.com/2026/08/07/2026-08-07-csrf-attacks-principles-and-defense/">http://example.com/2026/08/07/2026-08-07-csrf-attacks-principles-and-defense/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">小竹</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                    <span class="chip bg-color">安全</span>
+                                </a>
+                            
+                                <a href="/tags/Web%E5%AE%89%E5%85%A8/">
+                                    <span class="chip bg-color">Web安全</span>
+                                </a>
+                            
+                                <a href="/tags/CSRF/">
+                                    <span class="chip bg-color">CSRF</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/08/07/2026-08-07-csrf-attacks-principles-and-defense/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="CSRF 跨站请求伪造：原理、攻击与防御">
+                        
+                        <span class="card-title">CSRF 跨站请求伪造：原理、攻击与防御</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-07
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">安全</span>
+                    </a>
+                    
+                    <a href="/tags/Web%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">Web安全</span>
+                    </a>
+                    
+                    <a href="/tags/CSRF/">
+                        <span class="chip bg-color">CSRF</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/08/06/2026-08-06-xss-attacks-principles-and-defense/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="XSS 跨站脚本攻击：原理、攻击与防御">
+                        
+                        <span class="card-title">XSS 跨站脚本攻击：原理、攻击与防御</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-06
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">安全</span>
+                    </a>
+                    
+                    <a href="/tags/Web%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">Web安全</span>
+                    </a>
+                    
+                    <a href="/tags/XSS/">
+                        <span class="chip bg-color">XSS</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+        <link rel="stylesheet" href="/libs/aplayer/APlayer.min.css">
+<style>
+    .aplayer .aplayer-lrc p {
+        
+        display: none;
+        
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 16px !important;
+    }
+
+    .aplayer .aplayer-lrc p.aplayer-lrc-current {
+        
+        display: none;
+        
+        font-size: 15px;
+        color: #42b983;
+    }
+
+    
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body {
+        left: -66px !important;
+    }
+
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body:hover {
+        left: 0px !important;
+    }
+
+    
+</style>
+<div class="">
+    
+    <div class="row">
+        <meting-js class="col l8 offset-l2 m10 offset-m1 s12"
+                   server="netease"
+                   type="playlist"
+                   id="503838841"
+                   fixed='true'
+                   autoplay='false'
+                   theme='#42b983'
+                   loop='all'
+                   order='random'
+                   preload='auto'
+                   volume='0.7'
+                   list-folded='true'
+        >
+        </meting-js>
+    </div>
+</div>
+
+<script src="/libs/aplayer/APlayer.min.js"></script>
+<script src="/libs/aplayer/Meting.min.js"></script>
+
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2021-2026</span>
+            
+            <a href="/about" target="_blank">小竹</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/zhuyanzhen-lab" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
