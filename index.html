@@ -562,8 +562,8 @@
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                一、XSS 的核心原理1.1 本质：数据与代码的边界混淆XSS（Cross-Site Scripting，跨站脚本攻击）的根本原因是用户可控数据被浏览器当作可执行代码解释。
-这与 SQL 注入的逻辑完全同构——SQL 注入是用户输入被数据库
+                                一、核心原理XSS 的根本原因是用户可控数据被浏览器当作可执行代码解释。
+浏览器解析 HTML 时，遇到 &lt;script&gt; 标签、事件处理属性（onerror、onload）、javascript: 伪协议，会将其中的内容作为 
                             
                         </div>
                         <div class="publish-info">
