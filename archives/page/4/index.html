@@ -324,9 +324,9 @@
                     var typed = new Typed("#subtitle", {
                         strings: [ 
                             
-                                "从来没有真正的绝境, 只有心灵的迷途",
+                                "人生最难战胜的是自己，能够真正打败我们的也只有自己",
                             
-                                "Never really desperate, only the lost of the soul",
+                                "The hardest battle is against yourself, and only you can truly defeat you",
                             
                         ],
                         startDelay: 300,
@@ -843,25 +843,23 @@ uname=ad&#39; union select user(),dat
             <article class="cd-timeline-content" data-aos="fade-up">
                 <div class="article col s12 m6">
                     <div class="card">
-                        <a href="/2022/02/28/0228/">
+                        <a href="/2022/02/28/0227/">
                             <div class="card-image">
                                 
                                 
-                                <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="sqli-lab  less8-10">
+                                <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="sqli-lab  less6-7">
                                 
-                                <span class="card-title">sqli-lab  less8-10</span>
+                                <span class="card-title">sqli-lab  less6-7</span>
                             </div>
                         </a>
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    less8 –布尔型盲注使用sqlmap扫描，发现是单引号闭合。尝试一下，发现无报错信息。但是信息的正确和错误可以通过页面回显出来。
-一、猜测数据库长度
-and length(database())=8
+                                    less6- ”闭合报错注入步骤一：sqlmap进行扫描
 
-
-二、猜测数据库名
-and lef
+由结果可以得知注入形式为双引号闭合，并且可以使用报错注入。
+爆数据库名称
+id=-1&quot; and updatexml(1,concat(0x7e,database(),0x
                                 
                             </div>
                             <div class="publish-info">
@@ -898,23 +896,25 @@ and lef
             <article class="cd-timeline-content" data-aos="fade-up">
                 <div class="article col s12 m6">
                     <div class="card">
-                        <a href="/2022/02/28/0227/">
+                        <a href="/2022/02/28/0228/">
                             <div class="card-image">
                                 
                                 
-                                <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="sqli-lab  less6-7">
+                                <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="sqli-lab  less8-10">
                                 
-                                <span class="card-title">sqli-lab  less6-7</span>
+                                <span class="card-title">sqli-lab  less8-10</span>
                             </div>
                         </a>
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    less6- ”闭合报错注入步骤一：sqlmap进行扫描
+                                    less8 –布尔型盲注使用sqlmap扫描，发现是单引号闭合。尝试一下，发现无报错信息。但是信息的正确和错误可以通过页面回显出来。
+一、猜测数据库长度
+and length(database())=8
 
-由结果可以得知注入形式为双引号闭合，并且可以使用报错注入。
-爆数据库名称
-id=-1&quot; and updatexml(1,concat(0x7e,database(),0x
+
+二、猜测数据库名
+and lef
                                 
                             </div>
                             <div class="publish-info">
