@@ -1,0 +1,1468 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="HTTP 请求响应全景：从协议结构看 Web 攻击的本质, 是小竹不是小猪">
+    <meta name="description" content="引言：为什么要从协议层理解攻击XSS、CSRF、文件上传是 Web 安全中最常见的三类漏洞。表面上看它们各不相同——XSS 是脚本注入，CSRF 是请求伪造，文件上传是恶意文件写入。但如果回到 HTTP 协议层面，会发现它们攻击的是同一条通">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>HTTP 请求响应全景：从协议结构看 Web 攻击的本质 | 是小竹不是小猪</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">是小竹不是小猪</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">是小竹不是小猪</div>
+        <div class="logo-desc">
+            
+            每一年都奔走在自己的热爱里
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			留言板
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/blinkfox/hexo-theme-matery" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/blinkfox/hexo-theme-matery" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/18.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">HTTP 请求响应全景：从协议结构看 Web 攻击的本质</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        padding: 35px 0 15px 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        padding-bottom: 30px;
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+
+        position: absolute;
+        right: 23.5vw;
+        display: block;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                <span class="chip bg-color">安全</span>
+                            </a>
+                        
+                            <a href="/tags/Web%E5%AE%89%E5%85%A8/">
+                                <span class="chip bg-color">Web安全</span>
+                            </a>
+                        
+                            <a href="/tags/HTTP/">
+                                <span class="chip bg-color">HTTP</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-08-07
+                </div>
+                
+
+                
+
+                
+
+                
+
+                
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h3 id="引言：为什么要从协议层理解攻击"><a href="#引言：为什么要从协议层理解攻击" class="headerlink" title="引言：为什么要从协议层理解攻击"></a>引言：为什么要从协议层理解攻击</h3><p>XSS、CSRF、文件上传是 Web 安全中最常见的三类漏洞。表面上看它们各不相同——XSS 是脚本注入，CSRF 是请求伪造，文件上传是恶意文件写入。但如果回到 HTTP 协议层面，会发现它们攻击的是同一条通信链路的不同环节。</p>
+<p>一条完整的 Web 交互包含两部分：客户端发给服务端的请求（Request），和服务端返回给客户端的响应（Response）。请求中有方法、URL、请求头、请求体；响应中有状态码、响应头、响应体。每一部分都可能成为攻击面。</p>
+<p>本文先完整拆解请求和响应的每一个组成部分，然后将 XSS、CSRF、文件上传三种攻击映射到这条链路上，最后分析它们之间的关联和各自的防御侧重。</p>
+<hr>
+<h3 id="一、HTTP-请求的完整结构"><a href="#一、HTTP-请求的完整结构" class="headerlink" title="一、HTTP 请求的完整结构"></a>一、HTTP 请求的完整结构</h3><p>一个 HTTP 请求由四部分组成：请求行、请求头、请求体、以及底层 TCP/TLS 连接。攻击面分布在这四层的每一个字段中。</p>
+<h4 id="1-1-请求行"><a href="#1-1-请求行" class="headerlink" title="1.1 请求行"></a>1.1 请求行</h4><pre><code>POST /api/transfer HTTP/1.1
+│      │            │
+│      │            └── 协议版本
+│      └── URL 路径（含查询参数）
+└── HTTP 方法
+</code></pre>
+<p><strong>方法（Method）：</strong> GET、POST、PUT、DELETE 等。方法决定了服务端如何处理这个请求，也决定了攻击者能做什么。</p>
+<p>GET 请求的参数在 URL 中，可以被 <code>&lt;img src&gt;</code>、<code>&lt;link href&gt;</code>、<code>&lt;a href&gt;</code> 等标签直接触发。这就是 GET 型 CSRF 的基础——攻击者不需要 JS，一个 HTML 标签就能发出请求。</p>
+<p>POST 请求的参数在请求体中，需要 <code>&lt;form&gt;</code> 表单或 JS 才能构造。这提高了 CSRF 的攻击门槛，但并没有根本阻止。</p>
+<p><strong>URL 路径和查询参数：</strong> <code>https://bank.com/search?q=&lt;script&gt;alert(1)&lt;/script&gt;</code></p>
+<p>URL 中的查询参数（<code>?q=xxx</code>）是反射型 XSS 最常见的注入点。服务端从 URL 中取出参数值，未经转义拼入 HTML 响应，浏览器解析时执行注入的脚本。</p>
+<p>URL 路径本身也可能成为注入点。<code>$_SERVER[&#39;PHP_SELF&#39;]</code> 包含当前 URL 路径，如果直接用于 <code>form action</code> 属性，路径部分可被注入：访问 <code>/page.php/&lt;script&gt;alert(1)&lt;/script&gt;</code>，<code>PHP_SELF</code> 的值为 <code>/page.php/&lt;script&gt;alert(1)&lt;/script&gt;</code>。</p>
+<h4 id="1-2-请求头"><a href="#1-2-请求头" class="headerlink" title="1.2 请求头"></a>1.2 请求头</h4><p>请求头是键值对，每行一个 <code>Key: Value</code>。以下是与安全直接相关的关键请求头：</p>
+<p><strong>Host：</strong> 指定目标主机。虚拟主机环境下，一个 IP 服务多个域名，服务端根据 Host 头决定路由。Host 头注入可能导致密码重置链接指向攻击者的服务器。</p>
+<p><strong>Content-Type：</strong> 告诉服务端请求体的格式。</p>
+<pre><code>Content-Type: application/x-www-form-urlencoded   ← 表单默认
+Content-Type: multipart/form-data; boundary=xxx    ← 文件上传
+Content-Type: application/json                      ← API 常用
+Content-Type: text/plain                            ← 纯文本
+</code></pre>
+<p>文件上传攻击的入口就是 <code>multipart/form-data</code>。请求体按 boundary 分割为多个部分，每个部分有自己的 <code>Content-Disposition</code>（含文件名）和 <code>Content-Type</code>。这两个字段完全由客户端控制，服务端不能信任——这是文件上传安全问题的根源。</p>
+<p>CSRF 攻击中，Content-Type 也是一道天然屏障。HTML 表单只能发送 <code>application/x-www-form-urlencoded</code>、<code>multipart/form-data</code>、<code>text/plain</code> 三种类型。如果服务端只接受 <code>application/json</code>，传统表单无法直接伪造。</p>
+<p><strong>Cookie：</strong> 浏览器自动携带目标域的 Cookie。这是 CSRF 攻击的核心——浏览器不区分请求是用户主动发起的还是被第三方页面诱导发出的，只要目标域有 Cookie 就自动带上。</p>
+<pre><code>Cookie: session_id=abc123; csrf_token=xxx
+</code></pre>
+<p>如果 Cookie 没有设置 <code>SameSite</code> 属性，跨站请求也会携带。如果设置了 <code>HttpOnly</code>，JavaScript 无法读取（降低 XSS 窃取 Cookie 的风险）。如果设置了 <code>Secure</code>，只通过 HTTPS 传输。</p>
+<p><strong>Origin / Referer：</strong> 标识请求来源。</p>
+<pre><code>Origin: https://attacker.com
+Referer: https://attacker.com/page?id=1
+</code></pre>
+<p>Origin 只在跨域 POST 中发送，格式为 <code>scheme://host:port</code>（不含路径）。Referer 在所有请求中发送，包含完整 URL。服务端可以用它们校验请求来源是否合法，但这两个头也可能被隐私插件剥离。</p>
+<p>CORS 机制中，浏览器发送的 <code>Origin</code> 头和服务端返回的 <code>Access-Control-Allow-Origin</code> 响应头共同决定了跨域请求是否被允许。如果服务端动态反射 Origin（把请求的 Origin 原样返回），等于对所有域开放 CORS。</p>
+<p><strong>自定义安全头：</strong></p>
+<pre><code>X-Requested-With: XMLHttpRequest
+X-CSRF-Token: rAnd0mV4lu3
+</code></pre>
+<p>服务端可以用自定义头做 CSRF 校验——HTML 表单和 <code>&lt;img&gt;</code> 标签无法设置自定义头，所以要求必须有自定义头就能挡住传统 CSRF 手段。但这只挡住了不会 JS 的攻击者，<code>fetch</code> 可以设置任意自定义头，此时需要配合 CORS 策略兜底。</p>
+<h4 id="1-3-请求体"><a href="#1-3-请求体" class="headerlink" title="1.3 请求体"></a>1.3 请求体</h4><p>请求体是请求的实际数据载荷。根据 Content-Type 不同，格式不同：</p>
+<p><strong>表单编码（application/x-www-form-urlencoded）：</strong></p>
+<pre><code>username=admin&amp;password=123&amp;redirect=%2Fdashboard
+</code></pre>
+<p>键值对用 <code>&amp;</code> 分隔，特殊字符做 URL 编码。这是最传统的请求体格式，也是 CSRF 表单攻击的标准格式。</p>
+<p><strong>JSON（application/json）：</strong></p>
+<pre><code class="json">&#123;&quot;username&quot;: &quot;admin&quot;, &quot;password&quot;: &quot;123&quot;, &quot;role&quot;: &quot;user&quot;&#125;
+</code></pre>
+<p>现代 API 的标准格式。JSON 格式对 CSRF 有一定天然防护（表单无法直接发送 JSON），但如果 CORS 配置错误，<code>fetch</code> 可以绕过。</p>
+<p><strong>Multipart（multipart/form-data）：</strong></p>
+<pre><code>------WebKitFormBoundary
+Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;shell.php&quot;
+Content-Type: application/x-php
+
+&lt;?php phpinfo(); ?&gt;
+------WebKitFormBoundary--
+</code></pre>
+<p>文件上传的专用格式。<code>filename</code> 和每部分的 <code>Content-Type</code> 完全由客户端控制。攻击面包括：文件名注入（路径穿越、SQL 注入、命令注入）、文件类型伪造（扩展名、MIME、Magic Number）、文件内容（WebShell、图片马、SVG XSS）。</p>
+<h4 id="1-4-底层连接"><a href="#1-4-底层连接" class="headerlink" title="1.4 底层连接"></a>1.4 底层连接</h4><p>HTTP 运行在 TCP/TLS 之上。TLS 保证传输加密，但如果证书校验不严（如客户端禁用证书校验），中间人可以截获和篡改请求内容。</p>
+<hr>
+<h3 id="二、HTTP-响应的完整结构"><a href="#二、HTTP-响应的完整结构" class="headerlink" title="二、HTTP 响应的完整结构"></a>二、HTTP 响应的完整结构</h3><p>服务端处理完请求后，返回一个 HTTP 响应。响应也由三部分组成：状态行、响应头、响应体。</p>
+<h4 id="2-1-状态行"><a href="#2-1-状态行" class="headerlink" title="2.1 状态行"></a>2.1 状态行</h4><pre><code>HTTP/1.1 200 OK
+│          │    │
+│          │    └── 状态描述
+│          └── 状态码
+└── 协议版本
+</code></pre>
+<p>状态码本身一般不直接构成攻击面，但某些状态码与安全问题相关：302 重定向可能被利用做开放重定向（Open Redirect），403/404 页面的信息泄露可能暴露系统版本和路径。</p>
+<h4 id="2-2-响应头"><a href="#2-2-响应头" class="headerlink" title="2.2 响应头"></a>2.2 响应头</h4><p>响应头是服务端告诉浏览器”如何处理这个响应”的指令。以下是与安全直接相关的关键响应头：</p>
+<p><strong>Content-Type：</strong> 告诉浏览器响应的 MIME 类型。</p>
+<pre><code>Content-Type: text/html; charset=utf-8
+Content-Type: application/json
+Content-Type: image/jpeg
+</code></pre>
+<p>如果服务端返回 JSON 数据但 Content-Type 错误设置为 <code>text/html</code>，浏览器会把 JSON 当 HTML 解析。如果 JSON 中包含用户可控数据（如用户名），其中的 <code>&lt;script&gt;</code> 标签会被执行。这就是为什么 API 必须正确设置 <code>Content-Type: application/json</code>。</p>
+<p><strong>Content-Disposition：</strong> 告诉浏览器是内联显示还是作为附件下载。</p>
+<pre><code>Content-Disposition: inline                          ← 浏览器直接渲染
+Content-Disposition: attachment; filename=&quot;file.jpg&quot; ← 强制下载
+</code></pre>
+<p>对于用户上传的文件，设置 <code>Content-Disposition: attachment</code> 可以阻止 SVG/HTML 文件的 XSS 执行——浏览器会下载而不是渲染它。</p>
+<p><strong>X-Content-Type-Options: nosniff：</strong> 阻止浏览器 MIME 嗅探。如果 Content-Type 设置错误，浏览器通常会”智能”检测实际内容类型并据此处理。<code>nosniff</code> 让浏览器严格按照声明的 Content-Type 处理，防止 JSON 被当 HTML 解析。</p>
+<p><strong>Content-Security-Policy（CSP）：</strong> 告诉浏览器哪些来源的脚本可以执行。</p>
+<pre><code>Content-Security-Policy: default-src &#39;self&#39;; script-src &#39;self&#39; &#39;nonce-xxx&#39;; object-src &#39;none&#39;
+</code></pre>
+<p>CSP 是 XSS 防御的最后一道防线。即使页面中存在 XSS 注入点，CSP 禁止内联脚本后，大多数 payload 无法执行。</p>
+<p><strong>Set-Cookie：</strong> 服务端设置 Cookie。</p>
+<pre><code>Set-Cookie: session_id=abc123; HttpOnly; Secure; SameSite=Lax; Path=/
+</code></pre>
+<p><code>HttpOnly</code> 阻止 JS 读取 Cookie（防 XSS 窃取会话）。<code>Secure</code> 要求 HTTPS 传输（防中间人）。<code>SameSite</code> 控制跨站请求是否携带（防 CSRF）。这三个标志分别对应不同的攻击类型。</p>
+<p><strong>Access-Control-Allow-Origin / Allow-Credentials / Allow-Headers：</strong> CORS 响应头，控制哪些域可以跨域访问本资源。</p>
+<pre><code>Access-Control-Allow-Origin: https://mysite.com     ← 白名单（安全）
+Access-Control-Allow-Origin: *                       ← 所有域（危险）
+Access-Control-Allow-Credentials: true               ← 允许携带 Cookie
+Access-Control-Allow-Headers: X-CSRF-Token           ← 允许跨域带自定义头
+</code></pre>
+<p>如果 <code>Allow-Origin</code> 动态反射请求的 Origin，等于对所有域开放。配合 <code>Allow-Credentials: true</code>，攻击者可以在自己的页面上用 <code>fetch</code> 携带用户 Cookie 读取敏感数据，或绕过 CSRF Token。</p>
+<p><strong>X-Frame-Options: DENY：</strong> 阻止页面被 <code>&lt;iframe&gt;</code> 嵌入，防御点击劫持。</p>
+<h4 id="2-3-响应体"><a href="#2-3-响应体" class="headerlink" title="2.3 响应体"></a>2.3 响应体</h4><p>响应体是服务端返回的实际内容——HTML 页面、JSON 数据、图片、文件等。</p>
+<p><strong>HTML 响应体</strong> 是 XSS 的主战场。服务端将用户数据拼入 HTML 时，如果没有做输出编码，<code>&lt;script&gt;</code>、<code>onerror</code>、<code>javascript:</code> 等可执行内容会被浏览器解析执行。</p>
+<p><strong>JSON 响应体</strong> 如果 Content-Type 设置错误（<code>text/html</code>），或者被嵌入到 HTML 页面的 <code>&lt;script&gt;</code> 标签中（<code>var data = &#123;&#123; user_data | safe &#125;&#125;</code>），也可能触发 XSS。</p>
+<p><strong>文件下载响应体</strong> 如果是用户上传的文件（图片、文档），可能包含恶意内容（图片马、SVG XSS）。</p>
+<hr>
+<h3 id="三、三种攻击在请求响应链路中的映射"><a href="#三、三种攻击在请求响应链路中的映射" class="headerlink" title="三、三种攻击在请求响应链路中的映射"></a>三、三种攻击在请求响应链路中的映射</h3><p>现在把 XSS、CSRF、文件上传三种攻击映射到这条链路上，看它们各自攻击的是哪个环节。</p>
+<h4 id="3-1-XSS：攻击响应体中的-HTML-渲染"><a href="#3-1-XSS：攻击响应体中的-HTML-渲染" class="headerlink" title="3.1 XSS：攻击响应体中的 HTML 渲染"></a>3.1 XSS：攻击响应体中的 HTML 渲染</h4><p>XSS 的核心环节是<strong>响应体</strong>。攻击者将恶意数据注入到服务端的响应中，浏览器解析响应体时执行恶意脚本。</p>
+<pre><code>请求阶段                          响应阶段
+┌─────────────────────┐          ┌─────────────────────────────────┐
+│ GET /search?q=&lt;script&gt;│ ──→    │ HTML: &lt;p&gt;搜索结果：&lt;script&gt;...&lt;/p&gt;│
+│                      │         │                                  │
+│ 注入点在请求的查询参数 │         │ 恶意数据被拼入响应体的 HTML 中    │
+└─────────────────────┘          │                                  │
+                                 │ 浏览器解析响应体 → 执行 &lt;script&gt;  │
+                                 └─────────────────────────────────┘
+</code></pre>
+<p><strong>攻击的完整链路：</strong></p>
+<p>请求阶段：攻击者构造恶意 URL，将 payload 放在查询参数中（<code>?q=&lt;script&gt;...</code>）。</p>
+<p>服务端处理：服务端从查询参数中取出值，未经转义拼入 HTML 模板。</p>
+<p>响应阶段：响应体中包含未转义的 <code>&lt;script&gt;</code> 标签。</p>
+<p>浏览器渲染：浏览器解析 HTML，遇到 <code>&lt;script&gt;</code> 执行其中的 JS。</p>
+<p><strong>XSS 的关键防御点在响应阶段：</strong> 输出编码（在响应体中将 <code>&lt;</code> 转为 <code>&amp;lt;</code>）和 CSP 响应头（告诉浏览器不要执行内联脚本）。</p>
+<p><strong>三种 XSS 在链路上的差异：</strong></p>
+<p>反射型：恶意数据在请求参数中 → 服务端回显到响应体 → 浏览器执行。数据经过服务端。</p>
+<p>存储型：恶意数据先通过一个 POST 请求写入数据库 → 后续 GET 请求时服务端从数据库取出 → 拼入响应体 → 浏览器执行。数据经过服务端两次（写入和读出）。</p>
+<p>DOM 型：恶意数据在 URL hash 中 → 前端 JS 从 <code>location.hash</code> 读取 → 写入 <code>innerHTML</code> → 浏览器执行。数据不经过服务端，完全在客户端流转。</p>
+<h4 id="3-2-CSRF：攻击请求阶段中的-Cookie-自动携带"><a href="#3-2-CSRF：攻击请求阶段中的-Cookie-自动携带" class="headerlink" title="3.2 CSRF：攻击请求阶段中的 Cookie 自动携带"></a>3.2 CSRF：攻击请求阶段中的 Cookie 自动携带</h4><p>CSRF 的核心环节是<strong>请求阶段</strong>。攻击者利用浏览器自动携带 Cookie 的行为，以用户身份发出伪造请求。</p>
+<pre><code>请求阶段                              响应阶段
+┌──────────────────────────┐         ┌──────────────────┐
+│ attacker.com 页面中的表单  │ ──→     │ bank.com 处理转账  │
+│ &lt;form action=bank.com&gt;    │         │ Cookie 有效，执行  │
+│                           │         │                  │
+│ 浏览器自动携带 bank.com    │         │ 服务端无法区分     │
+│ 的 Cookie 发出跨站请求     │         │ 请求是主动还是伪造 │
+└──────────────────────────┘         └──────────────────┘
+</code></pre>
+<p><strong>攻击的完整链路：</strong></p>
+<p>请求阶段（攻击者侧）：攻击者在自己的页面上放置 <code>&lt;form&gt;</code> 或 <code>&lt;img&gt;</code>，指向目标站的操作接口。</p>
+<p>请求阶段（浏览器侧）：用户访问攻击页面，浏览器加载 <code>&lt;form&gt;</code> 或 <code>&lt;img&gt;</code>，自动携带目标站的 Cookie 发出请求。</p>
+<p>服务端处理：服务端收到请求，看到有效的 Cookie，认为是用户本人操作，执行请求中的操作。</p>
+<p>响应阶段：服务端返回操作结果（攻击者不关心响应内容）。</p>
+<p><strong>CSRF 的关键防御点在请求阶段：</strong> SameSite Cookie（阻止跨站携带 Cookie）、CSRF Token（在请求中携带服务端校验的令牌）、自定义请求头（利用表单无法设置自定义头的限制）。</p>
+<p><strong>CSRF 不关心响应阶段。</strong> 攻击者不需要读取服务端的响应，只需要请求发出去、操作被执行就够了。这与 XSS 形成鲜明对比——XSS 需要在响应体中注入内容，CSRF 只关心请求是否被发出。</p>
+<h4 id="3-3-文件上传：攻击请求体中的-multipart-解析"><a href="#3-3-文件上传：攻击请求体中的-multipart-解析" class="headerlink" title="3.3 文件上传：攻击请求体中的 multipart 解析"></a>3.3 文件上传：攻击请求体中的 multipart 解析</h4><p>文件上传的核心环节是<strong>请求体</strong>。攻击者通过 <code>multipart/form-data</code> 格式将恶意文件发送到服务端，服务端解析请求体、提取文件、存储到文件系统。</p>
+<pre><code>请求阶段                                响应阶段
+┌────────────────────────────┐        ┌────────────────────────┐
+│ POST /upload               │ ──→    │ 文件被写入服务器文件系统 │
+│ Content-Type: multipart/   │        │                        │
+│   form-data; boundary=xxx  │        │ 如果上传目录可执行脚本   │
+│                            │        │ → 攻击者访问文件 → RCE  │
+│ filename: shell.php        │        │ 如果配合 LFI           │
+│ Content-Type: image/jpeg   │        │ → 通过 include() 执行   │
+│ 内容: &lt;?php phpinfo(); ?&gt;  │        │ 如果文件名有路径穿越     │
+│                            │        │ → 文件写到任意位置       │
+│ 请求体中携带恶意文件内容    │        └────────────────────────┘
+│ 和伪造的文件名/MIME类型    │
+└────────────────────────────┘
+</code></pre>
+<p><strong>攻击的完整链路：</strong></p>
+<p>请求阶段：攻击者构造 <code>multipart/form-data</code> 请求，在 <code>filename</code> 中注入路径穿越序列，在文件内容中放入 WebShell，在 <code>Content-Type</code> 中伪造合法 MIME。</p>
+<p>服务端处理：解析 multipart 结构，校验文件名和类型（可能被绕过），将文件写入文件系统。</p>
+<p>后续请求：攻击者访问上传的文件 URL，如果上传目录可执行脚本，WebShell 被执行。</p>
+<p><strong>文件上传的关键防御点横跨请求和服务端两个阶段：</strong> 请求阶段校验文件名和类型（白名单、Magic Number），服务端阶段限制上传目录的执行权限、使用随机文件名、隔离存储域名。</p>
+<hr>
+<h3 id="四、三种攻击的关联与对比"><a href="#四、三种攻击的关联与对比" class="headerlink" title="四、三种攻击的关联与对比"></a>四、三种攻击的关联与对比</h3><h4 id="4-1-攻击位置对比"><a href="#4-1-攻击位置对比" class="headerlink" title="4.1 攻击位置对比"></a>4.1 攻击位置对比</h4><pre><code>                    请求阶段                          响应阶段
+            ┌──────────────────────┐          ┌──────────────────────┐
+            │ 请求行 │ 请求头 │ 请求体 │          │ 响应头 │ 响应体 │
+            └──────────────────────┘          └──────────────────────┘
+XSS         注入点    ─       ─                CSP     ★ 主战场
+            (URL参数)                          (兜底)   (HTML渲染)
+
+CSRF        ─        ★ 主战场  ─                ─       ─
+                     (Cookie                   (不关心
+                      自动携带)                  响应内容)
+
+文件上传    ─        ─       ★ 主战场           安全响应头  后续访问
+                            (multipart          (Content-  (执行恶意
+                             文件内容)            Disposition) 文件)
+</code></pre>
+<p>XSS 的主战场在响应体——恶意数据被渲染为可执行代码。CSRF 的主战场在请求头中的 Cookie——浏览器自动携带凭证。文件上传的主战场在请求体中的 multipart 数据——恶意文件被写入服务端。</p>
+<h4 id="4-2-攻击者需要什么"><a href="#4-2-攻击者需要什么" class="headerlink" title="4.2 攻击者需要什么"></a>4.2 攻击者需要什么</h4><p><strong>XSS 攻击者需要：</strong> 找到一个用户输入被回显到 HTML 中且未编码的位置。攻击者需要理解服务端的 HTML 渲染逻辑，找到注入点。</p>
+<p><strong>CSRF 攻击者需要：</strong> 用户已登录目标站 + 目标站缺乏 CSRF 防御。攻击者不需要理解目标站的内部逻辑，只需要知道操作接口的 URL 和参数格式（通过抓包分析）。</p>
+<p><strong>文件上传攻击者需要：</strong> 一个文件上传接口 + 上传目录可执行脚本（或配合 LFI）。攻击者需要理解服务端的文件处理逻辑（校验了什么、没校验什么）。</p>
+<h4 id="4-3-三者之间的连锁关系"><a href="#4-3-三者之间的连锁关系" class="headerlink" title="4.3 三者之间的连锁关系"></a>4.3 三者之间的连锁关系</h4><p>三种攻击不是孤立的，它们经常组合使用：</p>
+<p><strong>XSS 绕过 CSRF 防御：</strong> 如果目标站有 CSRF Token 但存在 XSS，攻击者可以通过 XSS 读取页面中的 CSRF Token，然后以用户身份发起带有效 Token 的请求。此时 CSRF Token 形同虚设——因为攻击者通过 XSS 获得了和目标站 JS 相同的权限。</p>
+<pre><code class="javascript">// XSS 注入的 JS：读取 CSRF Token，发起伪造请求
+const token = document.querySelector(&#39;input[name=csrf_token]&#39;).value;
+fetch(&#39;/api/transfer&#39;, &#123;
+  method: &#39;POST&#39;,
+  headers: &#123; &#39;X-CSRF-Token&#39;: token &#125;,
+  credentials: &#39;include&#39;,
+  body: JSON.stringify(&#123; to: &#39;attacker&#39;, amount: 10000 &#125;)
+&#125;);
+</code></pre>
+<p><strong>文件上传 → XSS：</strong> 上传 SVG 文件（内含 JavaScript），如果上传目录没有做域名隔离或 Content-Disposition 限制，其他用户访问该 SVG 时触发 XSS。这是文件上传和 XSS 的交叉点。</p>
+<p><strong>文件上传 → CSRF：</strong> 上传 <code>.htaccess</code> 文件修改服务器解析规则，让 <code>.jpg</code> 被当作 PHP 执行。这本身不是 CSRF，但上传操作如果缺乏 CSRF 防护，攻击者可以以管理员身份通过 CSRF 在管理后台上传恶意文件。</p>
+<p><strong>XSS + CSRF 组合：</strong> XSS 注入的 JS 可以发起跨域请求（因为同源策略不阻止发送请求，只阻止读取响应）。如果配合 CORS 配置错误，XSS 可以读取其他域的敏感数据，将 XSS 的影响从一个域扩展到多个域。</p>
+<h4 id="4-4-防御侧重对比"><a href="#4-4-防御侧重对比" class="headerlink" title="4.4 防御侧重对比"></a>4.4 防御侧重对比</h4><pre><code>            XSS                    CSRF                   文件上传
+            ─────────────────     ─────────────────      ─────────────────
+核心风险    数据被当作代码执行      请求被以用户身份发出     恶意文件被写入可执行环境
+
+主战场     响应体（HTML渲染）      请求头（Cookie携带）     请求体（multipart解析）
+
+最关键防御  输出编码                SameSite Cookie         上传目录禁执行
+           （按上下文选编码函数）   （阻断跨站携带Cookie）   （最后一道防线）
+
+兜底防御   CSP响应头               CSRF Token              独立域名/对象存储
+           （禁止内联脚本）        （服务端校验请求合法性）  （隔离执行环境）
+
+辅助防御   输入验证                自定义请求头              文件名随机化
+           模板引擎默认转义         Origin校验               Magic Number校验
+           框架默认转义             二次验证                 防病毒扫描
+</code></pre>
+<p>三种攻击的防御逻辑有一个共同点：<strong>纵深防御，不依赖任何单一手段。</strong></p>
+<p>XSS 的纵深：输出编码 → 模板引擎默认转义 → CSP → 输入验证。</p>
+<p>CSRF 的纵深：SameSite Cookie → CSRF Token → CORS → 自定义头 → 二次验证。</p>
+<p>文件上传的纵深：上传目录禁执行 → 文件名随机化 → 扩展名白名单 → Magic Number → 独立域名隔离 → 防病毒扫描。</p>
+<p>每一层都可能被绕过，但组合使用可以大幅提高攻击成本。</p>
+<h4 id="4-5-一个统一的视角"><a href="#4-5-一个统一的视角" class="headerlink" title="4.5 一个统一的视角"></a>4.5 一个统一的视角</h4><p>从 HTTP 协议的角度看，三种攻击的本质可以统一为：</p>
+<p><strong>XSS = 响应体中的数据被浏览器当作代码执行。</strong> 防御核心是确保数据始终是数据——输出编码、CSP。</p>
+<p><strong>CSRF = 请求中的身份凭证被浏览器自动携带。</strong> 防御核心是确保请求确实是用户主动发出的——SameSite、Token。</p>
+<p><strong>文件上传 = 请求体中的恶意内容被服务端写入可执行环境。</strong> 防御核心是确保写入的内容不可执行——目录权限、存储隔离。</p>
+<p>三者的共同根源是：<strong>系统在处理用户可控数据时，没有正确区分”数据”和”指令”的边界。</strong> XSS 混淆了 HTML 数据和 JS 代码，CSRF 混淆了用户请求和伪造请求，文件上传混淆了普通文件和可执行脚本。</p>
+<p>理解了这一点，再看任何新的 Web 漏洞，都可以问同一个问题：<strong>在这个漏洞中，数据和指令的边界在哪里被混淆了？</strong></p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">小竹</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://example.com/2026/08/07/2026-08-07-http-request-response-security-landscape/">http://example.com/2026/08/07/2026-08-07-http-request-response-security-landscape/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">小竹</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                    <span class="chip bg-color">安全</span>
+                                </a>
+                            
+                                <a href="/tags/Web%E5%AE%89%E5%85%A8/">
+                                    <span class="chip bg-color">Web安全</span>
+                                </a>
+                            
+                                <a href="/tags/HTTP/">
+                                    <span class="chip bg-color">HTTP</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/08/07/2026-08-07-http-request-response-security-landscape/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="HTTP 请求响应全景：从协议结构看 Web 攻击的本质">
+                        
+                        <span class="card-title">HTTP 请求响应全景：从协议结构看 Web 攻击的本质</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-07
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">安全</span>
+                    </a>
+                    
+                    <a href="/tags/Web%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">Web安全</span>
+                    </a>
+                    
+                    <a href="/tags/HTTP/">
+                        <span class="chip bg-color">HTTP</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/08/07/2026-08-07-csrf-attacks-principles-and-defense/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="CSRF 跨站请求伪造：原理、攻击与防御">
+                        
+                        <span class="card-title">CSRF 跨站请求伪造：原理、攻击与防御</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-07
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            小竹
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">安全</span>
+                    </a>
+                    
+                    <a href="/tags/Web%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">Web安全</span>
+                    </a>
+                    
+                    <a href="/tags/CSRF/">
+                        <span class="chip bg-color">CSRF</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+        <link rel="stylesheet" href="/libs/aplayer/APlayer.min.css">
+<style>
+    .aplayer .aplayer-lrc p {
+        
+        display: none;
+        
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 16px !important;
+    }
+
+    .aplayer .aplayer-lrc p.aplayer-lrc-current {
+        
+        display: none;
+        
+        font-size: 15px;
+        color: #42b983;
+    }
+
+    
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body {
+        left: -66px !important;
+    }
+
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body:hover {
+        left: 0px !important;
+    }
+
+    
+</style>
+<div class="">
+    
+    <div class="row">
+        <meting-js class="col l8 offset-l2 m10 offset-m1 s12"
+                   server="netease"
+                   type="playlist"
+                   id="503838841"
+                   fixed='true'
+                   autoplay='false'
+                   theme='#42b983'
+                   loop='all'
+                   order='random'
+                   preload='auto'
+                   volume='0.7'
+                   list-folded='true'
+        >
+        </meting-js>
+    </div>
+</div>
+
+<script src="/libs/aplayer/APlayer.min.js"></script>
+<script src="/libs/aplayer/Meting.min.js"></script>
+
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2021-2026</span>
+            
+            <a href="/about" target="_blank">小竹</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/zhuyanzhen-lab" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
