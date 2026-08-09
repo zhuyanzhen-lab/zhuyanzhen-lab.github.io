@@ -535,7 +535,18 @@ https://app.com/api/avatar?url=http://169.254.169.254/latest/meta-data/iam/secur
   → 攻击者用凭证调用 AWS API，接管云资源
 </code></pre>
 <p><strong>为什么这特别危险？</strong> 因为云凭证的权限通常很大（读写 S3、操作数据库、管理其他实例），而且临时凭证的有效期通常是几小时到几天。一次 SSRF 可能导致整个云环境被接管。</p>
-<p><strong>AWS 的防御措施：</strong> 2019 年后 AWS 推出了 IMDSv2，要求用 PUT 请求获取 session token，然后用 token 去获取元数据。简单的 HTTP GET 请求（SSRF 常用的方式）无法直接获取元数据。但如果 SSRF 支持 PUT 方法或使用 <code>gopher://</code> 协议，IMDSv2 仍可被绕过。</p>
+<p><strong>AWS 的防御措施——IMDSv2：</strong> 2019 年后 AWS 推出了 IMDSv2，将获取元数据的流程改为两步走。第一步必须先发一个 PUT 请求获取 session token：</p>
+<pre><code>PUT http://169.254.169.254/latest/api/token
+Header: X-aws-ec2-metadata-token-ttl-seconds: 21600
+→ 响应返回一个 token 字符串
+</code></pre>
+<p>第二步，带着这个 token 才能 GET 元数据：</p>
+<pre><code>GET http://169.254.169.254/latest/meta-data/
+Header: X-aws-ec2-metadata-token: &lt;上一步拿到的token&gt;
+</code></pre>
+<p>这个设计的核心思路不是”加密”或”认证”，而是<strong>提高请求构造的门槛</strong>，让大部分 SSRF 场景发不出符合要求的那种请求。</p>
+<p><strong>为什么 PUT 要求能挡住大部分 SSRF？</strong> 因为 GET 和 PUT 的差异不只是方法名不同，关键在于浏览器和 HTML 标签对请求方法的支持范围不同。HTML 标签（<code>&lt;img&gt;</code>、<code>&lt;link&gt;</code>、<code>&lt;script&gt;</code>、<code>&lt;iframe&gt;</code>）只能发起 GET 请求，没有任何办法让它们发 PUT。表单（<code>&lt;form&gt;</code>）只能发 GET 和 POST，也发不了 PUT。所以如果 SSRF 的注入点是这些 HTML 标签，攻击者根本发不出第一步的 PUT 请求，拿不到 token，元数据就访问不了。IMDSv2 挡的是”只能发 GET 的低能力 SSRF”。</p>
+<p><strong>为什么 IMDSv2 不是万能的？</strong> 如果 SSRF 的注入点不是 HTML 标签，而是服务端代码能构造任意 HTTP 请求（比如用 <code>curl</code>、<code>requests</code>、<code>urllib</code> 发起请求），那 PUT 方法、自定义请求头都不在话下。攻击者可以完整地执行两步：先 PUT 拿 token，再 GET 拿元数据。另外 <code>gopher://</code> 协议更危险——它能构造任意 TCP 数据流，等于把原始字节直接发给 169.254.169.254 的 80 端口。攻击者可以在 gopher payload 里手写完整的 PUT 请求行和请求头，效果和 curl 一样，IMDSv2 的两步校验完全被绕过。所以防御 SSRF 不能只靠 IMDSv2，还需要从服务端限制出网目标（内网 IP 过滤、DNS 校验等）。</p>
 <h4 id="2-3-协议利用：gopher-dict-file-协议攻击内网"><a href="#2-3-协议利用：gopher-dict-file-协议攻击内网" class="headerlink" title="2.3 协议利用：gopher/dict/file 协议攻击内网"></a>2.3 协议利用：gopher/dict/file 协议攻击内网</h4><p><strong>场景：</strong> 服务端的 URL 解析不仅支持 <code>http://</code>，还支持其他协议（<code>file://</code>、<code>dict://</code>、<code>gopher://</code>、<code>ldap://</code>）。</p>
 <p><strong>第一步：读取本地文件。</strong> 如果服务端支持 <code>file://</code> 协议：</p>
 <pre><code>https://app.com/api/avatar?url=file:///etc/passwd
@@ -622,11 +633,17 @@ extracted = tldextract.extract(parsed.hostname)
 if extracted.registered_domain != &#39;example.com&#39;:
     raise ValueError(&quot;Domain not allowed&quot;)
 </code></pre>
-<p>DNS 重绑定攻击：攻击者设置 DNS 记录，第一次解析 <code>attacker.com</code> 返回合法 IP（通过白名单校验），第二次解析返回内网 IP（实际请求时）。两次 DNS 查询之间有时间差，白名单校验和实际请求使用的是不同的 IP。</p>
-<pre><code>第一次 DNS 查询（白名单校验时）：attacker.com → 1.2.3.4（合法 IP）→ 通过
-第二次 DNS 查询（实际发请求时）：attacker.com → 192.168.1.100（内网 IP）→ SSRF 成功
+<p>DNS 重绑定攻击：这是 SSRF 防御中最精巧的绕过手段之一。攻击者注册一个域名 <code>evil.com</code>，自己控制 DNS 服务器，把 TTL（Time To Live，DNS 记录的缓存时间）设成 1 秒，然后配置 DNS 服务器对同一个域名交替返回不同的 IP。</p>
+<p><strong>攻击的完整过程：</strong></p>
+<pre><code>T=0s    防御层解析 evil.com → 问攻击者的 DNS 服务器 → 返回 1.2.3.4，缓存 1 秒
+T=0.1s  防御层检查 1.2.3.4 → 公网 IP → 合法 → 放行
+T=1s    缓存过期，1.2.3.4 这条记录被丢弃
+T=1.1s  请求层解析 evil.com → 缓存没了，重新问攻击者的 DNS 服务器 → 这次返回 169.254.169.254
+        请求实际发到了 169.254.169.254 → 攻击者拿到云元数据
 </code></pre>
-<p>防御 DNS 重绑定：白名单校验后，用校验得到的 IP 地址直接发起请求（不再做第二次 DNS 解析），或者设置 DNS 缓存让两次解析返回相同结果。</p>
+<p><strong>为什么两次解析 evil.com 会得到不同的 IP？</strong> DNS 解析不是”一次解析，永远记住”。每次解析出来的结果会被缓存，但缓存有过期时间（TTL）。攻击者把 TTL 设成 1 秒，意味着 1 秒后缓存失效，下次查询必须重新问 DNS 服务器。攻击者控制着自己的 DNS 服务器，每次查询返回什么 IP 完全由他决定——第一次返回 1.2.3.4，第二次返回 169.254.169.254。DNS 协议允许这样做，这不算异常行为。攻击者不需要在 1 秒内”修改 DNS 记录”，他的 DNS 服务器从一开始就被配置成交替返回两个 IP，这是服务器的程序逻辑，不是动态修改。</p>
+<p><strong>为什么第二次解析出内网 IP 没有人拒绝？</strong> 因为第二次解析根本不在防御层的管辖范围内。防御层的代码只执行了一次：解析、检查、放行。放行之后，控制权交给了 HTTP 请求库（比如 <code>requests.get(url)</code>）。请求库拿到的是原始 URL <code>http://evil.com/api/data</code>，它不知道防御层已经做过检查了，它只知道自己需要访问 <code>evil.com</code>，于是自己去做了一次 DNS 解析。这次解析是请求库内部的行为，防御层完全不参与，也看不到结果。换句话说，防御层检查的是”第一次解析的结果”，但实际建立连接用的是”第二次解析的结果”。这两次解析之间隔了 TTL 过期的时间差，结果不同，而防御层对第二次解析毫无感知。</p>
+<p>防御 DNS 重绑定的正确做法是<strong>只做一次 DNS 解析，然后用解析出来的 IP 直接建立连接</strong>，不给”第二次解析”留机会：</p>
 <pre><code class="python">import socket
 
 def safe_fetch(url):
@@ -636,10 +653,11 @@ def safe_fetch(url):
     # 校验 IP 不是内网地址
     if is_internal_ip(ip):
         raise ValueError(&quot;Internal IP not allowed&quot;)
-    # 用已解析的 IP 直接发起请求，避免 DNS 重绑定
+    # 用已校验的 IP 直接发起请求，不再让请求库重新解析域名
     new_url = url.replace(parsed.hostname, ip)
     return requests.get(new_url)
 </code></pre>
+<p>这样 DNS 解析只发生一次（防御层的那次），实际请求直接连到已校验的 IP，没有”第二次解析”的机会，DNS 重绑定就失效了。</p>
 <h4 id="3-2-内网-IP-过滤：禁止请求私有地址"><a href="#3-2-内网-IP-过滤：禁止请求私有地址" class="headerlink" title="3.2 内网 IP 过滤：禁止请求私有地址"></a>3.2 内网 IP 过滤：禁止请求私有地址</h4><p>如果业务需要允许用户输入任意 URL（不能做域名白名单），至少要过滤内网 IP 地址：</p>
 <pre><code class="python">import ipaddress
 
@@ -692,15 +710,36 @@ def is_internal_ip(ip_str):
 <pre><code class="python"># 只允许 GET
 response = requests.get(url, timeout=5, allow_redirects=False)
 </code></pre>
-<p><strong>禁止跟随重定向：</strong> 服务端可能先校验 URL 合法，然后发起请求。如果 HTTP 客户端自动跟随重定向，攻击者可以先指向合法地址，然后 302 重定向到内网地址：</p>
-<pre><code>https://app.com/api/avatar?url=https://attacker.com/redirect
-  → 校验 URL：https://attacker.com/redirect → 合法（外部域名）
-  → 发起请求 → attacker.com 返回 302 Location: http://169.254.169.254/
-  → HTTP 客户端自动跟随重定向 → 请求到达云元数据服务
+<p><strong>禁止跟随重定向：</strong> HTTP 重定向的工作方式是：服务器返回 302 状态码和一个 <code>Location</code> 头，告诉客户端”你要找的内容在另一个地址”。浏览器和大部分 HTTP 客户端的默认行为是自动跟随重定向——收到 302 后自动向 <code>Location</code> 指定的新地址发起请求，用户感知不到这个过程。Python 的 <code>requests.get(url, allow_redirects=True)</code> 会跟随，Java 的 <code>HttpURLConnection</code> 默认跟随，Go 的 <code>http.Get</code> 默认跟随最多 10 次。</p>
+<p>这个默认行为在 SSRF 场景下是一个严重的绕过路径。攻击者可以这样利用：</p>
+<pre><code>攻击者提交: url=http://attacker.com/redirect
+  → 防御层：DNS 解析 attacker.com → 1.2.3.4（公网 IP，合法）→ 放行
+  → HTTP 客户端：GET http://attacker.com/redirect
+  → attacker.com 响应：302 Location: http://169.254.169.254/latest/meta-data/
+  → HTTP 客户端自动跟随：GET http://169.254.169.254/latest/meta-data/
+  → 请求实际到达内网，防御层完全不知道
+  → 攻击者拿到元数据
 </code></pre>
+<p>防御层只检查了用户最初提交的 URL（<code>attacker.com</code>，合法），但 HTTP 客户端自动跟随重定向后访问的目标（<code>169.254.169.254</code>）完全不在防御层的检查范围内。这和 DNS 重绑定解决的是同一类问题：<strong>防御逻辑必须覆盖请求链路中的每一个目标地址，不能只检查入口就放行整条链。</strong></p>
+<p>“禁止跟随重定向”就是关掉 HTTP 客户端的自动重定向行为。收到 302 就停下来，把响应原样返回，不自动去访问 <code>Location</code> 指向的新地址。这样攻击者的重定向链就断了。</p>
 <pre><code class="python"># 禁止自动跟随重定向
 response = requests.get(url, allow_redirects=False)
-# 如果需要跟随重定向，必须对每个重定向目标重新校验
+</code></pre>
+<p>如果业务确实需要支持重定向（比如 CDN 跳转、短链接展开），不能简单禁止，而是要在每次跳转时重新校验目标地址——解析新 URL 的 DNS、检查 IP 是否内网、确认协议是否合法，通过后再继续：</p>
+<pre><code class="python">def safe_fetch_with_redirects(url, max_redirects=5):
+    for _ in range(max_redirects):
+        parsed = urlparse(url)
+        ip = socket.gethostbyname(parsed.hostname)
+        if is_internal_ip(ip):
+            raise ValueError(&quot;Redirect to internal IP blocked&quot;)
+        
+        response = requests.get(url, allow_redirects=False)
+        if response.status_code in (301, 302, 307, 308):
+            url = response.headers.get(&#39;Location&#39;)
+            if not url:
+                break
+            continue  # 对重定向目标重新执行校验
+        return response
 </code></pre>
 <p><strong>限制响应大小和超时：</strong> 防止 SSRF 被用于 DoS（让服务端下载超大文件或等待长时间无响应）。</p>
 <pre><code class="python">response = requests.get(url, timeout=5, stream=True)
