@@ -4,9 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="检测数组存在重复元素, 是小竹不是小猪">
-    <meta name="description" content="检测数组是否存在重复元素方法一：直接进行比较（时间复杂度过高）bool containsDuplicate(int* nums, int numsSize)&amp;#123;
-    for(int i=0;i&amp;lt;numsSize;i++)&amp;">
+    <meta name="keywords" content="检测数组中是否存在重复元素, 是小竹不是小猪">
+    <meta name="description" content="检测数组中是否存在重复元素 | 是小竹不是小猪">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -18,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>检测数组存在重复元素 | 是小竹不是小猪</title>
+    <title>检测数组中是否存在重复元素 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -310,12 +309,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/4.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/22.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">检测数组存在重复元素</h1>
+                    <h1 class="description center-align post-title">检测数组中是否存在重复元素</h1>
                 </div>
             </div>
         </div>
@@ -429,9 +428,17 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E7%AE%97%E6%B3%95/">
+                                <span class="chip bg-color">算法</span>
+                            </a>
+                        
+                            <a href="/tags/C%E8%AF%AD%E8%A8%80/">
+                                <span class="chip bg-color">C语言</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
@@ -464,335 +471,7 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="检测数组是否存在重复元素"><a href="#检测数组是否存在重复元素" class="headerlink" title="检测数组是否存在重复元素"></a>检测数组是否存在重复元素</h2><h4 id="方法一：直接进行比较（时间复杂度过高）"><a href="#方法一：直接进行比较（时间复杂度过高）" class="headerlink" title="方法一：直接进行比较（时间复杂度过高）"></a>方法一：直接进行比较（时间复杂度过高）</h4><pre><code class="c">bool containsDuplicate(int* nums, int numsSize)&#123;
-    for(int i=0;i&lt;numsSize;i++)&#123;
-        for(int j=i+1;j&lt;numsSize;j++)&#123;
-            if(nums[i]==nums[j])&#123;
-                return true;
-            &#125;
-        &#125;
-    &#125;
-    return false;
-&#125;
-</code></pre>
-<h4 id="方法二-利用C语言的qsort函数进行排序"><a href="#方法二-利用C语言的qsort函数进行排序" class="headerlink" title="方法二:利用C语言的qsort函数进行排序"></a>方法二:利用C语言的qsort函数进行排序</h4><pre><code class="c">int cmpfunc (const void * a, const void * b)
-&#123;
-   return ( *(int*)a - *(int*)b );
-&#125;
-
-bool containsDuplicate(int* nums, int numsSize) &#123;
-    qsort(nums, numsSize, sizeof(int), cmpfunc);
-    for (int i = 0; i &lt; numsSize - 1; i++) &#123;
-        if (nums[i] == nums[i + 1]) &#123;
-            return true;
-        &#125;
-    &#125;
-    return false;
-&#125;
-</code></pre>
-<h4 id="方法三：哈希表"><a href="#方法三：哈希表" class="headerlink" title="方法三：哈希表"></a>方法三：哈希表</h4><pre><code class="c">struct hashTable &#123;
-    int key;
-    UT_hash_handle hh;
-&#125;;
-
-bool containsDuplicate(int* nums, int numsSize) &#123;
-    struct hashTable* set = NULL;
-    for (int i = 0; i &lt; numsSize; i++) &#123;
-        struct hashTable* tmp;
-        HASH_FIND_INT(set, nums + i, tmp);
-        if (tmp == NULL) &#123;
-            tmp = malloc(sizeof(struct hashTable));
-            tmp-&gt;key = nums[i];
-            HASH_ADD_INT(set, key, tmp);
-        &#125; else &#123;
-            return true;
-        &#125;
-    &#125;
-    return false;
-&#125;
-</code></pre>
-<h4 id="完整的方法一示例代码："><a href="#完整的方法一示例代码：" class="headerlink" title="完整的方法一示例代码："></a>完整的方法一示例代码：</h4><pre><code class="c">#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;stdbool.h&gt;
-int values[] = &#123; 88, 56, 100, 2, 1 &#125;;
-
-bool containsDuplicate(int* nums, int numsSize)&#123;
-    for(int i=0;i&lt;numsSize;i++)&#123;
-        for(int j=i+1;j&lt;numsSize;j++)&#123;
-            if(nums[i]==nums[j])&#123;
-                return true;
-            &#125;
-        &#125;
-    &#125;
-    return false;
-&#125;
-int main()
-&#123;
-   int n;
-
-   printf(&quot;列表：\n&quot;);
-   for( n = 0 ; n &lt; 5; n++ ) &#123;
-      printf(&quot;%d &quot;, values[n]);
-   &#125;
-   
-   bool a=containsDuplicate(values, 5);
-   if(a)&#123;
-       printf(&quot;\n&quot;);
-       printf(&quot;存在重复元素&quot;);
-   &#125;else&#123;
-       printf(&quot;\n&quot;);
-       printf(&quot;不存在&quot;);
-   &#125;
-&#125;
-</code></pre>
-<h4 id="完整的方法二示例代码："><a href="#完整的方法二示例代码：" class="headerlink" title="完整的方法二示例代码："></a>完整的方法二示例代码：</h4><pre><code class="c">#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;stdbool.h&gt;
-int values[] = &#123; 88, 56, 100, 2, 2 &#125;;
-
-int cmpfunc (const void * a, const void * b)
-&#123;
-   return ( *(int*)a - *(int*)b );
-&#125;
-
-bool containsDuplicate(int* nums, int numsSize) &#123;
-    qsort(nums, numsSize, sizeof(int), cmpfunc);
-    for (int i = 0; i &lt; numsSize - 1; i++) &#123;
-        if (nums[i] == nums[i + 1]) &#123;
-            return true;
-        &#125;
-    &#125;
-    return false;
-&#125;
-int main()
-&#123;
-   int n;
-
-   printf(&quot;排序之前的列表：\n&quot;);
-   for( n = 0 ; n &lt; 5; n++ ) &#123;
-      printf(&quot;%d &quot;, values[n]);
-   &#125;
-
-   qsort(values, 5, sizeof(int), cmpfunc);
-
-   printf(&quot;\n排序之后的列表：\n&quot;);
-   for( n = 0 ; n &lt; 5; n++ ) &#123;
-      printf(&quot;%d &quot;, values[n]);
-   &#125;
-   
-   bool a=containsDuplicate(values, 5);
-   if(a)&#123;
-       printf(&quot;\n&quot;);
-       printf(&quot;存在重复元素&quot;);
-   &#125;else&#123;
-       printf(&quot;\n&quot;);
-       printf(&quot;不存在&quot;);
-   &#125;
-   
-   
-  return(0);
-&#125;
-</code></pre>
-<h4 id="完整的方法三的哈希表操作的学习"><a href="#完整的方法三的哈希表操作的学习" class="headerlink" title="完整的方法三的哈希表操作的学习"></a>完整的方法三的哈希表操作的学习</h4><pre><code class="c">#include &lt;stdio.h&gt;   /* gets */  
-#include &lt;stdlib.h&gt;  /* atoi, malloc */  
-#include &lt;string.h&gt;  /* strcpy */  
-#include &quot;uthash.h&quot;  
-#include &lt;stdbool.h&gt;
-
-int values[] = &#123; 88, 56, 100, 2, 2 &#125;;
-struct hashTable &#123;
-    int key;
-    UT_hash_handle hh;
-&#125;;
-
-bool containsDuplicate(int* nums, int numsSize) &#123;
-    struct hashTable* set = NULL;
-    for (int i = 0; i &lt; numsSize; i++) &#123;
-        struct hashTable* tmp;
-        HASH_FIND_INT(set, nums + i, tmp);
-        if (tmp == NULL) &#123;
-            tmp = malloc(sizeof(struct hashTable));
-            tmp-&gt;key = nums[i];
-            HASH_ADD_INT(set, key, tmp);
-        &#125; else &#123;
-            return true;
-        &#125;
-    &#125;
-    return false;
-&#125;
-
-
-int main()
-&#123;
-   int n;
-
-   printf(&quot;\n列表：\n&quot;);
-   for( n = 0 ; n &lt; 5; n++ ) &#123;
-      printf(&quot;%d &quot;, values[n]);
-   &#125;
-   
-   bool a=containsDuplicate(values, 5);
-   if(a)&#123;
-       printf(&quot;\n&quot;);
-       printf(&quot;存在重复元素&quot;);
-   &#125;else&#123;
-       printf(&quot;\n&quot;);
-       printf(&quot;不存在&quot;);
-   &#125;
-&#125;
-</code></pre>
-<h4 id="哈希表操作的学习"><a href="#哈希表操作的学习" class="headerlink" title="哈希表操作的学习"></a>哈希表操作的学习</h4><p>1、下载路径：<a target="_blank" rel="noopener" href="https://github.com/troydhanson/uthash">https://github.com/troydhanson/uthash</a></p>
-<p>2、打开目录文件，在src文件下编写C语言代码即可。</p>
-<p><img src="/2021/11/17/1117/1.png" alt="1"></p>
-<p>3、基本的操作</p>
-<pre><code class="c">#include &lt;stdio.h&gt;   /* gets */  
-#include &lt;stdlib.h&gt;  /* atoi, malloc */  
-#include &lt;string.h&gt;  /* strcpy */  
-#include &quot;uthash.h&quot;  
-  
-struct my_struct &#123;  
-    int ikey;                    /* key */  
-    char value[10];  
-    UT_hash_handle hh;         /* makes this structure hashable */  
-&#125;;  
-  
-static struct my_struct *g_users = NULL;  
-  
-void add_user(int mykey, char *value) &#123;  
-    struct my_struct *s;  
-  
-    HASH_FIND_INT(g_users, &amp;mykey, s);  /* mykey already in the hash? */  
-    if (s==NULL) &#123;  
-      s = (struct my_struct*)malloc(sizeof(struct my_struct));  
-      s-&gt;ikey = mykey;  
-      HASH_ADD_INT(g_users, ikey, s);  /* ikey: name of key field */  
-    &#125;  
-    strcpy(s-&gt;value, value);  
-&#125;  
-  
-struct my_struct *find_user(int mykey) &#123;  
-    struct my_struct *s;  
-  
-    HASH_FIND_INT(g_users, &amp;mykey, s);  /* s: output pointer */  
-    return s;  
-&#125;  
-  
-void delete_user(struct my_struct *user) &#123;  
-    HASH_DEL(g_users, user);  /* user: pointer to deletee */  
-    free(user);  
-&#125;  
-  
-void delete_all() &#123;  
-  struct my_struct *current_user, *tmp;  
-  
-  HASH_ITER(hh, g_users, current_user, tmp) &#123;  
-    HASH_DEL(g_users,current_user);  /* delete it (g_users advances to next) */  
-    free(current_user);            /* free it */  
-  &#125;  
-&#125;  
-  
-void print_users() &#123;  
-    struct my_struct *s;  
-  
-    for(s=g_users; s != NULL; s=(struct my_struct*)(s-&gt;hh.next)) &#123;  
-        printf(&quot;user ikey %d: value %s\n&quot;, s-&gt;ikey, s-&gt;value);  
-    &#125;  
-&#125;  
-  
-int name_sort(struct my_struct *a, struct my_struct *b) &#123;  
-    return strcmp(a-&gt;value,b-&gt;value);  
-&#125;  
-  
-int id_sort(struct my_struct *a, struct my_struct *b) &#123;  
-    return (a-&gt;ikey - b-&gt;ikey);  
-&#125;  
-  
-void sort_by_name() &#123;  
-    HASH_SORT(g_users, name_sort);  
-&#125;  
-  
-void sort_by_id() &#123;  
-    HASH_SORT(g_users, id_sort);  
-&#125;  
-  
-int main(int argc, char *argv[]) &#123;  
-    char in[10];  
-    int ikey=1, running=1;  
-    struct my_struct *s;  
-    unsigned num_users;  
-  
-    while (running) &#123;  
-        printf(&quot; 1. add user\n&quot;);  
-        printf(&quot; 2. add/rename user by id\n&quot;);  
-        printf(&quot; 3. find user\n&quot;);  
-        printf(&quot; 4. delete user\n&quot;);  
-        printf(&quot; 5. delete all users\n&quot;);  
-        printf(&quot; 6. sort items by name\n&quot;);  
-        printf(&quot; 7. sort items by id\n&quot;);  
-        printf(&quot; 8. print users\n&quot;);  
-        printf(&quot; 9. count users\n&quot;);  
-        printf(&quot;10. quit\n&quot;);  
-        gets(in);  
-        switch(atoi(in)) &#123;  
-            case 1:  
-                printf(&quot;name?\n&quot;);  
-                add_user(ikey++, gets(in));  
-                break;  
-            case 2:  
-                printf(&quot;id?\n&quot;);  
-                gets(in); ikey = atoi(in);  
-                printf(&quot;name?\n&quot;);  
-                add_user(ikey, gets(in));  
-                break;  
-            case 3:  
-                printf(&quot;id?\n&quot;);  
-                s = find_user(atoi(gets(in)));  
-                printf(&quot;user: %s\n&quot;, s ? s-&gt;value : &quot;unknown&quot;);  
-                break;  
-            case 4:  
-                printf(&quot;id?\n&quot;);  
-                s = find_user(atoi(gets(in)));  
-                if (s) delete_user(s);  
-                else printf(&quot;id unknown\n&quot;);  
-                break;  
-            case 5:  
-                delete_all();  
-                break;  
-            case 6:  
-                sort_by_name();  
-                break;  
-            case 7:  
-                sort_by_id();  
-                break;  
-            case 8:  
-                print_users();  
-                break;  
-            case 9:  
-                num_users=HASH_COUNT(g_users);  
-                printf(&quot;there are %u users\n&quot;, num_users);  
-                break;  
-            case 10:  
-                running=0;  
-                break;  
-        &#125;  
-    &#125;  
-  
-    delete_all();  /* free any structures */  
-    return 0;  
-&#125;  
-</code></pre>
-<p>学习笔记：</p>
-<p>1、get ()函数用法</p>
-<p>char *gets(char *str);</p>
-<p>注意：gets() 函数比 scanf 简洁，而且，就算输入的字符串中有空格也可以直接输入。</p>
-<p>2、atoi()函数</p>
-<p>  int atoi(const char *str)</p>
-<p>注意可以将字符型直接转化成整型。</p>
-<p>3、其余增加删除修改排序功能可以参考这篇文章的讲解。<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/340692819">C语言哈希表uthash的使用方法详解（附下载链接） - 知乎 (zhihu.com)</a></p>
-<p>参考资料:</p>
-<p>1、<a target="_blank" rel="noopener" href="https://blog.csdn.net/whatday/article/details/95926766">(25条消息) c开源hash项目 uthash的用法总结_whatday的专栏-CSDN博客_uthash</a></p>
-<p>2、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/contains-duplicate/solution/cun-zai-zhong-fu-yuan-su-by-leetcode-sol-iedd/">https://leetcode-cn.com/problems/contains-duplicate/solution/cun-zai-zhong-fu-yuan-su-by-leetcode-sol-iedd/</a></p>
-
+                
                 
             </div>
             <hr/>
@@ -855,7 +534,15 @@ int main(int argc, char *argv[]) &#123;
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/%E7%AE%97%E6%B3%95/">
+                                    <span class="chip bg-color">算法</span>
+                                </a>
+                            
+                                <a href="/tags/C%E8%AF%AD%E8%A8%80/">
+                                    <span class="chip bg-color">C语言</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -1033,9 +720,9 @@ int main(int argc, char *argv[]) &#123;
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="C语言排序">
+                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="C 语言常见排序算法实现">
                         
-                        <span class="card-title">C语言排序</span>
+                        <span class="card-title">C 语言常见排序算法实现</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1057,6 +744,18 @@ int main(int argc, char *argv[]) &#123;
                     </div>
                 </div>
                 
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E7%AE%97%E6%B3%95/">
+                        <span class="chip bg-color">算法</span>
+                    </a>
+                    
+                    <a href="/tags/C%E8%AF%AD%E8%A8%80/">
+                        <span class="chip bg-color">C语言</span>
+                    </a>
+                    
+                </div>
+                
             </div>
         </div>
         
@@ -1070,9 +769,9 @@ int main(int argc, char *argv[]) &#123;
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/15.jpg" class="responsive-img" alt="CTFhub-时间盲注">
+                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="CTFHub SQL 时间盲注">
                         
-                        <span class="card-title">CTFhub-时间盲注</span>
+                        <span class="card-title">CTFHub SQL 时间盲注</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1092,6 +791,18 @@ int main(int argc, char *argv[]) &#123;
                             
                         </span>
                     </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">安全</span>
+                    </a>
+                    
+                    <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                        <span class="chip bg-color">SQL注入</span>
+                    </a>
+                    
                 </div>
                 
             </div>

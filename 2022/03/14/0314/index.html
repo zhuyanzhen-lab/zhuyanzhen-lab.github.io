@@ -4,9 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="DVWA  CSF Bypass, 是小竹不是小猪">
-    <meta name="description" content="Low右击点击检查 ，查看网络选项，里面的
-Content-Security-Policy: script-src ‘self’ https://pastebin.com hastebin.com example.com code.jque">
+    <meta name="keywords" content="DVWA CSRF Bypass 解题记录, 是小竹不是小猪">
+    <meta name="description" content="DVWA CSRF Bypass 解题记录 | 是小竹不是小猪">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -18,7 +17,7 @@ Content-Security-Policy: script-src ‘self’ https://pastebin.com hastebin.com
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>DVWA  CSF Bypass | 是小竹不是小猪</title>
+    <title>DVWA CSRF Bypass 解题记录 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -310,12 +309,12 @@ Content-Security-Policy: script-src ‘self’ https://pastebin.com hastebin.com
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/14.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/22.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">DVWA  CSF Bypass</h1>
+                    <h1 class="description center-align post-title">DVWA CSRF Bypass 解题记录</h1>
                 </div>
             </div>
         </div>
@@ -429,9 +428,17 @@ Content-Security-Policy: script-src ‘self’ https://pastebin.com hastebin.com
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                <span class="chip bg-color">安全</span>
+                            </a>
+                        
+                            <a href="/tags/Web%E5%AE%89%E5%85%A8/">
+                                <span class="chip bg-color">Web安全</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
@@ -464,122 +471,7 @@ Content-Security-Policy: script-src ‘self’ https://pastebin.com hastebin.com
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="Low"><a href="#Low" class="headerlink" title="Low"></a>Low</h2><p>右击点击检查 ，查看网络选项，里面的</p>
-<p>Content-Security-Policy: script-src ‘self’ <a target="_blank" rel="noopener" href="https://pastebin.com/">https://pastebin.com</a> hastebin.com example.com code.jquery.com <a target="_blank" rel="noopener" href="https://ssl.google-analytics.com/">https://ssl.google-analytics.com</a> ;</p>
-<p>点击进入 <a target="_blank" rel="noopener" href="https://pastebin.com网站/">https://pastebin.com网站</a></p>
-<p>在paste 中输入alert(“hahaha”)</p>
-<p><img src="/2022/03/14/0314/3.PNG" alt="3"></p>
-<p>不用修改设置，直接点击创建连接</p>
-<p><img src="/2022/03/14/0314/2.PNG" alt="2"></p>
-<p>点击row尝试访问</p>
-<p><img src="/2022/03/14/0314/4.PNG" alt="4"></p>
-<p>赋值网址</p>
-<p><img src="/2022/03/14/0314/5.PNG" alt="5"></p>
-<p>进行注入，发现出现弹窗即可，但是由于网址是国外的，访问慢，会出不来弹窗。</p>
-<p><img src="/2022/03/14/0314/6.PNG" alt="6"></p>
-<h2 id="Medium"><a href="#Medium" class="headerlink" title="Medium"></a>Medium</h2><p>查看服务器源代码</p>
-<pre><code class="php">&lt;?php
-
-$headerCSP = &quot;Content-Security-Policy: script-src &#39;self&#39; &#39;unsafe-inline&#39; &#39;nonce-TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=&#39;;&quot;;
-
-header($headerCSP);
-
-// Disable XSS protections so that inline alert boxes will work
-header (&quot;X-XSS-Protection: 0&quot;);
-
-# &lt;script nonce=&quot;TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=&quot;&gt;alert(1)&lt;/script&gt;
-
-?&gt;
-&lt;?php
-if (isset ($_POST[&#39;include&#39;])) &#123;
-$page[ &#39;body&#39; ] .= &quot;
-    &quot; . $_POST[&#39;include&#39;] . &quot;
-&quot;;
-&#125;
-$page[ &#39;body&#39; ] .= &#39;
-&lt;form name=&quot;csp&quot; method=&quot;POST&quot;&gt;
-    &lt;p&gt;Whatever you enter here gets dropped directly into the page, see if you can get an alert box to pop up.&lt;/p&gt;
-    &lt;input size=&quot;50&quot; type=&quot;text&quot; name=&quot;include&quot; value=&quot;&quot; id=&quot;include&quot; /&gt;
-    &lt;input type=&quot;submit&quot; value=&quot;Include&quot; /&gt;
-&lt;/form&gt;
-&#39;;
-</code></pre>
-<p>发现,直接输入，发现出现弹窗</p>
-<pre><code class="js">&lt;script nonce=&quot;TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=&quot;&gt;alert(1)&lt;/script&gt;
-</code></pre>
-<p>接下来看看csp信息：</p>
-<pre><code class="php">$headerCSP = &quot;Content-Security-Policy: script-src &#39;self&#39; &#39;unsafe-inline&#39; &#39;nonce-TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=&#39;;&quot;;
-</code></pre>
-<p>当csp有Unsafe-inline时, 并且受限于csp无法直接引入外部js, 不过当frame-src<br>为self, 或者能引入当前域的资源的时候, 即有一定可能能够引入外部js。</p>
-<p>nonce-source，仅允许特定的内联脚本块。如源码中：nonce-TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=</p>
-<h2 id="High"><a href="#High" class="headerlink" title="High"></a>High</h2><pre><code class="php">&lt;?php
-$headerCSP = &quot;Content-Security-Policy: script-src &#39;self&#39;;&quot;;
-
-header($headerCSP);
-
-?&gt;
-&lt;?php
-if (isset ($_POST[&#39;include&#39;])) &#123;
-$page[ &#39;body&#39; ] .= &quot;
-    &quot; . $_POST[&#39;include&#39;] . &quot;
-&quot;;
-&#125;
-$page[ &#39;body&#39; ] .= &#39;
-&lt;form name=&quot;csp&quot; method=&quot;POST&quot;&gt;
-    &lt;p&gt;The page makes a call to &#39; . DVWA_WEB_PAGE_TO_ROOT . &#39;/vulnerabilities/csp/source/jsonp.php to load some code. Modify that page to run your own code.&lt;/p&gt;
-    &lt;p&gt;1+2+3+4+5=&lt;span id=&quot;answer&quot;&gt;&lt;/span&gt;&lt;/p&gt;
-    &lt;input type=&quot;button&quot; id=&quot;solve&quot; value=&quot;Solve the sum&quot; /&gt;
-&lt;/form&gt;
-
-&lt;script src=&quot;source/high.js&quot;&gt;&lt;/script&gt;
-&#39;;
-
-</code></pre>
-<p>没有输入框，查看源代码发现csp”Content-Security-Policy: script-src ‘self’;” 只能从本页面调用javascript脚本。观察源代码中的source/high.js。</p>
-<pre><code class="js">function clickButton() &#123;
-    var s = document.createElement(&quot;script&quot;);
-    s.src = &quot;source/jsonp.php?callback=solveSum&quot;;
-    document.body.appendChild(s);
-&#125;
-
-function solveSum(obj) &#123;
-    if (&quot;answer&quot; in obj) &#123;
-        document.getElementById(&quot;answer&quot;).innerHTML = obj[&#39;answer&#39;];
-    &#125;
-&#125;
-
-var solve_button = document.getElementById (&quot;solve&quot;);
-
-if (solve_button) &#123;
-    solve_button.addEventListener(&quot;click&quot;, function() &#123;
-        clickButton();
-    &#125;);
-&#125;
-</code></pre>
-<p>这个js代码的功能就是，当点击求和是跳转到题目所示的php页面，成一个 script 标签(src 指向 source/jsonp.php?callback=solveNum), 并把它加入到 DOM 中 ，js中定义了一个 solveNum 的函数 -&gt; 因此 script 标签会把远程加载的 solveSum({“answer”:“15”}) 当作 js 代码执行, 而这个形式正好就是调用了 solveSum 函数, 然后这个函数就会在界面适当的位置写入答案。</p>
-<p>查看jsonp.js代码</p>
-<pre><code class="js">&lt;?php
-header(&quot;Content-Type: application/json; charset=UTF-8&quot;);
-
-if (array_key_exists (&quot;callback&quot;, $_GET)) &#123;
-    $callback = $_GET[&#39;callback&#39;];
-&#125; else &#123;
-    return &quot;&quot;;
-&#125;
-
-$outp = array (&quot;answer&quot; =&gt; &quot;15&quot;);
-
-echo $callback . &quot;(&quot;.json_encode($outp).&quot;)&quot;;
-?&gt;
-</code></pre>
-<p>参数通过get方式获取，且没有做过滤， 这可能作为一个注入点, 我们构造<br>并把这个当做 include 参数传给界面就 注入成功!</p>
-<pre><code>include=&lt;script src=&quot;source/jsonp.php?callback=alert(&#39;xss&#39;);&quot;&gt;&lt;/script&gt;
-</code></pre>
-<p><img src="/2022/03/14/0314/9.PNG" alt="9"></p>
-<p>参考资料：</p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42075643/article/details/113928878">https://blog.csdn.net/weixin_42075643/article/details/113928878</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Mr_helloword/article/details/107827088">(30条消息) DVWA-CSP Bypass详解_Mr_helloword的博客-CSDN博客</a></p>
-
+                
                 
             </div>
             <hr/>
@@ -642,7 +534,15 @@ echo $callback . &quot;(&quot;.json_encode($outp).&quot;)&quot;;
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                    <span class="chip bg-color">安全</span>
+                                </a>
+                            
+                                <a href="/tags/Web%E5%AE%89%E5%85%A8/">
+                                    <span class="chip bg-color">Web安全</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -820,9 +720,9 @@ echo $callback . &quot;(&quot;.json_encode($outp).&quot;)&quot;;
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="317">
+                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="DVWA JavaScript 绕过（Low 级别）">
                         
-                        <span class="card-title">317</span>
+                        <span class="card-title">DVWA JavaScript 绕过（Low 级别）</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -844,6 +744,18 @@ echo $callback . &quot;(&quot;.json_encode($outp).&quot;)&quot;;
                     </div>
                 </div>
                 
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">安全</span>
+                    </a>
+                    
+                    <a href="/tags/Web%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">Web安全</span>
+                    </a>
+                    
+                </div>
+                
             </div>
         </div>
         
@@ -857,9 +769,9 @@ echo $callback . &quot;(&quot;.json_encode($outp).&quot;)&quot;;
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="DVWA xss （stored)">
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="DVWA XSS（存储型）解题记录">
                         
-                        <span class="card-title">DVWA xss （stored)</span>
+                        <span class="card-title">DVWA XSS（存储型）解题记录</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -879,6 +791,18 @@ echo $callback . &quot;(&quot;.json_encode($outp).&quot;)&quot;;
                             
                         </span>
                     </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">安全</span>
+                    </a>
+                    
+                    <a href="/tags/XSS/">
+                        <span class="chip bg-color">XSS</span>
+                    </a>
+                    
                 </div>
                 
             </div>

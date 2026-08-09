@@ -4,14 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="基于nodejs实现一个静态文件服务器, 是小竹不是小猪">
-    <meta name="description" content="一、搭建环境检查nodejs环境
-node -v
-npm -v
-
-如果在后续运行过程中出现缺少模块的情况可以使用npm install （模块名）的方法。注意全局和局部的区别。
-【必须以管理员身份操作】
-npm install model-">
+    <meta name="keywords" content="基于 Node.js 实现静态文件服务器, 是小竹不是小猪">
+    <meta name="description" content="基于 Node.js 实现静态文件服务器 | 是小竹不是小猪">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -23,7 +17,7 @@ npm install model-">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>基于nodejs实现一个静态文件服务器 | 是小竹不是小猪</title>
+    <title>基于 Node.js 实现静态文件服务器 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -315,12 +309,12 @@ npm install model-">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/14.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">基于nodejs实现一个静态文件服务器</h1>
+                    <h1 class="description center-align post-title">基于 Node.js 实现静态文件服务器</h1>
                 </div>
             </div>
         </div>
@@ -434,9 +428,17 @@ npm install model-">
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%89%8D%E7%AB%AF/">
+                                <span class="chip bg-color">前端</span>
+                            </a>
+                        
+                            <a href="/tags/Node-js/">
+                                <span class="chip bg-color">Node.js</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
@@ -469,109 +471,7 @@ npm install model-">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="一、搭建环境"><a href="#一、搭建环境" class="headerlink" title="一、搭建环境"></a>一、搭建环境</h2><p>检查nodejs环境</p>
-<pre><code class="shell">node -v
-npm -v
-</code></pre>
-<p>如果在后续运行过程中出现缺少模块的情况可以使用npm install （模块名）的方法。注意全局和局部的区别。</p>
-<p>【必须以管理员身份操作】</p>
-<pre><code class="shell">npm install model-name -g //全局
-npm install model-name  //局部
-</code></pre>
-<h2 id="二、服务实现说明"><a href="#二、服务实现说明" class="headerlink" title="二、服务实现说明"></a>二、服务实现说明</h2><h3 id="（一）要求"><a href="#（一）要求" class="headerlink" title="（一）要求"></a>（一）要求</h3><p>利用Node.js实现要给简单基于http的文件服务器。</p>
-<p>要求：</p>
-<p>1、利用http模块构建一个Http Server;</p>
-<p>2、服务器对输入的URL进行解析，获取URL中的pathname;</p>
-<p>3、将pathname和服务当前所在地址构造出一个绝对路径，显示这个路径下的文件与目录；</p>
-<p>4、可以点击页面的中文件或目录，如果是文件则在页面显示文件内容，如果是目录则显示目录下的内容。</p>
-<p>你只需要运行项目中的server.js文件，运行方法是打开项目目录的命令行输入node server.js，然后，在浏览器中输入：localhost:1314 或者 127.0.0.1:1314即可预览。</p>
-<h3 id="（二）实现步骤："><a href="#（二）实现步骤：" class="headerlink" title="（二）实现步骤："></a>（二）实现步骤：</h3><p>1、获取项目的绝对路径；</p>
-<p>2、获取请求的path，进行路径拼接；</p>
-<p>判断请求，如果是icon则忽略；</p>
-<p> else  执行3</p>
-<p> 3、判断请求的url是否存在；</p>
-<p>存在：（1）判断文件是文件夹还是文件目录</p>
-<p>​     目录：遍历目录下的所有文件，</p>
-<p>   文件：判断文件的类型，读取文件，然后响应数据。</p>
-<p>​    （2）获取一个路径，给文件的href</p>
-<p>  不存在：404，end;</p>
-<h3 id="（三）代码解析"><a href="#（三）代码解析" class="headerlink" title="（三）代码解析"></a>（三）代码解析</h3><pre><code class="js"> //server.js文件
-
-//我们使用 require 指令来载入 http，url,path,mime,fs,urlencode等模块，并且进行实例化。
- var http = require(&quot;http&quot;);
- var url = require(&quot;url&quot;);
- var path =  require(&quot;path&quot;);
- var mime = require(&quot;mime&quot;);
- var fs = require(&quot;fs&quot;);
- var urlencode = require(&#39;urlencode&#39;);
-
-//服务器框架
-http.createServer(function(req, res)&#123;
-    //获取路径名
-    var pathname = url.parse(req.url).pathname; //利用url模块的功能
-    //URL解码，防止乱码
-    pathname = urlencode.decode(pathname, &#39;utf-8&#39;);
-    //排错
-    if(pathname == &quot;/favicon.ico&quot;) return;
-    //获取根路径
-    finalpath = __dirname + pathname; //原本的目录加上访问目录
-    //如果文件存在：
-    fs.exists(finalpath,function(exists)&#123;
-        if(exists)&#123;
-            //如果是文件夹
-            if(fs.statSync(finalpath).isDirectory())&#123;
-                //获取文件夹的文件结构
-                fs.readdir(finalpath,function(err,files)&#123;
-                    //排错
-                    if(err)&#123;
-                        res.writeHead(200,&#123;&quot;Content-Type&quot;:&#39;text/plain&#39;&#125;);
-                        res.end(&quot;&lt;h1&gt;404 page cannot be found&lt;/h1&gt;&quot;);
-                    &#125;
-                    //将文件结构写入页面
-                    else&#123;
-                        var html = &quot;&lt;head&gt;&lt;meta charset=&#39;utf-8&#39;&gt;&lt;/head&gt;&quot;;
-                        var files = fs.readdirSync(finalpath);
-                        //创建超链接打开文件
-                        for (var i in files) &#123;
-                            var filename = files[i];
-                            html += &quot;&lt;ul&gt;&lt;li&gt;&lt;a href=&#39;http://127.0.0.1:1314&quot; +
-                                     pathname + &#39;/&#39;+  filename + &quot;&#39;&gt;&quot; + filename + &quot;&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&quot;;
-                        &#125;
-                        res.writeHead(200, &#123;&#39;content-type&#39;: &#39;text/html&#39;&#125;);
-                        res.write(html);
-                        res.end();
-                    &#125;
-                &#125;)
-            &#125;
-            //如果是文件
-            else if(fs.statSync(finalpath).isFile())&#123;
-                //打开文件
-                fs.readFile(finalpath,function(err,data)&#123;
-                    if(err) res.end(&quot;cannot read file!&quot;);
-                    else &#123;
-                        res.writeHead(200,&#123;&quot;Content-Type&quot;:mime.getType(path.basename)&#125;);
-                        res.write(data);
-                        res.end();
-                    &#125;
-                &#125;)
-            &#125;
-            else&#123;
-                res.writeHead(200,&#123;&quot;Content-Type&quot;:&quot;text/html;charset=utf-8&quot;&#125;);
-                res.end(&quot;&lt;h1&gt;404 page cannot be found!&lt;/h1&gt;&quot;);
-            &#125;
-        &#125;
-    &#125;)
-&#125;).listen(1314);//设置监听端口
-console.log(&quot;Server running at http://127.0.0.1:1314/&quot;);
-</code></pre>
-<p>实现效果如图可以看到：对本地的127.0.0.1:1314进行访问     <img src="/2021/11/22/1122/web.PNG" alt="web"></p>
-<h3 id="（四）nodejs的一些知识"><a href="#（四）nodejs的一些知识" class="headerlink" title="（四）nodejs的一些知识"></a>（四）nodejs的一些知识</h3><h4 id="1、url模块："><a href="#1、url模块：" class="headerlink" title="1、url模块："></a>1、url模块：</h4><p>模块的作用：解析用户的URL，以便程序根据URL的不同提供不同的服务；</p>
-<pre><code class="js">url.parse (urlStr[, parseQueryString][, slashesDenoteHost]); //解析用户输入的URL。
-url.format(urlObj)    // 输入一个 URL 对象，返回格式化后的 URL 字符串 。  
-url.resolve(from, to) //给定一个基URL路径，和一个href URL路径，并且象浏览器那样处理他们可以带上锚点。
-</code></pre>
-<h4 id="2、Node-js文件系统"><a href="#2、Node-js文件系统" class="headerlink" title="2、Node.js文件系统"></a>2、Node.js文件系统</h4><p>可以参照菜鸟教程的讲解。</p>
-
+                
                 
             </div>
             <hr/>
@@ -634,7 +534,15 @@ url.resolve(from, to) //给定一个基URL路径，和一个href URL路径，并
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/%E5%89%8D%E7%AB%AF/">
+                                    <span class="chip bg-color">前端</span>
+                                </a>
+                            
+                                <a href="/tags/Node-js/">
+                                    <span class="chip bg-color">Node.js</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -812,9 +720,9 @@ url.resolve(from, to) //给定一个基URL路径，和一个href URL路径，并
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="关于数组的合并排序">
+                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="数组合并排序算法详解">
                         
-                        <span class="card-title">关于数组的合并排序</span>
+                        <span class="card-title">数组合并排序算法详解</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -836,6 +744,18 @@ url.resolve(from, to) //给定一个基URL路径，和一个href URL路径，并
                     </div>
                 </div>
                 
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E7%AE%97%E6%B3%95/">
+                        <span class="chip bg-color">算法</span>
+                    </a>
+                    
+                    <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+                        <span class="chip bg-color">数据结构</span>
+                    </a>
+                    
+                </div>
+                
             </div>
         </div>
         
@@ -849,9 +769,9 @@ url.resolve(from, to) //给定一个基URL路径，和一个href URL路径，并
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="线段树">
+                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="线段树原理与实现">
                         
-                        <span class="card-title">线段树</span>
+                        <span class="card-title">线段树原理与实现</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -871,6 +791,18 @@ url.resolve(from, to) //给定一个基URL路径，和一个href URL路径，并
                             
                         </span>
                     </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E7%AE%97%E6%B3%95/">
+                        <span class="chip bg-color">算法</span>
+                    </a>
+                    
+                    <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+                        <span class="chip bg-color">数据结构</span>
+                    </a>
+                    
                 </div>
                 
             </div>

@@ -4,13 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="CTFHub/DVWA的xss泄露反射型, 是小竹不是小猪">
-    <meta name="description" content="CTFHub/DVWA的xss泄露反射型DVWA的反射型一、Low&amp;lt;?php
-
-header (&amp;quot;X-XSS-Protection: 0&amp;quot;);
-
-// Is there any input?
-if( array_k">
+    <meta name="keywords" content="CTFHub / DVWA XSS 反射型泄露, 是小竹不是小猪">
+    <meta name="description" content="CTFHub / DVWA XSS 反射型泄露 | 是小竹不是小猪">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -22,7 +17,7 @@ if( array_k">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>CTFHub/DVWA的xss泄露反射型 | 是小竹不是小猪</title>
+    <title>CTFHub / DVWA XSS 反射型泄露 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -314,12 +309,12 @@ if( array_k">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/1.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">CTFHub/DVWA的xss泄露反射型</h1>
+                    <h1 class="description center-align post-title">CTFHub / DVWA XSS 反射型泄露</h1>
                 </div>
             </div>
         </div>
@@ -433,9 +428,17 @@ if( array_k">
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                <span class="chip bg-color">安全</span>
+                            </a>
+                        
+                            <a href="/tags/XSS/">
+                                <span class="chip bg-color">XSS</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
@@ -468,91 +471,7 @@ if( array_k">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="CTFHub-DVWA的xss泄露反射型"><a href="#CTFHub-DVWA的xss泄露反射型" class="headerlink" title="CTFHub/DVWA的xss泄露反射型"></a>CTFHub/DVWA的xss泄露反射型</h2><h3 id="DVWA的反射型"><a href="#DVWA的反射型" class="headerlink" title="DVWA的反射型"></a>DVWA的反射型</h3><h4 id="一、Low"><a href="#一、Low" class="headerlink" title="一、Low"></a>一、Low</h4><pre><code class="php">&lt;?php
-
-header (&quot;X-XSS-Protection: 0&quot;);
-
-// Is there any input?
-if( array_key_exists( &quot;name&quot;, $_GET ) &amp;&amp; $_GET[ &#39;name&#39; ] != NULL ) &#123;
-    // Feedback for end user
-    echo &#39;&lt;pre&gt;Hello &#39; . $_GET[ &#39;name&#39; ] . &#39;&lt;/pre&gt;&#39;;
-&#125;
-
-?&gt;
-</code></pre>
-<p>这里没有对于$_GET[ ‘name’ ] 做出限制因此可以直接进行注入。</p>
-<pre><code class="js">&lt;script&gt;alert(&quot;low&quot;)&lt;/script&gt;
-</code></pre>
-<h4 id="二、med"><a href="#二、med" class="headerlink" title="二、med"></a>二、med</h4><pre><code class="php">&lt;?php
-
-header (&quot;X-XSS-Protection: 0&quot;);
-
-// Is there any input?
-if( array_key_exists( &quot;name&quot;, $_GET ) &amp;&amp; $_GET[ &#39;name&#39; ] != NULL ) &#123;
-    // Get input
-    $name = str_replace( &#39;&lt;script&gt;&#39;, &#39;&#39;, $_GET[ &#39;name&#39; ] );
-
-    // Feedback for end user
-    echo &quot;&lt;pre&gt;Hello $&#123;name&#125;&lt;/pre&gt;&quot;;
-&#125;
-
-?&gt;
-</code></pre>
-<p>将<script>替换成了' '，但这里对大小写敏感可以使用<Script></p>
-<pre><code class="js">&lt;Script&gt;alert(&quot;medium&quot;)&lt;/script&gt;
-#或者
-&lt;scri&lt;script&gt;pt&gt;alert(&quot;medium&quot;)&lt;/script&gt;
-</code></pre>
-<h4 id="三、high"><a href="#三、high" class="headerlink" title="三、high"></a>三、high</h4><pre><code class="php">&lt;?php
-
-header (&quot;X-XSS-Protection: 0&quot;);
-
-// Is there any input?
-if( array_key_exists( &quot;name&quot;, $_GET ) &amp;&amp; $_GET[ &#39;name&#39; ] != NULL ) &#123;
-    // Get input
-    $name = preg_replace( &#39;/&lt;(.*)s(.*)c(.*)r(.*)i(.*)p(.*)t/i&#39;, &#39;&#39;, $_GET[ &#39;name&#39; ] );
-
-    // Feedback for end user
-    echo &quot;&lt;pre&gt;Hello $&#123;name&#125;&lt;/pre&gt;&quot;;
-&#125;
-
-?&gt;
-</code></pre>
-<p>最高难度使用了正则匹配，但只是过滤了<scripts>这一种xss，话可以利用img标签报错来实现弹窗</p>
-<pre><code class="js">&lt;img src=0 οnerrοr=alert(&quot;high&quot;)&gt;
-</code></pre>
-<h4 id="四、impossible"><a href="#四、impossible" class="headerlink" title="四、impossible"></a>四、impossible</h4><pre><code class="php">&lt;?php
-
-// Is there any input?
-if( array_key_exists( &quot;name&quot;, $_GET ) &amp;&amp; $_GET[ &#39;name&#39; ] != NULL ) &#123;
-    // Check Anti-CSRF token
-    checkToken( $_REQUEST[ &#39;user_token&#39; ], $_SESSION[ &#39;session_token&#39; ], &#39;index.php&#39; );
-
-    // Get input
-    $name = htmlspecialchars( $_GET[ &#39;name&#39; ] );
-
-    // Feedback for end user
-    echo &quot;&lt;pre&gt;Hello $&#123;name&#125;&lt;/pre&gt;&quot;;
-&#125;
-
-// Generate Anti-CSRF token
-generateSessionToken();
-
-?&gt;
-</code></pre>
-<h3 id="CTFHub的例题"><a href="#CTFHub的例题" class="headerlink" title="CTFHub的例题"></a>CTFHub的例题</h3><p>反射型：需要攻击者提前构造一个恶意代码链接来使客户点击。</p>
-<p>1、XSS platform创建一个项目</p>
-<p><img src="https://img-blog.csdnimg.cn/20200813113648685.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzQ4Njk4MQ==,size_16,color_FFFFFF,t_70#pic_center" alt="img"></p>
-<p>2、把XSS平台给出的代码复制到第一个输入框中进行注入。</p>
-<p><img src="1128/1.jpg" alt="1"></p>
-<p>3、提交后在第二个框中访问第一框中注入XSS脚本后的网址</p>
-<p><img src="1128/3.PNG" alt="3"></p>
-<p>4、最后在XSSplatform中查看结果</p>
-<p><img src="1128/2.PNG" alt="2"></p>
-<p>参考资料：</p>
-<p>1、<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43726831/article/details/102713846">(26条消息) DVWA靶机-反射性XSS漏洞(Reflected)_小边同学的博客-CSDN博客</a></p>
-<p>2、<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43486981/article/details/107974878">(26条消息) CTFHUB-WEB-XSS-反射型_老大的豆豆酱的博客-CSDN博客</a></p>
-</script></p>
+                
                 
             </div>
             <hr/>
@@ -615,7 +534,15 @@ generateSessionToken();
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/%E5%AE%89%E5%85%A8/">
+                                    <span class="chip bg-color">安全</span>
+                                </a>
+                            
+                                <a href="/tags/XSS/">
+                                    <span class="chip bg-color">XSS</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -793,9 +720,9 @@ generateSessionToken();
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="二叉排序树的建构和按规则输出">
+                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="二叉排序树的构建与遍历输出">
                         
-                        <span class="card-title">二叉排序树的建构和按规则输出</span>
+                        <span class="card-title">二叉排序树的构建与遍历输出</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -817,6 +744,18 @@ generateSessionToken();
                     </div>
                 </div>
                 
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E7%AE%97%E6%B3%95/">
+                        <span class="chip bg-color">算法</span>
+                    </a>
+                    
+                    <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+                        <span class="chip bg-color">数据结构</span>
+                    </a>
+                    
+                </div>
+                
             </div>
         </div>
         
@@ -830,9 +769,9 @@ generateSessionToken();
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="关于数组中求重复元素【C语言】">
+                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="数组中求重复元素（C 语言实现）">
                         
-                        <span class="card-title">关于数组中求重复元素【C语言】</span>
+                        <span class="card-title">数组中求重复元素（C 语言实现）</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -852,6 +791,18 @@ generateSessionToken();
                             
                         </span>
                     </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E7%AE%97%E6%B3%95/">
+                        <span class="chip bg-color">算法</span>
+                    </a>
+                    
+                    <a href="/tags/C%E8%AF%AD%E8%A8%80/">
+                        <span class="chip bg-color">C语言</span>
+                    </a>
+                    
                 </div>
                 
             </div>
