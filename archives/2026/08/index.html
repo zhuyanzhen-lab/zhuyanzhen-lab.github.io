@@ -344,8 +344,14 @@
 
 
 <script>
-    // 每天切换 banner 图.  Switch banner image every day.
-    var bannerUrl = "/medias/banner/" + new Date().getDay() + '.jpg';
+    // 每天切换 banner 图，支持任意数量的 banner 图片
+    var start = new Date(new Date().getFullYear(), 0, 0);
+    var diff = Date.now() - start.getTime();
+    var oneDay = 86400000;
+    var dayOfYear = Math.floor(diff / oneDay);
+    var totalBanners = 12; // banner 图片总数，新增图片后更新此数字
+    var index = dayOfYear % totalBanners;
+    var bannerUrl = "/medias/banner/" + index + '.jpg';
     $('.bg-cover').css('background-image', 'url(' + bannerUrl + ')');
 </script>
 
@@ -899,7 +905,7 @@
                                 
                                     
   
-    1202c1026a7f617f130a0b1186a5874985b1d02787a60705a6bd27ddb767830959ab7dd28bf1a8b089e89bb8ce99a1cea55e9015b311b8b3
+    bc6f09ec42e86d9004dc75b637ecdf687f1043900d95f3513ea04570c5f8048497d115bbd3617f14239f543662900f74157e305e0a8c7af5
                                 
                             </div>
                             <div class="publish-info">

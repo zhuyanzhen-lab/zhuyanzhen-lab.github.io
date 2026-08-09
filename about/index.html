@@ -351,8 +351,14 @@
 
 
 <script>
-    // 每天切换 banner 图.  Switch banner image every day.
-    var bannerUrl = "/medias/banner/" + new Date().getDay() + '.jpg';
+    // 每天切换 banner 图，支持任意数量的 banner 图片
+    var start = new Date(new Date().getFullYear(), 0, 0);
+    var diff = Date.now() - start.getTime();
+    var oneDay = 86400000;
+    var dayOfYear = Math.floor(diff / oneDay);
+    var totalBanners = 12; // banner 图片总数，新增图片后更新此数字
+    var index = dayOfYear % totalBanners;
+    var bannerUrl = "/medias/banner/" + index + '.jpg';
     $('.bg-cover').css('background-image', 'url(' + bannerUrl + ')');
 </script>
 
@@ -599,7 +605,7 @@
         xAxis: [
             {
                 type: 'category',
-                data: ["安全","Web安全","AI Agent","Claude Code","LangChain","LangGraph","Deep Agents","数据结构","排序算法","Python"]
+                data: ["安全","Web安全","AI Agent","Claude Code","数据结构","排序算法","Python","文件上传","服务器","私密"]
             }
         ],
         yAxis: [
@@ -782,24 +788,6 @@
         <div class="tag-chips center-align">
             
             
-            <a href="/tags/LangChain/">
-                <span class="chip center-align waves-effect waves-light chip-default">LangChain</span>
-            </a>
-            
-            
-            
-            <a href="/tags/LangGraph/">
-                <span class="chip center-align waves-effect waves-light chip-default">LangGraph</span>
-            </a>
-            
-            
-            
-            <a href="/tags/Deep-Agents/">
-                <span class="chip center-align waves-effect waves-light chip-default">Deep Agents</span>
-            </a>
-            
-            
-            
             <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
                 <span class="chip center-align waves-effect waves-light chip-default">数据结构</span>
             </a>
@@ -808,6 +796,20 @@
             
             <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
                 <span class="chip center-align waves-effect waves-light chip-default">排序算法</span>
+            </a>
+            
+            
+            
+            
+            
+            <a href="/tags/%E5%AE%89%E5%85%A8/">
+                <span class="chip center-align waves-effect waves-light chip-default">安全</span>
+            </a>
+            
+            
+            
+            <a href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/">
+                <span class="chip center-align waves-effect waves-light chip-default">文件上传</span>
             </a>
             
             
@@ -826,28 +828,20 @@
             
             
             
-            <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
-                <span class="chip center-align waves-effect waves-light chip-default">SQL注入</span>
+            <a href="/tags/LangChain/">
+                <span class="chip center-align waves-effect waves-light chip-default">LangChain</span>
             </a>
             
             
             
-            <a href="/tags/%E5%AE%89%E5%85%A8/">
-                <span class="chip center-align waves-effect waves-light chip-default">安全</span>
+            <a href="/tags/LangGraph/">
+                <span class="chip center-align waves-effect waves-light chip-default">LangGraph</span>
             </a>
             
             
             
-            <a href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/">
-                <span class="chip center-align waves-effect waves-light chip-default">文件上传</span>
-            </a>
-            
-            
-            
-            
-            
-            <a href="/tags/CSRF/">
-                <span class="chip center-align waves-effect waves-light chip-default">CSRF</span>
+            <a href="/tags/Deep-Agents/">
+                <span class="chip center-align waves-effect waves-light chip-default">Deep Agents</span>
             </a>
             
             
@@ -858,14 +852,26 @@
             
             
             
-            <a href="/tags/HTTP/">
-                <span class="chip center-align waves-effect waves-light chip-default">HTTP</span>
+            <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">
+                <span class="chip center-align waves-effect waves-light chip-default">SQL注入</span>
             </a>
             
             
             
             <a href="/tags/%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5/">
                 <span class="chip center-align waves-effect waves-light chip-default">命令注入</span>
+            </a>
+            
+            
+            
+            <a href="/tags/CSRF/">
+                <span class="chip center-align waves-effect waves-light chip-default">CSRF</span>
+            </a>
+            
+            
+            
+            <a href="/tags/HTTP/">
+                <span class="chip center-align waves-effect waves-light chip-default">HTTP</span>
             </a>
             
             
@@ -912,12 +918,6 @@
             
             
             
-            <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">
-                <span class="chip center-align waves-effect waves-light chip-default">工程实践</span>
-            </a>
-            
-            
-            
             <a href="/tags/%E8%AF%84%E6%B5%8B/">
                 <span class="chip center-align waves-effect waves-light chip-default">评测</span>
             </a>
@@ -956,6 +956,12 @@
             
             <a href="/tags/%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1/">
                 <span class="chip center-align waves-effect waves-light chip-default">协议设计</span>
+            </a>
+            
+            
+            
+            <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">
+                <span class="chip center-align waves-effect waves-light chip-default">工程实践</span>
             </a>
             
             
